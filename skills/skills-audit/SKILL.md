@@ -17,12 +17,18 @@ Scan a repo's agent skills and audit them against field-tested best practices. W
 
 ## Phase 1: Discover Skills
 
-Search for skills in these locations (and any the user specifies):
+Search for skills in both user-level and project-level locations:
 
-- `.claude/skills/` — Claude Code skills
-- `.agents/skills/` — Codex / generic agent skills
-- `.claude/commands/` — Claude Code commands (lightweight skills)
-- Any custom paths the user provides
+**User-level (global installs):**
+- `~/.claude/skills/` — Claude Code skills
+- `~/.agents/skills/` — Codex / generic agent skills
+- `~/.claude/commands/` — Claude Code commands
+
+**Project-level (repo-local):**
+- `.claude/skills/` — Claude Code skills checked into the repo
+- `.agents/skills/` — Codex skills checked into the repo
+
+Also check any custom paths the user provides. Deduplicate if the same skill appears in both locations.
 
 For each skill found, note:
 - Its agent system (claude, codex, generic)
