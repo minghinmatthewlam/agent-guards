@@ -1,0 +1,4 @@
+[
+  {"source": "vercel-labs/agent-browser", "skill": "agent-browser"},
+  {"source": "vercel-labs/agent-browser", "skill": "slack"}
+]

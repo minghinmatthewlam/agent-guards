@@ -1,0 +1,30 @@
+name: Validate Skills
+
+on:
+  push:
+    paths:
+      - "skills/**/SKILL.md"
+      - "scripts/validate-skills.sh"
+      - "scripts/sync.sh"
+      - ".github/workflows/validate-skills.yml"
+  pull_request:
+    paths:
+      - "skills/**/SKILL.md"
+      - "scripts/validate-skills.sh"
+      - "scripts/sync.sh"
+      - ".github/workflows/validate-skills.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Validate skills
+        run: ./scripts/validate-skills.sh
