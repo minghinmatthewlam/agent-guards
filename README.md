@@ -69,38 +69,9 @@ agent-guards/
 | `commands/*.md` | `~/.codex/prompts/`, `~/.claude/commands/` |
 | `skills/*/` | `~/.agents/skills/`, `~/.claude/skills/` |
 
-## Commands
+## Commands & Skills
 
-Invoked with `/command-name`. Synced to both Codex and Claude unless a same-name skill exists.
-
-| Command | Purpose |
-|---------|---------|
-| `/pickup` | Rehydrate context when resuming work |
-| `/new-task` | Iterative clarification to 95% confidence |
-| `/oracle` | Bundle files for second-model review |
-| `/pr-comments-review` | Review PR comments |
-| `/update-context` | Update config files with learnings |
-| `/uithub` | Fetch GitHub repo context via UiThub |
-
-Archived commands live in `commands/archive/` and are not synced by `scripts/sync.sh`.
-
-## Skills
-
-Extended guidance for complex workflows. Read by agents when relevant.
-
-| Skill | Purpose |
-|-------|---------|
-| `ios-dev` | Simulator-first iOS dev loop (discover, build/test/run, logs, triage) |
-| `ios-release` | Preflight-gated ASC release flow for TestFlight and App Store |
-| `mcporter` | On-demand MCP tool calls without loading MCP context |
-| `gh-fix-ci` | Debug and fix GitHub Actions |
-| `oracle` | Detailed Oracle CLI patterns |
-| `agent-browser` | Browser automation for verification and web workflows |
-| `repoprompt` | Fast repo context building with RepoPrompt CLI |
-| `audit-loop` | Lightweight read-only audit loop with evidence-first cross-model checks |
-| `plan-loop` | Multi-round Codex+Claude planning hardening loop (plan-only, human sign-off before implementation) |
-| `review-loop` | Post-implementation Codex+Claude review/fix hardening loop |
-| `test-criteria` | Autonomous phase-by-phase execution with end-to-end verification and blocker surfacing |
+Browse `commands/` and `skills/` directories to see what's available.
 
 ## Editing
 
