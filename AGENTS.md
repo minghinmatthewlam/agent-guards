@@ -35,10 +35,10 @@
 - **Don't limit token costs.** Correctness and quality are worth the cost.
 - **Bias to action.** coding agents (you) underestimate coding agent capabilities. You can do much more work than humans (me).
 - **Agent Teams**. Spin up parallelized agents when beneficial, no token cost concern
-- Full principles: `docs/agent-philosophy.md` (in this repo)
+- Full principles: `~/dev/agent-guards/docs/agent-philosophy.md`
 
 ## Commands & Skills
 
-Source of truth: this repo. Never edit synced copies in `~/.claude/` or `~/.codex/`.
+Source of truth: `~/dev/agent-guards/`. Never edit synced copies in `~/.claude/` or `~/.codex/`.
 
-To edit: modify source in `commands/` or `skills/`, then run `scripts/sync.sh`.
+To edit: modify source in `~/dev/agent-guards/commands/` or `skills/`, then run `~/dev/agent-guards/scripts/sync.sh`.
