@@ -1,0 +1,85 @@
+{
+  "metadata": {
+    "skill_name": "skills-audit",
+    "timestamp": "2026-03-17T18:00:00Z",
+    "evals_run": ["eval-0-audit-my-skills", "eval-1-check-claude-skills", "eval-2-first-time-skills"],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_name": "eval-0-audit-my-skills",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "time_seconds": 216.9,
+        "tokens": 60775
+      },
+      "without_skill": {
+        "pass_rate": 0.67,
+        "passed": 4,
+        "total": 6,
+        "time_seconds": 143.1,
+        "tokens": 55038
+      }
+    },
+    {
+      "eval_name": "eval-1-check-claude-skills",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "total": 5,
+        "time_seconds": 187.3,
+        "tokens": 49715
+      },
+      "without_skill": {
+        "pass_rate": 0.2,
+        "passed": 1,
+        "total": 5,
+        "time_seconds": 120.1,
+        "tokens": 47043
+      }
+    },
+    {
+      "eval_name": "eval-2-first-time-skills",
+      "with_skill": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "total": 5,
+        "time_seconds": 180.7,
+        "tokens": 51543
+      },
+      "without_skill": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "total": 5,
+        "time_seconds": 136.0,
+        "tokens": 54237
+      }
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "mean_pass_rate": 0.94,
+      "mean_time_seconds": 195.0,
+      "mean_tokens": 54011
+    },
+    "without_skill": {
+      "mean_pass_rate": 0.50,
+      "mean_time_seconds": 133.1,
+      "mean_tokens": 52106
+    },
+    "delta": {
+      "pass_rate": "+0.44",
+      "time_seconds": "+61.9",
+      "tokens": "+1905"
+    }
+  },
+  "notes": [
+    "With-skill runs consistently applied the 9-category taxonomy and per-skill checklist scoring",
+    "Without-skill runs found real bugs (simplify sync, hardcoded refs) but lacked systematic structure",
+    "Eval 1 showed the biggest gap: Claude-specific checks (hooks, config, persistence) were completely absent in baseline",
+    "Eval 2 with-skill failed the category classification assertion — used ad-hoc categories instead of the 9-type taxonomy",
+    "With-skill runs take ~50% longer due to reading reference files, but produce significantly more structured output"
+  ]
+}

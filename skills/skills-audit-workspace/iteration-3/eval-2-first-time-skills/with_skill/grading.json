@@ -1,0 +1,11 @@
+{
+  "eval_id": 2, "variant": "with_skill",
+  "expectations": [
+    {"text": "Discovers and lists skills", "passed": true, "evidence": "All 19 skills listed with scores"},
+    {"text": "Approachable tone", "passed": true, "evidence": "Friendly language, clear recommendations"},
+    {"text": "Per-skill feedback", "passed": true, "evidence": "Individual sections for each skill"},
+    {"text": "Quick wins highlighted", "passed": true, "evidence": "Top 5 quick wins with effort estimates"},
+    {"text": "9-category taxonomy", "passed": true, "evidence": "Categories from taxonomy used throughout"},
+    {"text": "N/A only on progressive disclosure and scripts for short skills", "passed": false, "evidence": "self-test Gotchas scored N/A instead of Pass/Missing. Reasoning was defensible ('skill IS a gotcha') but inconsistent with the checklist which has no N/A for gotchas."}
+  ]
+}

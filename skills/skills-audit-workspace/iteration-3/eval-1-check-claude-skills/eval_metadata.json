@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "check-claude-skills",
+  "prompt": "check my .claude/skills for any issues",
+  "assertions": [
+    {"text": "Focuses on .claude/skills/ (not .agents/skills/)", "type": "boolean"},
+    {"text": "Applies Claude-specific checks (hooks, config, or data persistence)", "type": "boolean"},
+    {"text": "Provides per-skill individual findings", "type": "boolean"},
+    {"text": "Assesses description quality (trigger-oriented vs vague)", "type": "boolean"},
+    {"text": "Assesses folder structure / progressive disclosure", "type": "boolean"}
+  ]
+}

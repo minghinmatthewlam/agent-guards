@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "variant": "without_skill",
+  "expectations": [
+    {"text": "Focuses on .claude/skills/ (not .agents/skills/)", "passed": true, "evidence": "Scope is '~/.claude/skills/ (14 skill directories)'. Focused on Claude."},
+    {"text": "Applies Claude-specific checks (hooks, config, or data persistence)", "passed": false, "evidence": "No Claude-specific checks applied. No mention of hooks, config patterns, or CLAUDE_PLUGIN_DATA. Focused on sync integrity and general quality."},
+    {"text": "Provides per-skill individual findings", "passed": false, "evidence": "Issues are grouped thematically (HIGH/MEDIUM/LOW) not per-skill. Only 6 specific skills mentioned across all findings. Most skills have no individual assessment."},
+    {"text": "Assesses description quality (trigger-oriented vs vague)", "passed": false, "evidence": "Structural observations table says 'Description quality: OK' for all skills. No per-skill assessment of trigger orientation."},
+    {"text": "Assesses folder structure / progressive disclosure", "passed": false, "evidence": "Mentions agent-browser is 630+ lines in the inventory table but doesn't systematically assess progressive disclosure for each skill."}
+  ]
+}

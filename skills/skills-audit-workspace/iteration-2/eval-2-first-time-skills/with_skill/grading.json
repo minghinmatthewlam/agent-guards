@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "variant": "with_skill",
+  "expectations": [
+    {"text": "Discovers and lists the skills found", "passed": true, "evidence": "Lists all 19 skills with scope line showing 13 Claude + 19 Codex"},
+    {"text": "Approachable tone (not overly jargon-heavy)", "passed": true, "evidence": "'Your skills are good', 'solid collection with real depth'. Practical language throughout."},
+    {"text": "Provides per-skill individual feedback", "passed": true, "evidence": "All 19 skills have individual sections with scores and checklist tables"},
+    {"text": "Highlights quick wins (easiest high-impact improvements)", "passed": true, "evidence": "Top 3 quick wins section with specific actionable items"},
+    {"text": "Classifies skills into the 9-category taxonomy", "passed": true, "evidence": "Every skill labeled with taxonomy category: Business Process & Team Automation, Library & API Reference, Code Quality & Review, etc."},
+    {"text": "Uses N/A appropriately for short/behavioral skills", "passed": true, "evidence": "self-test 5/5, mcporter 5/5, new-task 5/5 — all with proper N/A usage"}
+  ]
+}

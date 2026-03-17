@@ -1,0 +1,12 @@
+{
+  "eval_id": 0,
+  "variant": "with_skill",
+  "expectations": [
+    {"text": "Discovers skills from both ~/.claude/skills/ and ~/.agents/skills/", "passed": true, "evidence": "Inventory table lists 19 skills across both Claude and Codex systems with clear agent-system labels"},
+    {"text": "Classifies each skill into one of the 9 categories", "passed": true, "evidence": "Every skill has a category assignment (CI/CD, Library & API Reference, Business Process, Code Quality, Product Verification, Runbooks). Categories match the reference taxonomy."},
+    {"text": "Provides per-skill individual scoring (not just a generic summary)", "passed": true, "evidence": "Each of the 19 skills has its own section with an X/8 score, a full checklist table, and specific top issues"},
+    {"text": "Includes repo-level gap analysis section", "passed": true, "evidence": "Dedicated 'Repo-Level Gap Analysis' section identifies missing categories (Scaffolding, Data Fetching, Infrastructure) and structural gaps (no web verification skill, agent-browser/slack duplication, simplify sync)"},
+    {"text": "Findings are ordered by priority/impact", "passed": true, "evidence": "Per-skill findings ordered by score (lowest first = highest priority). Quick wins section has impact/effort ratings. Issues labeled P1/P2."},
+    {"text": "Recommendations include concrete how-to-fix suggestions", "passed": true, "evidence": "Each issue has specific fix suggestions: 'Remove hardcoded ref numbers and replace with semantic descriptions', 'Add gotchas section covering TeamCreate pitfalls', etc."}
+  ]
+}

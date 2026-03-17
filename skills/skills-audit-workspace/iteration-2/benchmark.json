@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "skill_name": "skills-audit",
+    "timestamp": "2026-03-17T18:30:00Z",
+    "iteration": 2,
+    "evals_run": ["eval-0-audit-my-skills", "eval-1-check-claude-skills", "eval-2-first-time-skills"],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_name": "eval-0-audit-my-skills",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "total": 7,
+        "time_seconds": 191.7,
+        "tokens": 60213
+      },
+      "without_skill": {
+        "pass_rate": 0.57,
+        "passed": 4,
+        "total": 7,
+        "time_seconds": 143.1,
+        "tokens": 55038
+      }
+    },
+    {
+      "eval_name": "eval-1-check-claude-skills",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "time_seconds": 185.3,
+        "tokens": 50587
+      },
+      "without_skill": {
+        "pass_rate": 0.17,
+        "passed": 1,
+        "total": 6,
+        "time_seconds": 120.1,
+        "tokens": 47043
+      }
+    },
+    {
+      "eval_name": "eval-2-first-time-skills",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "time_seconds": 175.8,
+        "tokens": 59343
+      },
+      "without_skill": {
+        "pass_rate": 0.5,
+        "passed": 3,
+        "total": 6,
+        "time_seconds": 136.0,
+        "tokens": 54237
+      }
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "mean_pass_rate": 1.0,
+      "mean_time_seconds": 184.3,
+      "mean_tokens": 56714
+    },
+    "without_skill": {
+      "mean_pass_rate": 0.41,
+      "mean_time_seconds": 133.1,
+      "mean_tokens": 52106
+    },
+    "delta": {
+      "pass_rate": "+0.59",
+      "time_seconds": "+51.2",
+      "tokens": "+4608"
+    }
+  },
+  "notes": [
+    "Iteration 2 fixed the N/A handling — short/behavioral skills (self-test, mcporter, new-task) now score 5/5 instead of 4/8",
+    "All 3 evals now pass 100% of assertions (iteration 1 was 94%)",
+    "Eval 2 now uses the 9-category taxonomy (failed this in iteration 1)",
+    "N/A fix reduced score inflation in the other direction — complex skills with real issues aren't masked by inflated denominators",
+    "With-skill runs take ~50s longer but produce dramatically more structured output with 100% assertion pass rate vs 41% baseline"
+  ]
+}

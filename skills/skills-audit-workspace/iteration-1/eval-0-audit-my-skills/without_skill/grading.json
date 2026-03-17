@@ -1,0 +1,12 @@
+{
+  "eval_id": 0,
+  "variant": "without_skill",
+  "expectations": [
+    {"text": "Discovers skills from both ~/.claude/skills/ and ~/.agents/skills/", "passed": true, "evidence": "Inventory lists skills from both directories with sync status"},
+    {"text": "Classifies each skill into one of the 9 categories", "passed": false, "evidence": "Uses ad-hoc A/B/C grading without any category taxonomy. No classification system."},
+    {"text": "Provides per-skill individual scoring (not just a generic summary)", "passed": true, "evidence": "Each skill has its own section with a letter grade and specific findings"},
+    {"text": "Includes repo-level gap analysis section", "passed": false, "evidence": "Has 'Architecture Observations' but no systematic gap analysis against skill categories or repo contents"},
+    {"text": "Findings are ordered by priority/impact", "passed": true, "evidence": "Has P0/P1/P2 priority tiers in the Top Findings section"},
+    {"text": "Recommendations include concrete how-to-fix suggestions", "passed": true, "evidence": "Specific suggestions like 'add simplify to Claude managed skills list', 'Replace @eN refs with guidance to discover refs via snapshot'"}
+  ]
+}

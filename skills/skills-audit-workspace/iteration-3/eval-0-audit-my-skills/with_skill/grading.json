@@ -1,0 +1,12 @@
+{
+  "eval_id": 0, "variant": "with_skill",
+  "expectations": [
+    {"text": "Discovers skills from both directories", "passed": true, "evidence": "19 skills across both systems"},
+    {"text": "Classifies into 9 categories", "passed": true, "evidence": "All skills have category numbers from taxonomy"},
+    {"text": "Per-skill scoring", "passed": true, "evidence": "Each skill has X/Y score and checklist"},
+    {"text": "Gap analysis", "passed": true, "evidence": "Identifies missing scaffolding skill with evidence"},
+    {"text": "Priority ordered", "passed": true, "evidence": "Per-skill ordered by score, quick wins with P1/P2/P3"},
+    {"text": "Concrete fix suggestions", "passed": true, "evidence": "Specific gotcha suggestions per skill type"},
+    {"text": "N/A only on progressive disclosure and scripts for short skills", "passed": true, "evidence": "self-test: Gotchas Missing (not N/A), Progressive Disclosure N/A, Scripts N/A. mcporter same pattern."}
+  ]
+}
