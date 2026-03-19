@@ -12,6 +12,8 @@ Frontier AI models are rapidly improving at code understanding, planning, and co
 
 **Human's role = product context.** Trade-offs, architectural decisions, product goals — things not in code. Everything else (planning, coding, reviewing, shipping) agents do better. The human steers; agents execute.
 
+**Main session = orchestrator.** Keep product and architectural context concentrated in the main session when possible. Offload parallelizable research, implementation, cleanup, and review to fresh-context agents, then integrate results centrally.
+
 **Agents should auto-chain when confidence is high.** Don't require human coordination between steps. Plan, implement, review, ship should flow automatically after plan approval. Human intervention is for course correction, not handoffs.
 
 ## Tools + Success Criteria > Step-by-Step Guidance
@@ -20,7 +22,9 @@ Agents are capable of figuring out complex paths on their own. The human's job i
 
 ## Quality Over Speed
 
+- **Plan for self-test, not just implementation.** A good plan includes how the agent will verify the work end-to-end, what tools or access are required, and what blockers must be resolved before coding.
 - **Confidence thresholds.** Prefer correctness over speed. Keep working until confident (85%+). Don't ship uncertain work.
+- **Simplify before final review.** Agents tend to overcomplicate solutions and inherit bad local patterns. After implementation, run `simplify` before the final review loop on non-trivial changes.
 - **Priority levels on all outputs.** Agents find too many things — focus on what matters. Tag findings by priority so humans can triage.
 - **Don't limit token costs.** The output quality is worth the cost.
 
@@ -77,7 +81,7 @@ No custom documentation frameworks. Use built-in mechanisms.
 4. Human steers product decisions; agents do the rest
 5. Tools + success criteria > step-by-step guidance
 6. Auto-chain steps; minimize human handoffs
-7. More reviewers, fewer implementers
+7. Main session orchestrates; agent teams research, implement, simplify, and review
 8. Correctness over speed; prioritize outputs
 9. No frameworks — use built-in mechanisms
 10. Self-correcting rules over static snapshots
