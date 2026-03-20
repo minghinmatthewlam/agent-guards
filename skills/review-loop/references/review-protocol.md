@@ -1,48 +1,43 @@
 # Review Protocol
 
-Shared reference for plan-loop, review-loop, and audit-loop skills.
+Shared reference for `plan-loop`.
 
 ## Invocation
 
-Spin up a fresh-context agent for each review — never review inline. Run all agents in parallel.
+Spin up a fresh-context reviewer for each review. Run all reviewers for a round in parallel.
 
-- **Native**: spin up an agent in your own model family
-- **Cross-model**: call the other family (Claude host calls `codex` MCP tool, Codex host calls `claude` CLI below)
+- **Native**: use reviewers from the current host model family
+- **Cross-model**:
+  - **Claude host**: call Codex through the MCP tool
+  - **Codex host**: do not require Claude review as part of this skill
 
-### Codex (from Claude host)
+## Host Rules
 
-Call the `codex` MCP tool. Use `codex-reply` with the returned `threadId` for follow-ups.
+### Claude Host
 
-### Claude (from Codex host)
+- Every round should include at least 1 native Claude review and 1 Codex review.
+- Retry a failed Codex review once. If it still fails, note the gap and lower confidence before asking the user to proceed.
 
-```bash
-timeout 300 env -u CLAUDECODE claude -p "<prompt>"
-```
+### Codex Host
 
-Do NOT pass `--permission-mode plan`. It causes hangs in non-interactive mode.
-
-## Retry Policy
-
-- Empty response or timeout: retry once.
-- Still failing: note the gap and continue.
-
-## Coverage Invariant
-
-Every round must have at least 1 codex review + 1 claude review (native or cross-model).
+- Use native Codex reviewers only.
+- Do not block or fake coverage by calling unreliable Claude CLI review paths.
 
 ## Round Cap
 
-Max 3 rounds. If not converged after R3, stop and escalate to user with current findings and residual risks.
+Max 3 rounds. If not converged after R3, stop and escalate to the user with current findings and residual risks.
 
 ## Prompt Guidance
 
 Tell each reviewer:
-- What phase (plan / execution / audit) and what to focus on
-- Provide the relevant context inline (plan text, code changes, findings, etc.)
-- For R2+: what was found last round and what changed since — reviewers should focus on the delta, not re-review from scratch
+- what phase they are reviewing (plan / execution / audit)
+- what to focus on
+- the relevant context inline
+- for R2+, what changed since the previous round
 
 Ask for this output format:
-```
+
+```text
 ## Verdict
 READY or NOT_READY
 
