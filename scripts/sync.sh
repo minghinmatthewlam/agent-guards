@@ -288,9 +288,9 @@ if [ -f "$EXTERNAL_SKILLS_FILE" ] && command -v npx &>/dev/null && command -v jq
     source=$(echo "$entry" | jq -r '.source')
     skill=$(echo "$entry" | jq -r '.skill')
     if $DRY_RUN; then
-      echo "  [dry-run] npx skills add $source -g --skill $skill"
+      echo "  [dry-run] npx skills add $source -g -a universal claude-code --skill $skill"
     else
-      if npx -y skills add "$source" -g -y -a claude-code --skill "$skill" </dev/null 2>/dev/null; then
+      if npx -y skills add "$source" -g -y -a universal claude-code --skill "$skill" </dev/null 2>/dev/null; then
         external_count=$((external_count + 1))
       else
         echo "  Warning: failed to install external skill $skill from $source" >&2
