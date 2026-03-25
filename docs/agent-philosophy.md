@@ -22,7 +22,7 @@ Agents are capable of figuring out complex paths on their own. The human's job i
 
 ## Quality Over Speed
 
-- **Self-test is mandatory, not opt-in.** Every implementation task ends with `self-test`. A good plan includes how the agent will verify the work end-to-end, what tools or access are required, and what blockers must be resolved before coding.
+- **Plan for self-test, not just implementation.** A good plan includes how the agent will verify the work end-to-end, what tools or access are required, and what blockers must be resolved before coding.
 - **Confidence thresholds.** Prefer correctness over speed. Keep working until confident (85%+). Don't ship uncertain work.
 - **Simplify before final review.** Agents tend to overcomplicate solutions and inherit bad local patterns. After implementation, run `simplify` before the final review loop on non-trivial changes.
 - **Priority levels on all outputs.** Agents find too many things — focus on what matters. Tag findings by priority so humans can triage.

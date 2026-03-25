@@ -24,8 +24,9 @@ Keep iterating until confidence reaches 95%+.
 - Start broad (problem space, users, goals), narrow each round (edge cases, constraints, acceptance criteria).
 - Make questions concrete with examples when ambiguity is high.
 - Group related questions; don't repeat answered ones.
-- Always clarify how the agent will verify the result (`self-test`). Success criteria must be testable by the agent, not just by the human. If verification requires access or tools the agent doesn't have, surface that as a blocker early.
 
 ## Transition to Planning
 
-Once confidence reaches 95%+, invoke the `plan-loop` skill with the finalized requirements as context.
+Once confidence reaches 95%+, explicitly call out the specific use cases and features you'll test end-to-end (`self-test`). Include these in the handoff to planning so the verification plan is built alongside the implementation plan.
+
+Invoke the `plan-loop` skill with the finalized requirements and e2e test targets as context.
