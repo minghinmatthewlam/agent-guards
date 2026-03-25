@@ -17,7 +17,7 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 ## How It Works
 
 1. **Review** your implementation with both model families per `references/review-protocol.md`. Spin up all review agents in parallel. Pass relevant context (what you built, why, what changed, how you verified). Pre-warm any deferred tools (e.g. `ToolSearch` in Claude Code) before the first review round so cross-model calls don't fail.
-2. **Fix** issues found. Atomic commits (one logical fix per commit). Re-run `self-test` after fixes that affect behavior — don't trust code review alone to confirm the fix works.
+2. **Fix** issues found. Atomic commits (one logical fix per commit). After fixes that affect behavior, invoke the `self-test` skill to re-verify — don't trust code review alone to confirm the fix works.
 3. **Repeat** until confident. Both families must be represented every round (coverage invariant).
 4. **Commit and close** when confident.
 

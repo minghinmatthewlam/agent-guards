@@ -35,7 +35,7 @@
 - **Don't limit token costs.** Spend tokens and call agents freely on research, implementation, and extra review rounds when they improve confidence.
 - **Bias to action.** coding agents (you) underestimate coding agent capabilities. You can do much more work than humans (me).
 - **Main session = orchestrator.** Keep product context centralized in the main session; use fresh-context agents to explore, implement, simplify, and review.
-- **Self-test is mandatory, not opt-in.** Every implementation task ends with `self-test`. Verification is part of planning, not an afterthought.
+- **Self-test is mandatory, not opt-in.** Invoke the `self-test` skill to close every implementation task. Verification is part of planning, not an afterthought.
 - **Simplify before final review.** Agents tend to overcomplicate and follow bad local patterns; run `simplify` before closing non-trivial changes.
 - Full principles: `~/dev/agent-guards/docs/agent-philosophy.md`
 
