@@ -1,6 +1,6 @@
 ---
 name: self-test
-description: "Own verification end-to-end during planning and execution. Use when the agent must prove the result works on the real surface affected by the change, or when the user expects verified output instead of code that 'should work'. Triggers: 'make sure it works', 'test it yourself', 'don't just tell me it's done', 'I don't want to test this', or any task where the agent should deliver a verified result without handing testing back to the user."
+description: "Own verification end-to-end during planning and execution. Default closing behavior for every implementation task — not just when explicitly asked. Also triggers on: 'make sure it works', 'test it yourself', 'don't just tell me it's done', 'I don't want to test this'. Use whenever the agent must prove the result works on the real surface affected by the change."
 ---
 
 # Self-Test

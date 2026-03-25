@@ -31,10 +31,14 @@ Use the **Agent tool** only for isolated read-only research/exploration, not imp
 
 If new facts invalidate the plan, update the plan file before continuing.
 
-## Phase 4: Simplify
+## Phase 4: Verify
+
+Invoke the `self-test` skill. Run the verification plan defined during Phase 2 against the real surfaces affected by the change. If verification fails, fix and re-verify before proceeding. Do not skip this phase — code review is not a substitute for proving it works.
+
+## Phase 5: Simplify
 
 Invoke the `simplify` skill on the full changeset. Fix reuse, quality, and efficiency findings. This catches duplication and code smell that implementation agents introduce.
 
-## Phase 5: Review and Ship
+## Phase 6: Review and Ship
 
 Invoke the `review-loop` skill on the full changeset (including simplify changes). At >=85 confidence: commit, push, and create PR. Include in the PR summary: what was built, key decisions, and residual risks.

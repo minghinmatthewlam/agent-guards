@@ -24,6 +24,7 @@ Keep iterating until confidence reaches 95%+.
 - Start broad (problem space, users, goals), narrow each round (edge cases, constraints, acceptance criteria).
 - Make questions concrete with examples when ambiguity is high.
 - Group related questions; don't repeat answered ones.
+- Always clarify how the agent will verify the result (`self-test`). Success criteria must be testable by the agent, not just by the human. If verification requires access or tools the agent doesn't have, surface that as a blocker early.
 
 ## Transition to Planning
 
