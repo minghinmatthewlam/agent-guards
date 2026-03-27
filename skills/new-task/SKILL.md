@@ -27,6 +27,15 @@ Keep iterating until confidence reaches 95%+.
 
 ## Transition to Planning
 
-Once confidence reaches 95%+, explicitly call out the specific use cases and features you'll test end-to-end (`self-test`). Include these in the handoff to planning so the verification plan is built alongside the implementation plan.
+Once confidence reaches 95%+:
 
-Invoke the `plan-loop` skill with the finalized requirements and e2e test targets as context.
+1. Explicitly call out the specific use cases and features you'll test end-to-end (`self-test`).
+2. **Use the Skill tool to invoke `plan-loop`** with the finalized requirements and e2e test targets as context. Do NOT plan on your own — `plan-loop` uses multi-agent research, dual-model review, structured verification design, and `self-test` integration that ad-hoc planning skips.
+
+If `plan-loop` is unavailable, tell the user and stop — do not substitute your own planning.
+
+## Gotchas
+
+- **The #1 failure mode:** agent reaches 95% confidence and starts planning/implementing directly instead of invoking `plan-loop` via the Skill tool. This defeats the entire purpose of `new-task` — the value is the structured handoff, not just the clarification.
+- Don't inflate confidence to reach 95% faster. If key questions remain, stay in the loop.
+- Don't ask questions the user already answered in earlier rounds.

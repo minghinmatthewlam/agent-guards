@@ -63,9 +63,9 @@ After plan approval:
 - If new facts appear, update the plan file (what changed, why, impact).
 - If the plan breaks mid-execution, stop and re-plan — don't brute-force a failing approach.
 - Atomic commits throughout.
-- Verify against the `self-test` plan as you implement — do not defer all proof until the end.
-- After implementation, run the `simplify` skill on non-trivial changes.
-- Then invoke the `review-loop` skill.
+- Verify against the `self-test` plan as you implement (use the Skill tool to invoke `self-test`) — do not defer all proof until the end.
+- After implementation, use the Skill tool to invoke `simplify` on non-trivial changes.
+- Then use the Skill tool to invoke `review-loop`.
 
 ## Gotchas
 
