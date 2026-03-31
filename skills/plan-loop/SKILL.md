@@ -30,8 +30,8 @@ Read `~/dev/agent-guards/AGENTS.md` before starting, plus any repo-local `AGENTS
 ## How It Works
 
 1. **Research** — spin up many agents in parallel to explore the codebase and inform the plan. Don't skimp — missing context during planning costs tenfold during implementation. If the conversation already contains investigation findings, build on those rather than re-discovering them.
-2. **Draft** a plan in `plans/<task>/plan.md` (for example `plans/auth-refactor/plan.md`) informed by research findings. Gitignore `plans/`.
-3. **Plan verification up front** using the `self-test` skill. Every plan must include concrete success criteria, the exact proof commands or test surfaces that will be used, the environment or access required, and any blockers that only the user can unblock.
+2. **Draft** a plan in `plans/<task>/plan.md` (for example `plans/auth-refactor/plan.md`) informed by research findings. Gitignore `plans/`. Default to clean reimplementation over patching around existing complexity — agents implement fast, so the cost of rewriting cleanly is almost always lower than the cost of maintaining a patch on bad code.
+3. **Plan verification up front** using the `self-test` skill. The plan's self-test section must name the exact proof command the agent will run (e.g., `pnpm exec playwright test tests/core/foo.spec.ts`). If no existing test covers the surface, the plan must commit to writing one. "Manual E2E" or "the user should verify" is not acceptable when the agent can build and run the test itself.
 4. **Review** per `references/review-protocol.md`. Spin up all review agents in parallel. In Claude-hosted runs, include Codex cross-review. In Codex-hosted runs, use native reviewers and explicitly note that Claude coverage was not part of the loop.
 5. **Fix** the plan based on feedback.
 6. **Repeat** until confident.
@@ -63,12 +63,15 @@ After plan approval:
 - If new facts appear, update the plan file (what changed, why, impact).
 - If the plan breaks mid-execution, stop and re-plan — don't brute-force a failing approach.
 - Atomic commits throughout.
-- Verify against the `self-test` plan as you implement (use the Skill tool to invoke `self-test`) — do not defer all proof until the end.
+- Build and run the verification test on the real product surface as you implement — do not defer all proof until the end. If it fails, fix and re-run until success criteria pass.
 - After implementation, use the Skill tool to invoke `simplify` on non-trivial changes.
 - Then use the Skill tool to invoke `review-loop`.
 
 ## Gotchas
 
 - Do not claim `self-test` coverage unless the written plan names the exact proof commands, environments, and blockers.
+- Do not plan patches on top of bad code. Ask "would a clean rewrite be simpler?" — for agents, it usually is.
+- Do not list "manual verification" or "the user should test" in the self-test section when you can write and run the test yourself.
+- Do not defer all verification to post-implementation. Build the test alongside the code and run it on the real surface.
 - Do not re-research the codebase if the conversation already contains current findings you can build on.
 - Do not mark the plan as dual-model reviewed in Codex-hosted runs unless Claude coverage actually happened through a separate reliable path.
