@@ -63,9 +63,12 @@ After plan approval:
 - If new facts appear, update the plan file (what changed, why, impact).
 - If the plan breaks mid-execution, stop and re-plan — don't brute-force a failing approach.
 - Atomic commits throughout.
-- Build and run the verification test on the real product surface as you implement — do not defer all proof until the end. If it fails, fix and re-run until success criteria pass.
-- After implementation, use the Skill tool to invoke `simplify` on non-trivial changes.
-- Then use the Skill tool to invoke `review-loop`.
+
+### Closing chain (runs autonomously — do not pause for user input between steps)
+
+1. **Self-test**: invoke `self-test`. Build and run verification on the real product surface. If it fails, fix and re-run until all success criteria pass.
+2. **Simplify**: invoke `simplify` on non-trivial changes.
+3. **Review**: invoke `review-loop`. It handles its own fix → self-test → re-review cycle internally.
 
 ## Gotchas
 

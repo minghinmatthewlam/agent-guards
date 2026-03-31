@@ -1,6 +1,6 @@
 # Review Protocol
 
-Shared reference for `plan-loop`.
+Shared reference for `plan-loop` and `review-loop`.
 
 ## Invocation
 

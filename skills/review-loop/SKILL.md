@@ -17,8 +17,8 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 ## How It Works
 
 1. **Review** your implementation with both model families per `references/review-protocol.md`. Spin up all review agents in parallel. Pass relevant context (what you built, why, what changed, how you verified). Pre-warm any deferred tools (e.g. `ToolSearch` in Claude Code) before the first review round so cross-model calls don't fail.
-2. **Fix** issues found. Atomic commits (one logical fix per commit). After fixes that affect behavior, use the Skill tool to invoke `self-test` to re-verify — don't trust code review alone to confirm the fix works.
-3. **Repeat** until confident. Both families must be represented every round (coverage invariant).
+2. **Fix** issues found. Atomic commits (one logical fix per commit). After fixes that affect behavior, invoke `self-test` to re-verify on the real surface — don't trust code review alone.
+3. **Repeat** until confident. Both families must be represented every round (coverage invariant). Run autonomously — do not pause for user input between rounds.
 4. **Commit and close** when confident.
 
 ## Gotchas
@@ -34,6 +34,8 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 ## Confidence
 
 After each round, assess confidence 0-100 with top unknowns and what must be true to close:
-- `<70`: another round.
-- `70-84`: close only with explicit user acceptance of residual risks.
+- `<70`: another round, mandatory.
+- `70-84`: one more focused round on residual risks. If still 70-84 after that, escalate to user with findings.
 - `>=85`: eligible to close. Auto commit, push, and create PR.
+
+Hard cap: 3 rounds max (per review-protocol). If not converged after R3, escalate regardless of score.
