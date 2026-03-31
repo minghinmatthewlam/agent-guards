@@ -71,7 +71,7 @@ After plan approval:
 
 - Do not claim `self-test` coverage unless the written plan names the exact proof commands, environments, and blockers.
 - Do not plan patches on top of bad code. Ask "would a clean rewrite be simpler?" — for agents, it usually is.
-- Do not list "manual verification" or "the user should test" in the self-test section when you can write and run the test yourself.
+- Do not list "manual verification" or "the user should test" in the self-test section. Verification is always automatable — use Playwright, browser MCPs, or CLI tools to prove it works.
 - Do not defer all verification to post-implementation. Build the test alongside the code and run it on the real surface.
 - Do not re-research the codebase if the conversation already contains current findings you can build on.
 - Do not mark the plan as dual-model reviewed in Codex-hosted runs unless Claude coverage actually happened through a separate reliable path.

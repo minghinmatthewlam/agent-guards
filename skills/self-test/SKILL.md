@@ -43,5 +43,5 @@ Before planning, find what's available to verify on the real surface. Search for
 - **The most common self-test failure:** writing tests that call internal functions, seeing them pass, and declaring "verified on the real surface." The tests passed because the internal layer works. The bugs were in the layer the tests never touched.
 - Mocked or seeded test paths can be useful, but they are weaker evidence than running against a real local/preview/prod surface.
 - Command exit codes alone are not proof; verify the actual visible result.
-- **Silently downgrading verification** — listing "manual E2E" or "the user should test" when you could have written and run a Playwright/browser/CLI test yourself. If the test infra exists or can be built, use it.
+- **Silently downgrading verification** — listing "manual E2E" or "the user should test" instead of writing and running an automated test. You have Playwright for Electron apps, browser MCPs for web apps, and CLI for backend — there is no excuse to skip automated e2e verification.
 - If only a deployed environment can prove the change, use the safest production-like path available and state the exact scope you verified.
