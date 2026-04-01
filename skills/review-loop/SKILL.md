@@ -29,7 +29,6 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 
 - R1: 3-6 native + 1 cross-model, scaled to the number of distinct risk surfaces in the changeset. Each native reviewer gets a different focus area.
 - R2+: 1+1 default. Focus on previous round's findings and what changed — not a fresh re-review. Escalate to 3+1 on verdict disagreement, confidence drop, or blocker without consensus.
-- Cross-model cap: always 1 per round. Cross-model tools serialize, so a 2nd would wait for the 1st — add native reviewers instead for more coverage.
 
 ## Confidence
 
@@ -37,5 +36,3 @@ After each round, assess confidence 0-100 with top unknowns and what must be tru
 - `<70`: another round, mandatory.
 - `70-84`: one more focused round on residual risks. If still 70-84 after that, escalate to user with findings.
 - `>=85`: eligible to close. Auto commit, push, and create PR.
-
-Hard cap: 3 rounds max (per review-protocol). If not converged after R3, escalate regardless of score.

@@ -28,7 +28,6 @@ Every meaningful claim must cite specific files, commands, or source material.
 - R1: 1 native + 1 cross-model.
 - R2+ only when triggered: confidence below 85, reviewer disagreement, or high-impact finding lacks evidence. Focus on previous round's findings and unresolved gaps — not a fresh re-review.
 - Escalate to 3+1 for high-risk or persistent disagreement.
-- Cross-model cap: always 1 per round. Cross-model tools serialize, so a 2nd would wait for the 1st — add native reviewers instead for more coverage.
 
 ## Confidence
 

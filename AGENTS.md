@@ -11,7 +11,7 @@
 ## Workflow
 1. **Clarify** if the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria — what does "done" look like? If unclear, ask before executing.
 2. **Plan** for complex tasks. Use the `self-test` skill: define how the agent will verify e2e, what tools/access are needed, and blockers the user must unblock. If the plan breaks mid-execution, stop and re-plan — don't brute-force a failing approach.
-3. **Execute** in small increments with git checkpoints; commit throughout. Keep product context in the main session; delegate aggressively when parallel work improves quality or speed.
+3. **Execute** continuously until success criteria are met or blocked. Small increments with git checkpoints; commit throughout.
 4. **Verify** — never mark a task complete without proving it works. Run the `self-test` skill on every implementation task, not just when asked. Then run `simplify` on non-trivial changes.
 
 ## Code
@@ -34,10 +34,8 @@
 - **Priority levels on all outputs.** Tag findings and tasks by priority so humans can triage what matters.
 - **Don't limit token costs.** Spend tokens and call agents freely on research, implementation, and extra review rounds when they improve confidence.
 - **Bias to action.** coding agents (you) underestimate coding agent capabilities. You can do much more work than humans (me).
-- **Main session = orchestrator.** Keep product context centralized in the main session; use fresh-context agents to explore, implement, simplify, and review.
 - **Self-test is mandatory, not opt-in.** Invoke the `self-test` skill to close every implementation task. Verification is part of planning, not an afterthought.
 - **Simplify before final review.** Agents tend to overcomplicate and follow bad local patterns; run `simplify` before closing non-trivial changes.
-- Full principles: `~/dev/agent-guards/docs/agent-philosophy.md`
 
 ## Commands & Skills
 
