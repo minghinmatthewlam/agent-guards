@@ -1,44 +1,34 @@
-<!-- EDITING: Keep under 50 lines. Every line must prevent real agent mistakes — cut if not. Don't restate what models already know. Search online for current CLAUDE.md/AGENTS.md conventions before editing. Prefer skills or path-scoped rules over adding lines here. -->
-
 # Agent Operating Guidelines
 
-**These rules are persistent constraints, not initial suggestions. Apply for the full session.**
+Listen: these rules are persistent constraints, not initial suggestions. Apply them for the full session.
 
 ## Safety
-- Multiple agents may work simultaneously. Treat files you didn't edit as read-only; never revert another agent's changes without approval.
-- Confirm before destructive or irreversible commands (`rm`, `git reset --hard`, `docker prune`) and before deleting user data or rewriting history.
+- Treat files you did not edit as read-only when multiple agents may be working.
+- Ask before destructive commands, history rewrites, or deleting user data.
 
 ## Workflow
-1. **Clarify** if the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria — what does "done" look like? If unclear, ask before executing.
-2. **Plan** for complex tasks. Use the `self-test` skill: define how the agent will verify e2e, what tools/access are needed, and blockers the user must unblock. If the plan breaks mid-execution, stop and re-plan — don't brute-force a failing approach.
-3. **Execute** continuously until success criteria are met or blocked. Small increments with git checkpoints; commit throughout.
-4. **Verify** — never mark a task complete without proving it works. Run the `self-test` skill on every implementation task, not just when asked. Then run `simplify` on non-trivial changes.
+1. Clarify before acting when the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria first.
+2. For non-trivial work, plan verification up front with `self-test`. If the plan breaks, stop and re-plan.
+3. Execute continuously until the success criteria are met or a real blocker is surfaced.
+4. Do not mark work complete without proof on the real affected surface.
+5. Run `simplify` before closing non-trivial implementation work.
 
 ## Code
-- Keep files <~500 LOC; split/refactor as needed
-- Default to clean reimplementation over conforming to existing complexity — implement the new way, remove the old
-- Delete dead code, unused imports, compat shims
-- Keep code simple and clean, avoid over complication
-- Fix root causes, not symptoms — if a fix requires patching around broken logic, reimplement the broken part
+- Prefer clean reimplementation over patching around bad local complexity.
+- Keep code simple; delete dead code, unused imports, and compat shims.
+- Split files that are growing unwieldy.
+- Fix root causes, not symptoms.
 
 ## Git
-- Small, focused commits; commit continuously, don't batch unrelated changes
-- Conventional Commits: `feat|fix|refactor|build|ci|chore|docs|style|perf|test`
-- Branch names: `feature/*`, `fix/*`, `chore/*`, `docs/*`
-- No AI attribution footers in commits
+- Make small, focused commits during the work, not only at the end.
+- Commit after each completed subtask that changes behavior, before broad refactors, and before long verification loops unless the user asks otherwise.
+- Do not add AI attribution footers.
 
 ## Philosophy
-- **Success criteria first.** Define what "done" looks like before executing. If criteria are unclear, stop and ask. Verify against them before marking complete.
-- **Confidence gates.** Don't ship uncertain work. If confidence is below 85%, clarify with the human rather than guessing.
-- **Unblock the human.** Surface blockers, missing context, and decisions that only the human can make — so they can unblock you and you can complete more work on your own.
-- **Priority levels on all outputs.** Tag findings and tasks by priority so humans can triage what matters.
-- **Don't limit token costs.** Spend tokens and call agents freely on research, implementation, and extra review rounds when they improve confidence.
-- **Bias to action.** coding agents (you) underestimate coding agent capabilities. You can do much more work than humans (me).
-- **Self-test is mandatory, not opt-in.** Invoke the `self-test` skill to close every implementation task. Verification is part of planning, not an afterthought.
-- **Simplify before final review.** Agents tend to overcomplicate and follow bad local patterns; run `simplify` before closing non-trivial changes.
-
-## Commands & Skills
-
-Source of truth: `~/dev/agent-guards/`. Never edit synced copies in `~/.claude/` or `~/.codex/`.
-
-To edit: modify source in `~/dev/agent-guards/commands/` or `skills/`, then run `~/dev/agent-guards/scripts/sync.sh`.
+- Success criteria first. If “done” is unclear, stop and clarify before executing.
+- Work as autonomously as possible once the goal is clear. Do not require human coordination between obvious next steps.
+- Keep the human focused on product context, trade-offs, and decisions that require judgment.
+- Surface blockers, missing context, and decisions that require the human as early as possible.
+- Main sessions should keep product and architectural context centralized; parallelizable research, implementation, cleanup, and review can be delegated and then integrated.
+- If confidence is below 85%, clarify rather than guessing.
+- Use priority tags for findings, blockers, risks, and plans.
