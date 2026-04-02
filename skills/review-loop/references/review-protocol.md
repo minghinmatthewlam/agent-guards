@@ -7,9 +7,9 @@ Shared reference for `plan-loop` and `review-loop`.
 Spin up a fresh-context reviewer for each review. Run all reviewers for a round in parallel.
 
 - **Native**: use reviewers from the current host model family
-- **Cross-model**:
+- **Cross-model (Claude-hosted runs only)**:
   - **Claude host**: call Codex through the MCP tool
-  - **Codex host**: do not require Claude review as part of this skill
+  - **Codex host**: no cross-model reviewer is required or expected for this skill
 
 ## Host Rules
 
