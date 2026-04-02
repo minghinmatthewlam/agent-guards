@@ -1,14 +1,11 @@
 ---
 name: plan-loop
-description: "Use for complex or high-risk implementation work that needs plan-first execution, explicit verification design, and review before coding. When hosted in Claude, include Codex cross-review. When hosted in Codex, do not rely on Claude review."
+description: "Use for complex or high-risk implementation work that needs plan-first execution, explicit verification design, pre-code review, and autonomous post-implementation hardening through self-test, simplify, and review-loop."
 ---
 
 # Plan Loop
 
 Draft a plan, harden it with review coverage appropriate to the current host, then execute after user approval.
-
-Read-only analysis -> use `audit-loop` instead.
-Post-implementation review -> use `review-loop` instead.
 
 ## Prerequisites
 
@@ -49,6 +46,7 @@ After each round, assess confidence 0-100 with top unknowns and what must be tru
 ## Gotchas
 
 - Do not claim `self-test` coverage unless the written plan names the exact proof commands, environments, and blockers.
+- Do not stop after `self-test`. `plan-loop` is not complete until `simplify` and `review-loop` have also run.
 - Do not plan patches on top of bad code. Ask "would a clean rewrite be simpler?" — for agents, it usually is.
 - Do not list "manual verification" or "the user should test" in the self-test section. Verification is always automatable — use Playwright, browser MCPs, or CLI tools to prove it works.
 - Do not defer all verification to post-implementation. Build the test alongside the code and run it on the real surface.
