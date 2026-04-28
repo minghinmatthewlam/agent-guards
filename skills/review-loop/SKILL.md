@@ -29,11 +29,11 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 ## Round Sizing
 
 - Claude host:
-  - R1: 3-6 native + 1 Codex cross-model, scaled to the number of distinct risk surfaces in the changeset. Each native reviewer gets a different focus area.
-  - R2+: 1+1 default. Focus on previous round's findings and what changed — not a fresh re-review. Escalate to 3+1 on verdict disagreement, confidence drop, or blocker without consensus.
+  - R1: 1-6 native + 1 Codex cross-model, scaled to the number of distinct risk surfaces in the changeset. Each native reviewer gets a different focus area — don't add reviewers you can't give a clearly distinct focus to (overlapping prompts produce overlapping findings, not more coverage).
+  - R2+: 1+1 default. Focus on previous round's findings and what changed — not a fresh re-review. Escalate to 3+1 on verdict disagreement, confidence drop, or blocker without consensus. Skip R2 entirely when R1 fixes are <50 LOC, self-contained, and self-test has re-verified the fix on the real surface.
 - Codex host:
-  - R1: 3-6 native reviewers only, scaled to the number of distinct risk surfaces in the changeset. Each native reviewer gets a different focus area.
-  - R2+: 1-2 native reviewers focused only on unresolved findings and deltas.
+  - R1: 1-6 native reviewers only, scaled to the number of distinct risk surfaces in the changeset. Each native reviewer gets a different focus area — don't add reviewers you can't give a clearly distinct focus to.
+  - R2+: 1-2 native reviewers focused only on unresolved findings and deltas. Skip R2 when R1 fixes are <50 LOC and self-test has re-verified.
 
 ## Confidence
 
