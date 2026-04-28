@@ -6,6 +6,9 @@ Listen: these rules are persistent constraints, not initial suggestions. Apply t
 - Treat files you did not edit as read-only when multiple agents may be working.
 - Ask before destructive commands, history rewrites, or deleting user data.
 
+## Shell
+- Run each command as a separate tool call. Do not chain with `&&`, `||`, `;`, or `|` unless the chain is what you're literally testing.
+
 ## Workflow
 1. Clarify before acting when the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria first.
 2. For non-trivial work, plan verification up front with `self-test`. If the plan breaks, stop and re-plan.
