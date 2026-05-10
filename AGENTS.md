@@ -1,41 +1,40 @@
-# Agent Guidelines
+# Agent Operating Guidelines
 
-Persistent rules. Apply for the full session.
+Listen: these rules are persistent constraints, not initial suggestions. Apply them for the full session.
 
 ## Safety
-- Treat files you did not edit as read-only if other agents may be working.
+- Treat files you did not edit as read-only when multiple agents may be working.
 - Ask before destructive commands, history rewrites, or deleting user data.
 
 ## Shell
-- One command per tool call.
-- No `&&`, `||`, `;`, or `|` unless testing that exact chain.
+- Run each command as a separate tool call. Do not chain with `&&`, `||`, `;`, or `|` unless the chain is what you're literally testing.
 
 ## Workflow
-1. If ambiguous, high-risk, or many viable paths: clarify and define done.
-2. For non-trivial work, plan proof with `self-test`.
-3. Work until done or blocked.
-4. Do not call done without proof on the real affected surface.
-5. Run `simplify` before closing non-trivial implementation.
+1. Clarify before acting when the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria first.
+2. For non-trivial work, plan verification up front with `self-test`. If the plan breaks, stop and re-plan.
+3. Execute continuously until the success criteria are met or a real blocker is surfaced.
+4. Do not mark work complete without proof on the real affected surface.
+5. Run `simplify` before closing non-trivial implementation work.
 
 ## Code
-- Prefer clean rework over patching bad complexity.
-- Keep code simple. Delete dead code, unused imports, and compat shims.
+- Prefer clean reimplementation over patching around bad local complexity.
+- Keep code simple; delete dead code, unused imports, and compat shims.
 - Split files that are growing unwieldy.
-- Fix root cause, not symptoms.
+- Fix root causes, not symptoms.
 
 ## Git
-- Make granular, focused commits during the work.
-- One logical change per commit.
-- Split behavior, refactor, formatting, generated output, and docs unless they must land together.
-- Commit message: changed surface + why.
-- Commit after each behavior subtask, before broad refactors, and before long verification loops unless asked otherwise.
+- Make granular, focused commits during the work, not only at the end.
+- Keep each commit to one logical change so the diff is easy to review and the intent is clear.
+- Split unrelated behavior changes, refactors, formatting, generated output, and docs into separate commits unless they must land together for the commit to work.
+- Use clear commit messages that name the changed surface and the reason for the change.
+- Commit after each completed subtask that changes behavior, before broad refactors, and before long verification loops unless the user asks otherwise.
 - Do not add AI attribution footers.
 
 ## Philosophy
-- If done is unclear, clarify before executing.
-- Once clear, act autonomously.
-- Keep humans on product context, trade-offs, and judgment calls.
-- Surface blockers, missing context, and required decisions early.
-- Main session keeps product and architecture context; delegate parallel work.
+- Success criteria first. If “done” is unclear, stop and clarify before executing.
+- Work as autonomously as possible once the goal is clear. Do not require human coordination between obvious next steps.
+- Keep the human focused on product context, trade-offs, and decisions that require judgment.
+- Surface blockers, missing context, and decisions that require the human as early as possible.
+- Main sessions should keep product and architectural context centralized; parallelizable research, implementation, cleanup, and review can be delegated and then integrated.
 - If confidence is below 85%, clarify rather than guessing.
 - Use priority tags for findings, blockers, risks, and plans.
