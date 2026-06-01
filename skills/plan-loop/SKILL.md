@@ -16,25 +16,24 @@ Read `~/dev/agent-guards/AGENTS.md` before starting, plus any repo-local `AGENTS
 1. **Research** — spin up many agents in parallel to explore the codebase and inform the plan. Don't skimp — missing context during planning costs tenfold during implementation. If the conversation already contains investigation findings, build on those rather than re-discovering them.
 2. **Draft** a plan in `plans/<task>/plan.md` (for example `plans/auth-refactor/plan.md`) informed by research findings. Gitignore `plans/`. Default to clean reimplementation over patching around existing complexity — agents implement fast, so the cost of rewriting cleanly is almost always lower than the cost of maintaining a patch on bad code.
 3. **Plan verification up front** using the `self-test` skill. The plan's self-test section must name the exact proof path the agent will use: commands, test files, browser/Electron automation, Computer Use steps, or a combination. For new user-facing features, prefer a real-surface smoke of the completed workflow, then use fast command checks for repeatable confidence. "Manual E2E" or "the user should verify" is not acceptable when the agent can prove the behavior itself.
-4. **Review** per `references/review-protocol.md`. Spin up all review agents in parallel.
+4. **Review** the plan with fresh-context reviewers per `references/review-protocol.md`. `autoreview` is for actual code diffs; use reviewer agents for pure plan files unless the plan itself is the change being shipped.
 5. **Fix** the plan based on feedback.
 6. **Repeat** until confident.
 7. **User sign-off** before execution.
 8. **Execute** continuously — no mandatory stop gates. Atomic commits throughout. If new facts appear, update the plan file. If the plan breaks, stop and re-plan.
 9. **Self-test** — invoke `self-test` skill. Run the planned proof path on the highest-signal affected surface. If it fails, fix and re-run.
 10. **Simplify** — invoke `simplify` skill, coding agents tend to overcomplicate code.
-11. **Review** — invoke `review-loop`. It handles its own fix/re-verify cycle internally.
+11. **Review** — invoke `review-loop`. It uses `autoreview` for the implemented diff and handles its own fix/re-verify cycle internally.
 
 Steps 8-11 run autonomously — do not pause for user input between them.
 
 ## Round Sizing
 
-- Claude host:
-  - R1: 2-4 native + 1 Codex cross-model, all launched in parallel. Each native reviewer gets a distinct focus area.
-  - R2+: 1+1 default. Focus on previous round's findings and what changed — not a fresh re-review. Escalate to 3+1 on verdict disagreement, confidence drop, or blocker without consensus.
-- Codex host:
-  - R1: 2-4 native reviewers in parallel.
-  - R2+: 1-2 native reviewers focused only on unresolved findings and plan deltas.
+- Plan review:
+  - R1: 2-4 fresh-context reviewers in parallel, each with a distinct focus area.
+  - R2+: 1-2 reviewers focused only on unresolved findings and plan deltas.
+- Code-diff review after implementation:
+  - Defer to `review-loop`, which uses `autoreview` by default.
 
 ## Confidence
 

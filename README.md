@@ -43,6 +43,8 @@ Core workflow skills:
 | `self-test` | Forces the agent to prove the real surface works before closing |
 | `simplify` | Cleanup pass after implementation to remove unnecessary complexity |
 | `audit-loop` | Read-only investigation with cross-checking and confidence gates |
+| `autoreview` | Runs OpenClaw structured code review as the default closeout check |
+| `codex-review` | Runs Codex's built-in review command as an explicit fallback/comparison check |
 
 Task-specific skills:
 
@@ -137,6 +139,8 @@ After changes:
 
 ```bash
 ./scripts/validate-skills.sh
+python3 -m py_compile skills/autoreview/scripts/autoreview skills/autoreview/scripts/test-review-harness.py
+bash -n skills/autoreview/scripts/test-review-harness
 ./scripts/sync.sh --dry-run
 ./scripts/sync.sh
 git status

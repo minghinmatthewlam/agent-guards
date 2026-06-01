@@ -25,10 +25,6 @@ Listen: these rules are persistent constraints, not initial suggestions. Apply t
 ## Git
 - Make granular, focused commits during the work, not only at the end.
 - Keep each commit to one logical change so the diff is easy to review and the intent is clear.
-- Split unrelated behavior changes, refactors, formatting, generated output, and docs into separate commits unless they must land together for the commit to work.
-- Use clear commit messages that name the changed surface and the reason for the change.
-- Commit after each completed subtask that changes behavior, before broad refactors, and before long verification loops unless the user asks otherwise.
-- Do not add AI attribution footers.
 
 ## Philosophy
 - Success criteria first. If “done” is unclear, stop and clarify before executing.

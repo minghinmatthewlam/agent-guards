@@ -4,24 +4,23 @@ Shared reference for `plan-loop` and `review-loop`.
 
 ## Invocation
 
-Spin up a fresh-context reviewer for each review. Run all reviewers for a round in parallel.
+For actual code diffs, start with the `autoreview` skill. It builds a frozen diff bundle, runs the selected reviewer, validates structured findings, and exits nonzero when actionable findings exist.
 
-- **Native**: use reviewers from the current host model family
-- **Cross-model (Claude-hosted runs only)**:
-  - **Claude host**: call Codex through the MCP tool
-  - **Codex host**: no cross-model reviewer is required or expected for this skill
+Fresh-context reviewer agents are still useful for plan review, read-only audits, and focused follow-up on ambiguous findings. Do not use them as the default replacement for `autoreview` on code diffs.
 
 ## Host Rules
 
-### Claude Host
+### Default Code-Diff Review
 
-- Every round should include at least 1 native Claude review and 1 Codex review.
-- Retry a failed Codex review once. If it still fails, note the gap and lower confidence before asking the user to proceed.
+- Run `~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex --no-web-search`.
+- Add `--prompt-file ~/.agents/skills/autoreview/references/<repo-name>.md` when that file exists.
+- Omit `--no-web-search` when findings depend on current API docs, dependency contracts, model names, platform behavior, or security guidance.
+- Retry a failed autoreview once with the same engine/model settings. If it still fails, note the review gap and lower confidence.
 
-### Codex Host
+### Optional Panel
 
-- Use native Codex reviewers only.
-- Do not block or fake coverage by calling unreliable Claude CLI review paths.
+- Use `--reviewers codex,claude` only when the user asks for a second model, risk justifies extra spend, or Codex-only output needs arbitration.
+- Do not use Droid or Copilot unless the user explicitly asks for those engines.
 
 ## Round Cap
 
@@ -29,7 +28,7 @@ Max 3 rounds. If not converged after R3, stop and escalate to the user with curr
 
 ## Prompt Guidance
 
-Tell each reviewer:
+Tell any fresh-context reviewer:
 - what phase they are reviewing (plan / execution / audit)
 - what to focus on
 - the relevant context inline
