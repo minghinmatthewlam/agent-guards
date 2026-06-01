@@ -16,7 +16,7 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 
 ## How It Works
 
-1. **Review** your implementation per `references/review-protocol.md`. Use the `autoreview` skill as the default closeout reviewer for actual code diffs. Pass relevant context through `--prompt-file` when a repo-specific reference exists. Use fresh-context reviewer agents only for focused follow-up, ambiguous findings, or non-diff review.
+1. **Review** your implementation per `references/review-protocol.md`. Use the `autoreview` skill as the default closeout reviewer for actual code diffs. Keep product context in the main session and pass only task-specific review notes when needed. Use fresh-context reviewer agents only for focused follow-up, ambiguous findings, or non-diff review.
 2. **Fix** issues found. Atomic commits (one logical fix per commit). After fixes that affect behavior, invoke `self-test` to re-verify on the real surface — don't trust code review alone.
 3. **Repeat** until confident. Follow the host-specific coverage rules every round. Run autonomously — do not pause for user input between rounds.
 4. **Commit and close** when confident.
@@ -29,7 +29,7 @@ Read `~/dev/agent-guards/AGENTS.md` before applying fixes — the safety, workfl
 ## Round Sizing
 
 - Default:
-  - R1: one `autoreview --engine codex` pass on the full diff. Add `--prompt-file` for known repos. Use `--no-web-search` unless current docs/API/platform behavior matter.
+  - R1: one `autoreview --engine codex` pass on the full diff. Web search stays enabled by default.
   - R2+: rerun `autoreview` after accepted fixes. Focus any extra reviewer agents only on unresolved findings and changed code, not a fresh broad re-review.
 - Optional panel:
   - Use `--reviewers codex,claude` only when the user asks for Claude coverage, the change is high-risk, or the Codex-only result has low confidence.

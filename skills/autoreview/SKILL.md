@@ -13,10 +13,10 @@ Codex review is the default when no engine is set. It usually delivers the best 
 
 - Use this skill, not `codex-review`, for plain "autoreview", "review my changes", and default closeout review requests.
 - Run Codex-only review by default. Use Claude only when the user explicitly asks for a second model or a panel.
-- Prefer `--no-web-search` for normal local code review. Upstream autoreview enables web search by default; opt back into web search only when a finding depends on current API docs, dependency contracts, platform behavior, model names, or security guidance.
+- Keep upstream web search enabled by default so reviewers can check dependency contracts, upstream docs, current behavior, model names, and security implications.
 - Do not force `--model` or `--thinking` unless the user asks or the run needs explicit reproducibility. The user's Codex CLI may already set the desired model/reasoning defaults.
 - Ignore Droid and Copilot paths unless the user explicitly asks for those engines.
-- When the reviewed repo matches a file in `references/<repo-name>.md`, pass that file with `--prompt-file` so product-specific review risks are included.
+- Use `--no-web-search` only when the user explicitly requests an offline/local-only review or when network access would be inappropriate for the reviewed material.
 
 Use when:
 
@@ -76,12 +76,6 @@ Optional review context is first-class:
 
 ```bash
 <autoreview-helper> --mode branch --base origin/main --prompt-file /tmp/review-notes.md --dataset /tmp/evidence.json
-```
-
-For known local repos, prefer the bundled repo prompt:
-
-```bash
-~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex --no-web-search --prompt-file ~/.agents/skills/autoreview/references/pi-gui.md
 ```
 
 If an open PR exists, use its actual base:
@@ -228,25 +222,25 @@ The helper:
 Normal Codex review:
 
 ```bash
-~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex --no-web-search
+~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex
 ```
 
 Branch review:
 
 ```bash
-~/.agents/skills/autoreview/scripts/autoreview --mode branch --base origin/main --engine codex --no-web-search
+~/.agents/skills/autoreview/scripts/autoreview --mode branch --base origin/main --engine codex
 ```
 
-Current-doc/API-sensitive review:
+Explicit offline/local-only review:
 
 ```bash
-~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex
+~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex --no-web-search
 ```
 
 Explicit Codex + Claude panel:
 
 ```bash
-~/.agents/skills/autoreview/scripts/autoreview --mode auto --reviewers codex,claude --no-web-search
+~/.agents/skills/autoreview/scripts/autoreview --mode auto --reviewers codex,claude
 ```
 
 If review findings are accepted and fixed, rerun the focused tests/proof and rerun this helper. Do not substitute code review for `self-test` on behavior changes.

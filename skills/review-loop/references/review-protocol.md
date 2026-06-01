@@ -12,9 +12,9 @@ Fresh-context reviewer agents are still useful for plan review, read-only audits
 
 ### Default Code-Diff Review
 
-- Run `~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex --no-web-search`.
-- Add `--prompt-file ~/.agents/skills/autoreview/references/<repo-name>.md` when that file exists.
-- Omit `--no-web-search` when findings depend on current API docs, dependency contracts, model names, platform behavior, or security guidance.
+- Run `~/.agents/skills/autoreview/scripts/autoreview --mode auto --engine codex`.
+- Keep web search enabled by default so review can check current API docs, dependency contracts, model names, platform behavior, and security guidance.
+- Add `--no-web-search` only when the user explicitly requests offline/local-only review or network access would be inappropriate for the reviewed material.
 - Retry a failed autoreview once with the same engine/model settings. If it still fails, note the review gap and lower confidence.
 
 ### Optional Panel
