@@ -1,50 +1,153 @@
 ---
 name: orchestrator
-description: "Orchestrate complex tasks with agent teams. Clarify requirements, plan with dual-model review, implement with TeamCreate, simplify, review, and ship."
+description: "Coordinate complex work with Codex App worker threads. Keep the main thread as orchestrator: clarify, delegate, wait for worker completion, review outputs, iterate, verify, and ship without doing substantial implementation directly."
 ---
 
 # Orchestrator
 
-End-to-end flow for complex tasks: clarify → plan → implement with teams → simplify → review → ship.
+Use this skill when the user wants the main Codex App thread to coordinate work across other Codex threads. The orchestrator owns context, decisions, integration, and final judgment. Worker threads do research, implementation slices, verification, or review.
 
-For simple tasks (1-3 files), skip this — just implement directly, then `review-loop`.
+For simple one-thread tasks, skip this skill and do the work directly.
 
-Consider `$ARGUMENTS` if provided. Read `~/dev/agent-guards/AGENTS.md` before starting.
+Read `~/dev/agent-guards/AGENTS.md` before starting.
 
-## Control Flow
+## Core Rule
 
-You drive each phase and control all transitions. When a sub-skill finishes, return here for the next phase.
+The orchestrator orchestrates; it does not implement substantial work itself.
 
-## Phase 1: Clarify
+Keep the main thread focused on:
 
-Use the Skill tool to invoke `new-task`. When 95%+ confident, proceed to Phase 2 yourself.
+- Clarifying the goal and success criteria.
+- Choosing worker tasks and file ownership.
+- Creating worker threads.
+- Waiting for workers to finish.
+- Reviewing worker outputs and evidence.
+- Sending follow-ups after completion when needed.
+- Integrating results, deciding next steps, and reporting to the user.
 
-## Phase 2: Plan
+Implement directly only when the task is tiny, urgent, or the user explicitly asks this thread to do it.
 
-Use the Skill tool to invoke `plan-loop`. When user approves the plan, proceed to Phase 3 yourself.
+## Codex App Tools
 
-## Phase 3: Implement with Agent Teams
+Use `tool_search` to expose these tools when they are not already available:
 
-Use **TeamCreate** for coordinated parallel work (shared task list, peer messaging). Split agents by module/feature, not by role — each agent owns a vertical slice with exclusive file ownership. Size the team to the task (2-4 agents typical).
+- `create_thread`: start a user-owned Codex App worker thread.
+- `read_thread`: inspect worker status and read completed turns.
+- `send_message_to_thread`: send follow-up work, missing context, or changed decisions.
+- `fork_thread`: branch completed context into a new thread when a second path should share history.
+- `handoff_thread`: move a thread between local checkout and Codex worktree when isolation needs change.
+- `list_threads`: find an existing worker thread before continuing it.
+- `set_thread_title`, `set_thread_pinned`, `set_thread_archived`: keep orchestration threads tidy.
 
-Use the **Agent tool** only for isolated read-only research/exploration, not implementation.
+`create_thread` basics:
 
-If new facts invalidate the plan, update the plan file before continuing.
+- Use a project local target by default, especially for read-only investigation, planning, review, explanation, and normal same-branch app work.
+- Use a project worktree target only when isolation is useful: parallel edit-heavy workers, risky experiments, or tasks that should not touch the shared checkout.
+- Include model/thinking only when the task needs an override; otherwise inherit defaults.
+- After a successful creation, report the created thread id using the Codex App thread directive required by the host.
 
-## Phase 4: Simplify
+`read_thread` is the normal wait mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Poll/read them until the worker turn is completed or the thread is idle, then evaluate the final response.
 
-Use the Skill tool to invoke `simplify` on the full changeset. Fix reuse, quality, and efficiency findings. This catches duplication and code smell that implementation agents introduce.
+## Worker Prompt
 
-## Phase 5: Verify
+Give every worker a concrete, bounded task.
 
-Use the Skill tool to invoke `self-test`. Run the verification plan defined during Phase 2 against the real surfaces affected by the change. If verification fails, fix and re-verify before proceeding. Do not skip this phase — code review is not a substitute for proving it works.
+```text
+You are a worker thread for the orchestrator.
+Goal: <specific outcome>.
+Scope: <repo/files/surfaces>.
+Permissions: <read-only or allowed edits>.
+File ownership: <exclusive paths, if editing>.
+Do not: <forbidden actions such as publish, push, destructive commands>.
+Success criteria: <evidence required before done>.
+Return: <concise report format: findings, files changed, tests run, blockers, residual risk>.
+```
 
-## Phase 6: Review and Ship
+For implementation workers, give exclusive file ownership whenever possible. Treat files outside that ownership as read-only unless the orchestrator explicitly expands scope.
 
-Use the Skill tool to invoke `review-loop` on the full changeset (including simplify and verify changes). At >=85 confidence: commit, push, and create PR. Include in the PR summary: what was built, key decisions, and residual risks.
+Broad discovery tasks are allowed when the desired output is broad. Examples:
+
+- "Read how X works in this repo and explain it."
+- "Find the top-priority improvements for this app."
+- "Map the release pipeline and identify weak spots."
+
+For broad tasks, bound the return format instead of pretending the investigation is narrow: ask for a ranked list, evidence, confidence, open questions, and recommended next actions. After that worker returns, follow-ups should be specific to the missing evidence or chosen next step.
+
+## Main Loop
+
+1. Clarify success criteria before creating workers.
+2. Split work by separable outcome, module, or evidence source.
+3. Spawn workers with explicit prompts and permissions.
+4. Wait with `read_thread`; do not assume quiet means stuck.
+5. When a worker completes, read its final response and inspect claimed evidence.
+6. Decide centrally:
+   - accept the result,
+   - send a focused follow-up to the same worker,
+   - spawn another worker for an independent pass,
+   - revise the plan,
+   - or integrate and move to verification.
+7. Repeat until the success criteria are met or a real blocker is surfaced.
+
+## Waiting Policy
+
+Default to passive supervision. A worker that is `inProgress` may be thinking, running tools, or waiting on a command.
+
+Do not send mid-turn status checks or steering messages by default. Steer only when:
+
+- New user context, product decisions, or constraints arrive.
+- The original prompt was wrong or missing critical context.
+- The worker asks a blocking question.
+- The worker explicitly reports a blocker.
+- A task-specific timeout is exceeded with no new visible progress.
+
+If the worker finishes with an incomplete answer, send a follow-up after completion. Do not interrupt an active turn just because it is quiet.
+
+Important limitation: `read_thread` shows status, visible messages, and final outputs. It does not expose private reasoning. Treat `inProgress` as active unless there is concrete evidence otherwise.
+
+## Review And Integration
+
+Worker output is evidence, not an automatic final answer.
+
+Before accepting a worker result:
+
+- Check that every success criterion was answered.
+- Separate verified facts from inference.
+- Confirm claimed file edits, tests, links, or timestamps where practical.
+- Resolve conflicts between workers in the orchestrator thread.
+- Ask follow-ups for missing evidence instead of filling gaps silently.
+
+For code changes, run the normal closeout sequence after workers finish:
+
+1. `simplify` on the integrated changeset.
+2. `self-test` against the real affected surface.
+3. `review-loop` on the final diff.
+4. Commit, push, and open a PR only after verification is sufficient.
+
+## Patterns
+
+Read-only incident investigation:
+
+- Worker A: gather local repo evidence.
+- Worker B: verify live external state, if credentials/tools are available.
+- Orchestrator: merge timelines, distinguish direct evidence from inference, ask one follow-up for gaps.
+
+Implementation:
+
+- Worker A: implement owned module or narrow fix in a worktree.
+- Worker B: independently review the intended fix or write verification plan.
+- Orchestrator: inspect diffs, resolve tradeoffs, run simplify/self-test/review-loop, then ship.
+
+Review:
+
+- Worker A: code review for correctness and regressions.
+- Worker B: test/verification audit.
+- Orchestrator: prioritize findings, decide fixes, delegate follow-up work.
 
 ## Gotchas
 
-- **Phase skipping is the #1 failure mode.** Agents skip Simplify and Self-Test because they feel "done" after implementation. Every phase exists for a reason — don't skip any.
-- **Always return to the orchestrator after a sub-skill completes.** Don't let a sub-skill's closing state bleed into the next phase — come back here, confirm which phase just finished, then proceed to the next.
-- **Don't do everything in the main context.** Phase 3 exists to delegate to teams. If you're implementing everything yourself in one thread, you're not using the orchestrator correctly.
+- Do not convert orchestration into main-thread implementation.
+- Do not over-steer active workers; wait for completion first.
+- Broad initial discovery tasks are fine; broad follow-ups are the problem. After a worker responds, ask for the exact missing evidence, decision, or fix.
+- Do not let worker confidence replace verification on the real affected surface.
+- Do not let one worker edit files another worker owns.
+- Do not skip simplify, self-test, or review-loop after implementation work.
