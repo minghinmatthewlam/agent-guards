@@ -46,10 +46,11 @@ Use `tool_search` to expose these tools when they are not already available:
 - Use a project worktree target only when isolation is useful: parallel edit-heavy workers, risky experiments, or tasks that should not touch the shared checkout.
 - Include model/thinking only when the task needs an override; otherwise inherit defaults.
 - After a successful creation, report the created thread id using the Codex App thread directive required by the host.
+- After starting a worker, immediately establish supervision. Default to a heartbeat automation, including for short tasks, unless the user explicitly wants the current turn to stay open.
 
-`read_thread` is the normal wait mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Poll/read them until the worker turn is completed or the thread is idle, then evaluate the final response.
+`read_thread` is the normal inspection mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Use it for immediate spot checks, heartbeat wakeups, final result reads, and focused follow-up review.
 
-Use `automation_update` for a heartbeat when the worker may take longer than the current interaction. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, and disable itself after the worker completes and the result is summarized.
+Use `automation_update` for heartbeat supervision by default after worker creation. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, send a focused follow-up if the result is incomplete, and disable itself after the worker completes and the result is summarized.
 
 ## Worker Prompt
 
@@ -81,7 +82,7 @@ For broad tasks, bound the return format instead of pretending the investigation
 1. Clarify success criteria before creating workers.
 2. Split work by separable outcome, module, or evidence source.
 3. Spawn workers with explicit prompts and permissions.
-4. Supervise completion. Use `read_thread` polling for short waits. Use a heartbeat automation for longer waits.
+4. Supervise completion. Default to a heartbeat automation immediately after worker creation. Use direct `read_thread` polling only for immediate spot checks, final reads, or when the user explicitly wants this turn to stay open.
 5. When a worker completes, read its final response and inspect claimed evidence.
 6. Decide centrally:
    - accept the result,
@@ -97,9 +98,9 @@ Do not end after merely creating a worker unless you have also established how t
 
 Default to passive supervision. A worker that is `inProgress` may be thinking, running tools, or waiting on a command.
 
-For short waits, poll conservatively with `read_thread`: confirm the worker started, then wait long enough for meaningful progress before reading again. Avoid rapid polling that clutters the thread.
+Default to heartbeat supervision instead of keeping the current turn open for manual polling. For short tasks, use a short heartbeat interval; for longer tasks, use a longer interval. The heartbeat is still polling with `read_thread`; it just moves the wait out of the current turn and into scheduled follow-ups.
 
-For longer waits, create a heartbeat automation instead of asking the user to come back and check. The heartbeat is still polling; it just moves the wait out of the current turn and into scheduled follow-ups.
+Use direct `read_thread` polling only when you need an immediate spot check, a final result read, or the user explicitly wants live coordination in the current turn. For low-noise reads, start with the newest turn only and omit tool outputs where possible, such as `turnLimit=1` and `includeOutputs=false`. Broaden the read only when the latest turn does not contain enough context.
 
 Do not send mid-turn status checks or steering messages by default. Steer only when:
 
@@ -122,8 +123,16 @@ Before accepting a worker result:
 - Check that every success criterion was answered.
 - Separate verified facts from inference.
 - Confirm claimed file edits, tests, links, or timestamps where practical.
+- For broad audits or discovery, check the response shape for every finding, then spot-check the highest-impact P0/P1 claims against the cited source before presenting them as accepted.
+- Fully verify any finding that will drive implementation delegation; otherwise label it as worker-reported or source-inferred.
 - Resolve conflicts between workers in the orchestrator thread.
 - Ask follow-ups for missing evidence instead of filling gaps silently.
+
+When reporting worker output to the user, label the confidence level clearly:
+
+- **Orchestrator-accepted:** spot-checked or otherwise verified enough to drive decisions.
+- **Worker-reported:** plausible worker result that has not been independently checked.
+- **Unverified / needs proof:** useful lead that requires follow-up, live surface proof, or implementation-specific verification.
 
 For code changes, run the normal closeout sequence after workers finish:
 
