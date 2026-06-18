@@ -38,6 +38,7 @@ Use `tool_search` to expose these tools when they are not already available:
 - `handoff_thread`: move a thread between local checkout and Codex worktree when isolation needs change.
 - `list_threads`: find an existing worker thread before continuing it.
 - `set_thread_title`, `set_thread_pinned`, `set_thread_archived`: keep orchestration threads tidy.
+- `automation_update`: create a heartbeat when worker completion should be checked later without keeping the current turn open.
 
 `create_thread` basics:
 
@@ -47,6 +48,8 @@ Use `tool_search` to expose these tools when they are not already available:
 - After a successful creation, report the created thread id using the Codex App thread directive required by the host.
 
 `read_thread` is the normal wait mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Poll/read them until the worker turn is completed or the thread is idle, then evaluate the final response.
+
+Use `automation_update` for a heartbeat when the worker may take longer than the current interaction. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, and disable itself after the worker completes and the result is summarized.
 
 ## Worker Prompt
 
@@ -78,7 +81,7 @@ For broad tasks, bound the return format instead of pretending the investigation
 1. Clarify success criteria before creating workers.
 2. Split work by separable outcome, module, or evidence source.
 3. Spawn workers with explicit prompts and permissions.
-4. Wait with `read_thread`; do not assume quiet means stuck.
+4. Supervise completion. Use `read_thread` polling for short waits. Use a heartbeat automation for longer waits.
 5. When a worker completes, read its final response and inspect claimed evidence.
 6. Decide centrally:
    - accept the result,
@@ -88,9 +91,15 @@ For broad tasks, bound the return format instead of pretending the investigation
    - or integrate and move to verification.
 7. Repeat until the success criteria are met or a real blocker is surfaced.
 
+Do not end after merely creating a worker unless you have also established how the orchestrator will continue supervision. The user should not need to manually check worker threads.
+
 ## Waiting Policy
 
 Default to passive supervision. A worker that is `inProgress` may be thinking, running tools, or waiting on a command.
+
+For short waits, poll conservatively with `read_thread`: confirm the worker started, then wait long enough for meaningful progress before reading again. Avoid rapid polling that clutters the thread.
+
+For longer waits, create a heartbeat automation instead of asking the user to come back and check. The heartbeat is still polling; it just moves the wait out of the current turn and into scheduled follow-ups.
 
 Do not send mid-turn status checks or steering messages by default. Steer only when:
 
@@ -146,6 +155,7 @@ Review:
 ## Gotchas
 
 - Do not convert orchestration into main-thread implementation.
+- Do not stop at "worker created." Supervision is the orchestrator's job.
 - Do not over-steer active workers; wait for completion first.
 - Broad initial discovery tasks are fine; broad follow-ups are the problem. After a worker responds, ask for the exact missing evidence, decision, or fix.
 - Do not let worker confidence replace verification on the real affected surface.
