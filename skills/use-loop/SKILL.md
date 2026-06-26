@@ -114,7 +114,7 @@ The target is the source of truth. Do not weaken or change the target during the
 
 ## Agent-Specific Execution
 
-First determine the loop mechanism. If you are Claude, Cursor, or Devin, use the built-in `/loop` tool. If you are Codex, expose the automation tool and create a heartbeat automation for the current thread after the loop contract is explicit. Use the heartbeat to wake this thread and continue the state machine until a stop condition is met.
+First determine the loop mechanism. If you are Claude, Cursor, or Devin, use the built-in `/loop` tool. If you are Codex, expose the automation tool and create a heartbeat automation for the current thread after the loop contract is explicit and before implementation attempts begin. Use the heartbeat to wake this thread and continue the state machine until a stop condition is met.
 
 Use this compact Codex heartbeat shape:
 
@@ -126,7 +126,7 @@ Wake message: Continue the loop toward <goal>. Check the latest state and verifi
 
 Do not repeat the full loop contract, history, or verifier details in every heartbeat. The thread already has context; the automation only needs to wake the loop and point at the current goal.
 
-Only skip heartbeat creation when the whole loop truly finishes in the current turn. If the automation tool is unavailable, report that as a loop blocker instead of pretending the loop is durable.
+Set up the heartbeat by default before iterating. When the task reaches final proof, close or cancel the loop using the available automation controls. If the automation tool is unavailable, report that as a loop blocker instead of pretending the loop is durable.
 
 If your environment has a native `/loop` command, such as Claude or Cursor-style agents, invoke it yourself after the target, verifier, tool access, and self-test path are explicit:
 
