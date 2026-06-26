@@ -46,7 +46,13 @@ Use `tool_search` to expose these tools when they are not already available:
 
 `read_thread` is the normal inspection mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Use it for immediate spot checks, heartbeat wakeups, final result reads, and focused follow-up review.
 
-Use `automation_update` after worker creation. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, send a focused follow-up if the result is incomplete, and disable itself after the worker completes and the result is summarized.
+Use `automation_update` after worker creation. Default to a 3-minute heartbeat unless the user specifies a cadence. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, send a focused follow-up if the result is incomplete, and disable itself after the worker completes and the result is summarized.
+
+Keep heartbeat messages compact. Do not paste full worker histories, full logs, or large status inventories into every wakeup. The orchestrator thread already has context; the heartbeat only needs to wake it and point at the current supervision goal. Store detail in worker threads, PR/check links, patch artifacts, or a ledger.
+
+```text
+Wake message: Continue supervising <goal>. Read the active worker thread(s), send focused follow-up if blocked or incomplete, report only meaningful changes or final completion, and stop when <condition>.
+```
 
 ## Worker Prompt
 
@@ -93,7 +99,7 @@ Do not end after merely creating a worker unless you have also established how t
 
 Default to passive supervision. A worker that is `inProgress` may be thinking, running tools, or waiting on a command.
 
-Use heartbeat supervision instead of keeping the current turn open for manual polling. For short tasks, use a short heartbeat interval; for longer tasks, use a longer interval. The heartbeat is still polling with `read_thread`; it just moves the wait out of the current turn and into scheduled follow-ups.
+Use heartbeat supervision instead of keeping the current turn open for manual polling. The heartbeat is still polling with `read_thread`; it just moves the wait out of the current turn and into scheduled follow-ups.
 
 Use direct `read_thread` polling only when you need an immediate spot check, a final result read, or the user explicitly wants live coordination in the current turn. For low-noise reads, start with the newest turn only and omit tool outputs where possible, such as `turnLimit=1` and `includeOutputs=false`. Broaden the read only when the latest turn does not contain enough context.
 
