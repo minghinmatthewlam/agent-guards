@@ -7,8 +7,6 @@ description: "Coordinate complex work with Codex App worker threads. Keep the ma
 
 Use this skill when the user wants the main Codex App thread to coordinate work across other Codex threads. The orchestrator owns context, decisions, integration, and final judgment. Worker threads do research, implementation slices, verification, or review.
 
-For simple one-thread tasks, skip this skill and do the work directly.
-
 Read `~/dev/agent-guards/AGENTS.md` before starting.
 
 ## Core Rule
@@ -18,14 +16,12 @@ The orchestrator orchestrates; it does not implement substantial work itself.
 Keep the main thread focused on:
 
 - Clarifying the goal and success criteria.
-- Choosing worker tasks and file ownership.
+- Choosing worker tasks.
 - Creating worker threads.
 - Waiting for workers to finish.
 - Reviewing worker outputs and evidence.
 - Sending follow-ups after completion when needed.
 - Integrating results, deciding next steps, and reporting to the user.
-
-Implement directly only when the task is tiny, urgent, or the user explicitly asks this thread to do it.
 
 ## Codex App Tools
 
@@ -46,28 +42,27 @@ Use `tool_search` to expose these tools when they are not already available:
 - Use a project worktree target only when isolation is useful: parallel edit-heavy workers, risky experiments, or tasks that should not touch the shared checkout.
 - Include model/thinking only when the task needs an override; otherwise inherit defaults.
 - After a successful creation, report the created thread id using the Codex App thread directive required by the host.
-- After starting a worker, immediately establish supervision. Default to a heartbeat automation, including for short tasks, unless the user explicitly wants the current turn to stay open.
+- After starting a worker, immediately establish heartbeat supervision, including for short tasks, unless the user explicitly wants the current turn to stay open.
 
 `read_thread` is the normal inspection mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Use it for immediate spot checks, heartbeat wakeups, final result reads, and focused follow-up review.
 
-Use `automation_update` for heartbeat supervision by default after worker creation. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, send a focused follow-up if the result is incomplete, and disable itself after the worker completes and the result is summarized.
+Use `automation_update` after worker creation. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, send a focused follow-up if the result is incomplete, and disable itself after the worker completes and the result is summarized.
 
 ## Worker Prompt
 
 Give every worker a concrete, bounded task.
 
 ```text
-You are a worker thread for the orchestrator.
+You are working in this thread on one delegated task.
+Use /use-loop.
 Goal: <specific outcome>.
-Scope: <repo/files/surfaces>.
 Permissions: <read-only or allowed edits>.
-File ownership: <exclusive paths, if editing>.
 Do not: <forbidden actions such as publish, push, destructive commands>.
 Success criteria: <evidence required before done>.
-Return: <concise report format: findings, files changed, tests run, blockers, residual risk>.
+Return in this thread: <concise report format: findings, files changed, tests run, blockers, residual risk>.
 ```
 
-For implementation workers, give exclusive file ownership whenever possible. Treat files outside that ownership as read-only unless the orchestrator explicitly expands scope.
+Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, iterates until the target is met or blocked, and writes status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread.
 
 Broad discovery tasks are allowed when the desired output is broad. Examples:
 
@@ -82,7 +77,7 @@ For broad tasks, bound the return format instead of pretending the investigation
 1. Clarify success criteria before creating workers.
 2. Split work by separable outcome, module, or evidence source.
 3. Spawn workers with explicit prompts and permissions.
-4. Supervise completion. Default to a heartbeat automation immediately after worker creation. Use direct `read_thread` polling only for immediate spot checks, final reads, or when the user explicitly wants this turn to stay open.
+4. Set up heartbeat automation immediately after worker creation so the orchestrator is guaranteed to check the worker. Use direct `read_thread` polling only for immediate spot checks, final reads, or when the user explicitly wants this turn to stay open.
 5. When a worker completes, read its final response and inspect claimed evidence.
 6. Decide centrally:
    - accept the result,
@@ -98,7 +93,7 @@ Do not end after merely creating a worker unless you have also established how t
 
 Default to passive supervision. A worker that is `inProgress` may be thinking, running tools, or waiting on a command.
 
-Default to heartbeat supervision instead of keeping the current turn open for manual polling. For short tasks, use a short heartbeat interval; for longer tasks, use a longer interval. The heartbeat is still polling with `read_thread`; it just moves the wait out of the current turn and into scheduled follow-ups.
+Use heartbeat supervision instead of keeping the current turn open for manual polling. For short tasks, use a short heartbeat interval; for longer tasks, use a longer interval. The heartbeat is still polling with `read_thread`; it just moves the wait out of the current turn and into scheduled follow-ups.
 
 Use direct `read_thread` polling only when you need an immediate spot check, a final result read, or the user explicitly wants live coordination in the current turn. For low-noise reads, start with the newest turn only and omit tool outputs where possible, such as `turnLimit=1` and `includeOutputs=false`. Broaden the read only when the latest turn does not contain enough context.
 
@@ -134,33 +129,6 @@ When reporting worker output to the user, label the confidence level clearly:
 - **Worker-reported:** plausible worker result that has not been independently checked.
 - **Unverified / needs proof:** useful lead that requires follow-up, live surface proof, or implementation-specific verification.
 
-For code changes, run the normal closeout sequence after workers finish:
-
-1. `simplify` on the integrated changeset.
-2. `self-test` against the real affected surface.
-3. `review-loop` on the final diff.
-4. Commit, push, and open a PR only after verification is sufficient.
-
-## Patterns
-
-Read-only incident investigation:
-
-- Worker A: gather local repo evidence.
-- Worker B: verify live external state, if credentials/tools are available.
-- Orchestrator: merge timelines, distinguish direct evidence from inference, ask one follow-up for gaps.
-
-Implementation:
-
-- Worker A: implement owned module or narrow fix in a worktree.
-- Worker B: independently review the intended fix or write verification plan.
-- Orchestrator: inspect diffs, resolve tradeoffs, run simplify/self-test/review-loop, then ship.
-
-Review:
-
-- Worker A: code review for correctness and regressions.
-- Worker B: test/verification audit.
-- Orchestrator: prioritize findings, decide fixes, delegate follow-up work.
-
 ## Gotchas
 
 - Do not convert orchestration into main-thread implementation.
@@ -168,5 +136,4 @@ Review:
 - Do not over-steer active workers; wait for completion first.
 - Broad initial discovery tasks are fine; broad follow-ups are the problem. After a worker responds, ask for the exact missing evidence, decision, or fix.
 - Do not let worker confidence replace verification on the real affected surface.
-- Do not let one worker edit files another worker owns.
-- Do not skip simplify, self-test, or review-loop after implementation work.
+- Do not ignore material overlap, conflicts, or duplicated work between workers; resolve those centrally when they appear.
