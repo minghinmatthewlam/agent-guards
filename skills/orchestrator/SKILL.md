@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: "Coordinate complex work with Codex App worker threads. Keep the main thread as orchestrator: clarify, delegate, wait for worker completion, review outputs, iterate, verify, and ship without doing substantial implementation directly."
+description: "Coordinate complex work across worker threads (Codex) or background subagents (Claude). Keep the main thread as orchestrator: clarify, delegate, supervise to completion, review outputs, iterate, verify, and ship without doing substantial implementation directly."
 ---
 
 # Orchestrator
@@ -54,13 +54,31 @@ Keep heartbeat messages compact. Do not paste full worker histories, full logs, 
 Wake message: Continue supervising <goal>. Read the active worker thread(s), send focused follow-up if blocked or incomplete, report only meaningful changes or final completion, and stop when <condition>.
 ```
 
+## Claude Backend
+
+Same orchestrator role; different plumbing. Do NOT apply the Codex poll model here.
+
+- **Spawn worker:** `Agent` tool with `run_in_background: true` (Explore for read-only; general-purpose or a custom type for edits). Each gets its own context. Name it so you can steer it.
+- **Completion is PUSH:** finished workers notify the orchestrator automatically with their full result. Do NOT poll to learn a worker finished.
+- **Bounded fan-out (the common case): no heartbeat.** Spawn workers, end the turn, handle each pushed result, synthesize when the last lands.
+- **Heartbeat (`/loop`) only for:** (a) a standing orchestrator that must keep finding NEW work, or (b) a slow fallback (20-30 min) to catch a silently hung worker. Never a short poll just to watch spawned workers.
+- **Checking status is possible but expensive:** `TaskOutput(task_id, block=false)` returns `running`/`completed`, but also dumps the worker's raw transcript into context. Use only to confirm a suspected hang, not routine polling.
+- **Shared state:** a `TaskCreate`/`TaskUpdate` board, one task per worker.
+- **Steer:** `SendMessage` to the worker's name.
+- **Worker loop is identical to Codex:** the worker runs `/use-loop` then `/goal`. Unchanged.
+
+Gotchas:
+
+- Same-repo workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits.
+- Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
+
 ## Worker Prompt
 
 Give every worker a concrete, bounded task.
 
 ```text
 You are working in this thread on one delegated task.
-Use /use-loop.
+Use /use-loop. After you identify the verifiable goal, tool access, and self-test path, set /goal or use the harness goal tool for this delegated task.
 Goal: <specific outcome>.
 Permissions: <read-only or allowed edits>.
 Do not: <forbidden actions such as publish, push, destructive commands>.
@@ -68,7 +86,7 @@ Success criteria: <evidence required before done>.
 Return in this thread: <concise report format: findings, files changed, tests run, blockers, residual risk>.
 ```
 
-Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, iterates until the target is met or blocked, and writes status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread.
+Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
 
 Broad discovery tasks are allowed when the desired output is broad. Examples:
 
@@ -96,6 +114,8 @@ For broad tasks, bound the return format instead of pretending the investigation
 Do not end after merely creating a worker unless you have also established how the orchestrator will continue supervision. The user should not need to manually check worker threads.
 
 ## Waiting Policy
+
+(Codex poll model. On Claude, completion is push; see the Claude Backend section.)
 
 Default to passive supervision. A worker that is `inProgress` may be thinking, running tools, or waiting on a command.
 
