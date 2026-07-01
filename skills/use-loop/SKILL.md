@@ -1,13 +1,13 @@
 ---
 name: use-loop
-description: "Default workflow for implementation and product goals: identify the verifiable goal, check tool/self-test access, start a real continuation loop, iterate until verified, report blockers or decisions, then close with simplify/self-test/autoreview. Use when the user asks for /use-loop, loop mode, autonomous iteration, repeated attempts, retry-until-green workflows, or any non-trivial coding/product task where the agent can define a target and verify progress."
+description: "Default workflow for implementation and product goals: identify the verifiable goal, check tool/self-test access, start a real /goal continuation loop, iterate until verified, report blockers or decisions, then close with simplify/self-test/autoreview. Use when the user asks for /use-loop, loop mode, autonomous iteration, repeated attempts, retry-until-green workflows, or any non-trivial coding/product task where the agent can define a target and verify progress."
 ---
 
 # Use Loop
 
 Use this skill as the default execution shape for implementation and product goals.
 
-Your job is to run one verifiable loop for the current task. Do not rely on intention alone. Look for a built-in `/loop` tool: Claude, Cursor, and Devin have one. If you are Codex, use heartbeat automations. Report status, blockers, questions, and final proof clearly.
+Your job is to run one verifiable loop for the current task. Do not rely on intention alone. Assume the current harness has `/goal`, including Codex and Claude. Set a clear goal with success criteria, verifier, and stop conditions, then keep working until the goal is verified or blocked. Report status, blockers, questions, and final proof clearly in the current thread.
 
 ## Default Loop Policy
 
@@ -31,7 +31,7 @@ Use this order before iterating:
 1. Identify the goal and verifiable target.
 2. Identify tool access and ability to self-test against that target.
 3. Establish the baseline with the verifier when possible.
-4. Start an actual continuation loop using the agent-specific mechanism below.
+4. Start an actual continuation loop using `/goal` or the harness goal tool.
 5. Report in-thread only for blockers, critical questions, surprising results, or final completion.
 6. Repeat until the goal is reached or a stop condition triggers.
 
@@ -46,7 +46,7 @@ End-to-end loop:
 ```mermaid
 flowchart LR
     A["Find verifiable target"] --> B["Check tool access and self-test path"]
-    B --> C["Start heartbeat or native loop"]
+    B --> C["Start /goal"]
     C --> D["Report blockers or decisions in-thread"]
     D --> E["Finish with proof"]
 ```
@@ -82,7 +82,7 @@ Keep/revert rule: <when to preserve a change; when to revert to last best>
 Stop conditions: <target hit, no gains after N tries, out of ideas, blocked, budget hit>
 Budget: <max attempts/time/tokens>
 State ledger: <where attempts/results/evidence are recorded>
-Continuation: <Codex heartbeat automation, native /loop, or blocker>
+Continuation: /goal or harness goal tool
 Decision gate: <decisions that require the caller>
 Report: <when to write in-thread: start, surprise, blocker, completion>
 Closeout: <simplify, self-test, autoreview requirements>
@@ -112,32 +112,17 @@ Use this loop shape:
 
 The target is the source of truth. Do not weaken or change the target during the loop unless the decision gate approves it.
 
-## Agent-Specific Execution
+## Goal Execution
 
-First determine the loop mechanism. If you are Claude, Cursor, or Devin, use the built-in `/loop` tool. If you are Codex, expose the automation tool and create a heartbeat automation for the current thread after the loop contract is explicit and before implementation attempts begin. Use the heartbeat to wake this thread and continue the state machine until a stop condition is met.
-
-Use this compact Codex heartbeat shape:
+Set the goal after the target, verifier, tool access, and self-test path are explicit:
 
 ```text
-Title: loop: <goal>
-Cadence: every 3 minutes by default.
-Wake message: Continue the loop toward <goal>. Check the latest state and verifier, take the next step, update the ledger, and report only blockers, critical decisions, surprising results, or final completion.
+/goal <specific outcome>. Treat <verifier> as the source of truth. Continue until <success criteria> are verified, stop if <blockers/decision gates> appear, and close with <required proof>.
 ```
 
-Do not repeat the full loop contract, history, or verifier details in every heartbeat. The thread already has context; the automation only needs to wake the loop and point at the current goal.
+If the harness exposes goal tools instead of a slash command, use those tools yourself. For Codex, check the active goal, create a goal when none exists, and mark it complete only after the declared verifier passes and closeout evidence is ready.
 
-Set up the heartbeat by default before iterating. When the task reaches final proof, close or cancel the loop using the available automation controls. If the automation tool is unavailable, report that as a loop blocker instead of pretending the loop is durable.
-
-If your environment has a native `/loop` command, such as Claude or Cursor-style agents, invoke it yourself after the target, verifier, tool access, and self-test path are explicit:
-
-```text
-/loop until <metric / tests / eval / QA check> hits <target>.
-Treat <verifier> as the source of truth and do not change it while running.
-Before each attempt, confirm tool access needed for <self-test path>.
-Make one coherent change, measure, keep improvements, and revert non-improvements.
-Stop early if progress stalls, ideas run out, access is missing, or you are blocked/unsure.
-Report only for blockers, critical decisions, surprising results, and final completion.
-```
+Use `/goal` for this task only. Scheduled check-ins are outside this skill unless the task prompt explicitly says this thread owns follow-up automation. Do not choose `/loop` instead of `/goal` for this skill.
 
 ## State Ledger
 
@@ -154,9 +139,9 @@ Record each attempt with:
 
 Do not rely on chat history alone for long-running loops.
 
-## Compact Loop State
+## Compact Goal State
 
-Keep heartbeat state short enough to survive many wakeups. Store details in the ledger or artifacts; put only the current control state in the heartbeat. For worker loops, the wake message should usually be just: "continue the loop toward the goal; check the latest verifier; report blockers or final proof."
+Keep loop state short enough to survive many turns. Store details in the ledger or artifacts; keep only the current control state in the thread status or goal updates.
 
 Use this shape:
 
