@@ -37,6 +37,8 @@ Use this order before iterating:
 
 The tool-access check is mandatory. Look for the same things `self-test` requires: test configs, build scripts, app launch paths, browser/Electron harnesses, Computer Use/browser access, API endpoints, credentials, fixtures, existing specs, and the loop continuation tool. If the agent cannot reach the highest-signal affected surface or cannot start the required continuation mechanism, stop and report the blocker instead of silently using weaker proof.
 
+Plan proof artifacts before implementation when the target has any visual, UI, desktop, browser, animation, focus, timing, or multi-step interaction surface. Use screenshots for final visible state and short screen recordings for flows that cannot be proven by one still image. Store artifacts in a durable path such as `/Users/matthewlam/.codex/proofs/<thread-or-task>/<slug>/`, verify their metadata, and include the paths in the final report. Tool output alone is not durable proof if it cannot be reopened from a stable file path.
+
 ## Loop Diagrams
 
 Use these diagrams as the mental model for the workflow.
@@ -76,6 +78,7 @@ Target: <metric, tests, eval, QA check, review gate, validation count>
 Verifier: <exact command/tool/surface and expected result>
 Tool access: <available tools, credentials, runtime, browser/app/API access>
 Self-test path: <how the agent will prove the goal on the highest-signal surface>
+Proof artifacts: <screenshot/video/log/trace paths required, or "not needed" with reason>
 Baseline: <current score/state, or "establish first">
 Iteration rule: <what may change per attempt>
 Keep/revert rule: <when to preserve a change; when to revert to last best>
@@ -134,7 +137,7 @@ Record each attempt with:
 - change made,
 - verifier result,
 - keep/revert decision,
-- evidence link, command output summary, screenshot, score, or file path,
+- evidence link, command output summary, screenshot, video, trace, score, or file path,
 - next idea or blocker.
 
 Do not rely on chat history alone for long-running loops.
@@ -188,6 +191,7 @@ Do not call a loop complete just because it stopped. Close it with:
 
 - final best result,
 - verifier evidence,
+- proof artifact paths and metadata when the affected surface is visual or interaction-based,
 - attempts kept and reverted,
 - stop reason,
 - residual risks,
