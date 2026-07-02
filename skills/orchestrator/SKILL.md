@@ -84,12 +84,15 @@ Permissions: <read-only or allowed edits>.
 Do not: <forbidden actions such as publish, push, destructive commands>.
 Success criteria: <evidence required before done>.
 Proof artifacts: <required screenshots/videos/traces/logs and where to save them; use "not needed" only with reason>.
-Return in this thread: <concise report format: findings, files changed, tests run, proof artifact paths, blockers, residual risk>.
+Explain diff: <for substantial code changes, invoke and use /explain-diff; return the HTML path, or "not needed" with reason>.
+Return in this thread: <concise report format: findings, files changed, tests run, proof artifact paths, explain-diff path, blockers, residual risk>.
 ```
 
 Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
 
 For UI, desktop, browser, animation, focus, scrolling, or multi-step interaction work, require durable proof artifacts from the worker. Ask for saved screenshots for final visible state and short recordings for flows that require motion or timing. Prefer a stable directory such as `/Users/matthewlam/.codex/proofs/<worker-thread-id>/<task-slug>/`, and ask the worker to report artifact metadata with the final result.
+
+For substantial code changes that the caller needs to understand, tell the worker to invoke and use `/explain-diff` before final reporting. The worker should return the generated HTML path. Do not inline explain-diff instructions into the worker prompt.
 
 Broad discovery tasks are allowed when the desired output is broad. Examples:
 
@@ -148,6 +151,7 @@ Before accepting a worker result:
 - Separate verified facts from inference.
 - Confirm claimed file edits, tests, links, or timestamps where practical.
 - For visual or interaction work, confirm the worker provided durable proof artifact paths and enough metadata to reopen them.
+- For substantial code changes, confirm the worker either returned an `/explain-diff` HTML path or gave a clear reason it was not needed.
 - For broad audits or discovery, check the response shape for every finding, then spot-check the highest-impact P0/P1 claims against the cited source before presenting them as accepted.
 - Fully verify any finding that will drive implementation delegation; otherwise label it as worker-reported or source-inferred.
 - Resolve conflicts between workers in the orchestrator thread.

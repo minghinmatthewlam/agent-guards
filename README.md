@@ -45,6 +45,7 @@ Core workflow skills:
 | `audit-loop` | Read-only investigation with cross-checking and confidence gates |
 | `autoreview` | Runs OpenClaw structured code review as the default closeout check |
 | `codex-review` | Runs Codex's built-in review command as an explicit fallback/comparison check |
+| `explain-diff` | Produces rich self-contained HTML explanations of code changes for human understanding |
 
 Task-specific skills:
 

@@ -192,6 +192,7 @@ Do not call a loop complete just because it stopped. Close it with:
 - final best result,
 - verifier evidence,
 - proof artifact paths and metadata when the affected surface is visual or interaction-based,
+- for substantial code changes where the caller needs to understand the implementation, invoke and use `/explain-diff` and include the generated HTML path,
 - attempts kept and reverted,
 - stop reason,
 - residual risks,
