@@ -60,15 +60,29 @@ Same orchestrator role; different plumbing. Do NOT apply the Codex poll model he
 
 - **Spawn worker:** `Agent` tool with `run_in_background: true` (Explore for read-only; general-purpose or a custom type for edits). Each gets its own context. Name it so you can steer it.
 - **Completion is PUSH:** finished workers notify the orchestrator automatically with their full result. Do NOT poll to learn a worker finished.
-- **Bounded fan-out (the common case): no heartbeat.** Spawn workers, end the turn, handle each pushed result, synthesize when the last lands.
-- **Heartbeat (`/loop`) only for:** (a) a standing orchestrator that must keep finding NEW work, or (b) a slow fallback (20-30 min) to catch a silently hung worker. Never a short poll just to watch spawned workers.
+- **Default: arm a fallback heartbeat right after you spawn workers.** The cost is asymmetric — an unneeded heartbeat is one cheap tick then `CronDelete`, but a missing one lets a finished background job sit silently unreported (observed: a background matrix run sat ~6h until the user pinged). Set one up by default; close it early if the first tick shows every worker already pushed and handled.
+- **Why push alone isn't enough:** completion push is reliable only while a worker's turn is live. It breaks when a worker offloads to a detached process — a `run_in_background` command, a long matrix/eval run, a deploy, a CI job — then ends its turn: the job finishes with no live turn to observe it. The heartbeat is the safety net for exactly that.
+- **Also heartbeat** a standing orchestrator that must keep finding NEW work.
+- **Keep ticks cheap, not short:** a 20-30 min `TaskList` + `git status` check, never a tight poll and never a `TaskOutput` transcript dump. A live worker's push still lands first and is handled immediately; the heartbeat only catches what push misses.
 - **Checking status is possible but expensive:** `TaskOutput(task_id, block=false)` returns `running`/`completed`, but also dumps the worker's raw transcript into context. Use only to confirm a suspected hang, not routine polling.
 - **Shared state:** a `TaskCreate`/`TaskUpdate` board, one task per worker.
 - **Steer:** `SendMessage` to the worker's name.
 - **Worker loop is identical to Codex:** the worker runs `/use-loop` then `/goal`. Unchanged.
 
+### Fallback heartbeat (Claude)
+
+Arm this by default right after spawning workers — do not wait for a stall to appear. Worst case it fires once, sees everything already handled, and you `CronDelete` it:
+
+- Schedule with `/loop <20-30m> <check prompt>` (CronCreate underneath); pick an off-minute cadence so fleet load spreads.
+- Keep each tick CHEAP: `TaskList` for board status plus `git status` / file mtimes for finished-but-unreported surfaces. NEVER dump a worker transcript (`TaskOutput`) on a routine tick.
+- On a tick, if a deliverable is complete on disk but unreported: nudge the worker to report, or verify and commit it yourself when the worker is stale.
+- END the heartbeat (`CronDelete`) once every tracked deliverable is accepted and committed.
+
+The heartbeat is a safety net, not the primary signal — a live worker's push still lands first and is handled immediately.
+
 Gotchas:
 
+- A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs a fallback heartbeat, not push.
 - Same-repo workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
 
