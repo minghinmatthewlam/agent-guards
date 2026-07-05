@@ -5,7 +5,7 @@ description: "Coordinate complex work across worker threads (Codex) or backgroun
 
 # Orchestrator
 
-Use this skill when the user wants the main Codex App thread to coordinate work across other Codex threads. The orchestrator owns context, decisions, integration, and final judgment. Worker threads do research, implementation slices, verification, or review.
+Use this skill when the user wants the main thread — a Codex App thread or a Claude Code session — to coordinate work across worker threads or subagents. The orchestrator owns context, decisions, integration, and final judgment. Workers do research, implementation slices, verification, or review. A Codex App orchestrator drives Codex App threads (see Codex App Tools); a Claude Code orchestrator drives `Agent`-tool subagents or `codex exec` workers (see Claude Backend).
 
 Read `~/dev/agent-guards/AGENTS.md` before starting.
 
@@ -56,34 +56,54 @@ Wake message: Continue supervising <goal>. Read the active worker thread(s), sen
 
 ## Claude Backend
 
-Same orchestrator role; different plumbing. Do NOT apply the Codex poll model here.
+Same orchestrator role; different plumbing. A Claude Code orchestrator cannot use the Codex App tools (`create_thread` etc. exist only when the orchestrator IS the Codex App). It drives workers two ways — the `Agent` tool or shelling out to `codex exec`. Do NOT assume the Codex App poll model; supervision is covered below.
 
-- **Spawn worker:** `Agent` tool with `run_in_background: true` (Explore for read-only; general-purpose or a custom type for edits). Each gets its own context. Name it so you can steer it.
-- **Completion is PUSH:** finished workers notify the orchestrator automatically with their full result. Do NOT poll to learn a worker finished.
-- **Default: arm a fallback heartbeat right after you spawn workers.** The cost is asymmetric — an unneeded heartbeat is one cheap tick then `CronDelete`, but a missing one lets a finished background job sit silently unreported (observed: a background matrix run sat ~6h until the user pinged). Set one up by default; close it early if the first tick shows every worker already pushed and handled.
-- **Why push alone isn't enough:** completion push is reliable only while a worker's turn is live. It breaks when a worker offloads to a detached process — a `run_in_background` command, a long matrix/eval run, a deploy, a CI job — then ends its turn: the job finishes with no live turn to observe it. The heartbeat is the safety net for exactly that.
-- **Also heartbeat** a standing orchestrator that must keep finding NEW work.
-- **Keep ticks cheap, not short:** a 20-30 min `TaskList` + `git status` check, never a tight poll and never a `TaskOutput` transcript dump. A live worker's push still lands first and is handled immediately; the heartbeat only catches what push misses.
-- **Checking status is possible but expensive:** `TaskOutput(task_id, block=false)` returns `running`/`completed`, but also dumps the worker's raw transcript into context. Use only to confirm a suspected hang, not routine polling.
-- **Shared state:** a `TaskCreate`/`TaskUpdate` board, one task per worker.
+### Choosing the worker engine
+
+- **Claude workers (`Agent` tool)** — use when the task turns on **design, frontend, or visual/UX taste**: UI, layout, styling, animation, "make it look good / on-brand", copy tone, any aesthetic judgment call.
+- **Codex workers (`codex exec`)** — the DEFAULT for everything else: implementation, refactors, bug fixes, tests, backend/CLI/data work, research, analysis, review.
+
+Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude worker; if it's judged by whether it *works*, use `codex exec`.
+
+### Claude workers (Agent tool)
+
+- **Spawn:** `Agent` tool with `run_in_background: true` (Explore for read-only; general-purpose or a custom type for edits). Each gets its own context. Name it so you can steer it.
+- **Completion is PUSH:** finished workers notify the orchestrator automatically with their full result — but push is reliable only while a worker's turn is live (see Supervision).
 - **Steer:** `SendMessage` to the worker's name.
-- **Worker loop is identical to Codex:** the worker runs `/use-loop` then `/goal`. Unchanged.
+- **Worker loop:** the worker runs `/use-loop` then `/goal`.
 
-### Fallback heartbeat (Claude)
+### Codex workers (codex exec)
 
-Arm this by default right after spawning workers — do not wait for a stall to appear. Worst case it fires once, sees everything already handled, and you `CronDelete` it:
+Shell out via `Bash` with `run_in_background: true`. Reliable exit codes and clean result capture make this the better programmatic worker.
 
-- Schedule with `/loop <20-30m> <check prompt>` (CronCreate underneath); pick an off-minute cadence so fleet load spreads.
-- Keep each tick CHEAP: `TaskList` for board status plus `git status` / file mtimes for finished-but-unreported surfaces. NEVER dump a worker transcript (`TaskOutput`) on a routine tick.
-- On a tick, if a deliverable is complete on disk but unreported: nudge the worker to report, or verify and commit it yourself when the worker is stale.
-- END the heartbeat (`CronDelete`) once every tracked deliverable is accepted and committed.
+- **Spawn:** `codex exec --skip-git-repo-check -s <sandbox> -C <dir> --json -o <last.txt> "<prompt>"`
+  - `-s read-only|workspace-write|danger-full-access` scopes permissions.
+  - `-C <dir>` = worker root; give each parallel worker its own dir/worktree so edits don't collide.
+  - `-o <file>` captures only the final message; `--json` streams JSONL events (`thread.started` carries `thread_id`; `turn.completed`, `command_execution`, `file_change`).
+  - `-m <model>` overrides the model per worker.
+- **Result:** read the `-o` file for the final message; process exit 0 = success.
+- **Steer / follow-up:** `codex exec resume <thread_id> "<msg>"`. Gotcha: `resume` inherits the original session's sandbox/cwd and REJECTS `-s`/`-C`; still pass `--skip-git-repo-check` if the original cwd wasn't a git repo.
+- **Parallel fan-out:** launch N `codex exec` processes in the background, each with its own `-C` dir — truly concurrent (independent processes and threads).
+- **Worker loop:** the bounded prompt is the `exec` argument; the worker self-loops to the goal and exits with the result in `-o <file>` (it cannot run `/use-loop` interactively).
 
-The heartbeat is a safety net, not the primary signal — a live worker's push still lands first and is handled immediately.
+### Supervision — arm a fallback heartbeat (5-10 min) by default, both engines
+
+Arm this right after spawning workers; do not wait for a stall. The cost is asymmetric — an unneeded heartbeat is one cheap tick then `CronDelete`, but a missing one lets a finished job sit silently unreported (observed: a background run sat ~6h until the user pinged).
+
+- **Schedule** with `/loop <5-10m> <check prompt>` (CronCreate underneath); pick an off-minute cadence so fleet load spreads.
+- **Keep each tick CHEAP:** `TaskList` for board status, plus `git status` / file mtimes / the worker's `-o`/`--json` tail for finished-but-unreported surfaces. NEVER dump a worker transcript (`TaskOutput`) on a routine tick.
+- **Why both engines need it:** a Claude worker's push breaks when it offloads to a detached process (a `run_in_background` command, a matrix/eval run, a deploy) then ends its turn; a `codex exec` worker has no live turn to push from at all — only a weak process-exit notification and no steering channel if it stalls.
+- **On a tick,** if a deliverable is complete but unreported: nudge the worker (`SendMessage` for Claude, `codex exec resume <thread_id>` for codex), or verify and commit it yourself when the worker is stale.
+- **Shared state:** a `TaskCreate`/`TaskUpdate` board, one task per worker.
+- **END the heartbeat** (`CronDelete`) once every tracked deliverable is accepted and committed. Also heartbeat a standing orchestrator that must keep finding NEW work.
+
+A live worker's push still lands first and is handled immediately; the heartbeat only catches what push misses.
 
 Gotchas:
 
-- A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs a fallback heartbeat, not push.
-- Same-repo workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits.
+- A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs the fallback heartbeat, not push.
+- `codex exec resume` flag-parsing differs from the initial `exec` (no `-s`/`-C`) — don't reuse the spawn command verbatim for follow-ups.
+- Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. `codex exec` isolates via `-C`/`--add-dir` or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
 
 ## Worker Prompt
