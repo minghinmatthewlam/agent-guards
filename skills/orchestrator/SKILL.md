@@ -103,6 +103,7 @@ Gotchas:
 
 - A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs the fallback heartbeat, not push.
 - `codex exec resume` flag-parsing differs from the initial `exec` (no `-s`/`-C`) — don't reuse the spawn command verbatim for follow-ups.
+- `codex exec` `workspace-write` blocks `.git` writes and network: workers cannot `git init`/branch/commit or `npm install`. Route git-heavy tasks to a Claude worker, or let the codex worker edit files and do the git operations in the orchestrator. Read-only workers can't write report files either — have them return deliverables in the final message (`-o`) and save files yourself.
 - Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. `codex exec` isolates via `-C`/`--add-dir` or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
 
