@@ -74,25 +74,25 @@ Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude
 
 ### pi workers (pi -p)
 
-Shell out via `Bash` with `run_in_background: true`. Requires the pi-worker extension (`pi install npm:@matthewlam/pi-worker`) and pi-goal >= 0.2.0 (reliable headless exit codes). Verified: parallel fan-out, heartbeat supervision, schema results, session-resume steering.
+Shell out via `Bash` with `run_in_background: true`. Requires pi >= 0.80, pi-goal >= 0.3.0 (headless goal loop + exit codes), and the pi-worker extension (`pi install npm:@matthewlam/pi-goal`, `pi install npm:@matthewlam/pi-worker`). Verified end-to-end: goal-driven multi-turn completion, parallel fan-out, heartbeat supervision, schema results, session-resume follow-ups.
 
-- **Spawn:**
+- **Spawn (default):**
 
   ```bash
-  pi -p --session-id <uuid> -t read,write,bash,report_result \
-    --last-message-file <dir>/last.txt --worker-heartbeat-file <dir>/hb.json \
-    [--result-schema <schema.json> --result-file <dir>/result.json] \
-    [--thinking low|medium|high|xhigh] [--model <provider/model[:thinking]>] "<bounded task>"
+  pi -p --session-id <uuid> -t read,write,bash,create_goal,update_goal,get_goal \
+    --last-message-file <dir>/last.txt "<worker prompt>"
   ```
 
-  - Model and thinking default from `~/.pi/agent/settings.json`; override per worker with `--model`/`--thinking`.
-  - Give each parallel worker its own working dir (cd there before spawning) so edits don't collide.
-  - Use `--session-id <uuid>` (not `--no-session`) for any worker you may need to steer later.
-- **Result:** `last.txt` = final message; `result.json` = schema-validated structured output when `--result-schema` is set. Exit 0 = success (trustworthy).
-- **Steer / follow-up:** re-run `pi -p --session-id <same-uuid> "<follow-up>"` — the session resumes with full context (verified: follow-ups modify prior artifacts, not recreate them).
-- **Parallel fan-out:** launch N background `pi -p` processes — truly concurrent, independent sessions.
+  The worker prompt is the SAME template as the other backends (see Worker Prompt): "Use /use-loop... use create_goal for this delegated task..." — pi discovers /use-loop from ~/.agents/skills, and pi-goal keeps driving continuation turns until the goal is terminal.
+  - CRITICAL: the `-t` allowlist covers extension tools — it must include `create_goal,update_goal,get_goal` (and `report_result` if using --result-schema) or the worker silently cannot run the goal loop. Omit `-t` entirely for trusted workers.
+  - Model/thinking default from `~/.pi/agent/settings.json`; override per worker with `--model <provider/model[:thinking]>` / `--thinking low|medium|high|xhigh`.
+  - Give each parallel worker its own working dir; use `--session-id <uuid>` (not `--no-session`) so follow-ups are possible.
+- **Exit codes:** 0 = goal complete (or no goal); 4 = loop ended incomplete (blocked / budget_limited / usage_limited / --goal-max-turns cap). The orchestrator can triage from the exit code alone.
+- **Opt-in flags by task shape:** `--worker-heartbeat-file <hb.json>` for long tasks (stall detection: stale timestamp = hung); `--result-schema/--result-file` when downstream code consumes the output; `--goal-max-turns <n>` (default 50) to bound the loop; `token_budget` in create_goal for checkpoint-style review.
+- **Result:** `last.txt` = final message of the FINAL turn; `result.json` when schema is set.
+- **Follow-up / steer:** re-run `pi -p --session-id <same-uuid> "<clarification>"` — resumes with full context and re-enters the goal loop. Mid-run emergency: kill the process (sessions persist every turn), then resume the same way. Prompt workers to `update_goal blocked` with a question when ambiguous instead of guessing — blocked (exit 4) is the worker asking for steering.
+- **Parallel fan-out:** N background `pi -p` processes — independent sessions, truly concurrent.
 - **No sandbox:** pi workers CAN git commit, npm install, and reach the network. The flip side: no OS-level containment — scope with `-t` allowlists and explicit Do-NOT lines in the prompt, and treat untrusted-content tasks with care.
-- **Worker loop:** the bounded prompt is the argument; the worker self-loops to the goal and exits with the result in the output files (it cannot run `/use-loop` interactively).
 
 ### Supervision — arm a fallback heartbeat (5-10 min) by default, both engines
 
@@ -110,7 +110,7 @@ A live worker's push still lands first and is handled immediately; the heartbeat
 Gotchas:
 
 - A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs the fallback heartbeat, not push.
-- A pi `-t` allowlist applies to EXTENSION tools too: forgetting `report_result` in it silently disables structured results (exit 0, empty result file).
+- A pi `-t` allowlist applies to EXTENSION tools too: forgetting the goal tools silently disables the goal loop, and forgetting `report_result` silently disables structured results (exit 0, empty result file, no error).
 - pi has no read-only sandbox mode: for research workers use `-t read,bash` (or `-t read,grep,find,ls`) plus explicit no-write instructions — soft policy, not enforcement.
 - Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. pi workers isolate by per-worker working dirs or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
