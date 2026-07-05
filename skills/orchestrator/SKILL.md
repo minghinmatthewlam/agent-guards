@@ -5,7 +5,7 @@ description: "Coordinate complex work across worker threads (Codex) or backgroun
 
 # Orchestrator
 
-Use this skill when the user wants the main thread — a Codex App thread or a Claude Code session — to coordinate work across worker threads or subagents. The orchestrator owns context, decisions, integration, and final judgment. Workers do research, implementation slices, verification, or review. A Codex App orchestrator drives Codex App threads (see Codex App Tools); a Claude Code orchestrator drives `Agent`-tool subagents or `codex exec` workers (see Claude Backend).
+Use this skill when the user wants the main thread — a Codex App thread or a Claude Code session — to coordinate work across worker threads or subagents. The orchestrator owns context, decisions, integration, and final judgment. Workers do research, implementation slices, verification, or review. A Codex App orchestrator drives Codex App threads (see Codex App Tools); a Claude Code orchestrator drives `Agent`-tool subagents or headless pi workers (see Claude Backend).
 
 Read `~/dev/agent-guards/AGENTS.md` before starting.
 
@@ -56,14 +56,14 @@ Wake message: Continue supervising <goal>. Read the active worker thread(s), sen
 
 ## Claude Backend
 
-Same orchestrator role; different plumbing. A Claude Code orchestrator cannot use the Codex App tools (`create_thread` etc. exist only when the orchestrator IS the Codex App). It drives workers two ways — the `Agent` tool or shelling out to `codex exec`. Do NOT assume the Codex App poll model; supervision is covered below.
+Same orchestrator role; different plumbing. A Claude Code orchestrator cannot use the Codex App tools (`create_thread` etc. exist only when the orchestrator IS the Codex App). It drives workers two ways — the `Agent` tool or shelling out to headless `pi`. Do NOT assume the Codex App poll model; supervision is covered below.
 
 ### Choosing the worker engine
 
 - **Claude workers (`Agent` tool)** — use when the task turns on **design, frontend, or visual/UX taste**: UI, layout, styling, animation, "make it look good / on-brand", copy tone, any aesthetic judgment call.
-- **Codex workers (`codex exec`)** — the DEFAULT for everything else: implementation, refactors, bug fixes, tests, backend/CLI/data work, research, analysis, review.
+- **pi workers (`pi -p`)** — the DEFAULT for everything else: implementation, refactors, bug fixes, tests, backend/CLI/data work, research, analysis, review.
 
-Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude worker; if it's judged by whether it *works*, use `codex exec`.
+Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude worker; if it's judged by whether it *works*, use a pi worker.
 
 ### Claude workers (Agent tool)
 
@@ -72,28 +72,36 @@ Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude
 - **Steer:** `SendMessage` to the worker's name.
 - **Worker loop:** the worker runs `/use-loop` then `/goal`.
 
-### Codex workers (codex exec)
+### pi workers (pi -p)
 
-Shell out via `Bash` with `run_in_background: true`. Reliable exit codes and clean result capture make this the better programmatic worker.
+Shell out via `Bash` with `run_in_background: true`. Requires the pi-worker extension (`pi install npm:@matthewlam/pi-worker`) and pi-goal >= 0.2.0 (reliable headless exit codes). Verified: parallel fan-out, heartbeat supervision, schema results, session-resume steering.
 
-- **Spawn:** `codex exec --skip-git-repo-check -s <sandbox> -C <dir> --json -o <last.txt> "<prompt>"`
-  - `-s read-only|workspace-write|danger-full-access` scopes permissions.
-  - `-C <dir>` = worker root; give each parallel worker its own dir/worktree so edits don't collide.
-  - `-o <file>` captures only the final message; `--json` streams JSONL events (`thread.started` carries `thread_id`; `turn.completed`, `command_execution`, `file_change`).
-  - `-m <model>` overrides the model per worker.
-- **Result:** read the `-o` file for the final message; process exit 0 = success.
-- **Steer / follow-up:** `codex exec resume <thread_id> "<msg>"`. Gotcha: `resume` inherits the original session's sandbox/cwd and REJECTS `-s`/`-C`; still pass `--skip-git-repo-check` if the original cwd wasn't a git repo.
-- **Parallel fan-out:** launch N `codex exec` processes in the background, each with its own `-C` dir — truly concurrent (independent processes and threads).
-- **Worker loop:** the bounded prompt is the `exec` argument; the worker self-loops to the goal and exits with the result in `-o <file>` (it cannot run `/use-loop` interactively).
+- **Spawn:**
+
+  ```bash
+  pi -p --session-id <uuid> -t read,write,bash,report_result \
+    --last-message-file <dir>/last.txt --worker-heartbeat-file <dir>/hb.json \
+    [--result-schema <schema.json> --result-file <dir>/result.json] \
+    [--thinking low|medium|high|xhigh] [--model <provider/model[:thinking]>] "<bounded task>"
+  ```
+
+  - Model and thinking default from `~/.pi/agent/settings.json`; override per worker with `--model`/`--thinking`.
+  - Give each parallel worker its own working dir (cd there before spawning) so edits don't collide.
+  - Use `--session-id <uuid>` (not `--no-session`) for any worker you may need to steer later.
+- **Result:** `last.txt` = final message; `result.json` = schema-validated structured output when `--result-schema` is set. Exit 0 = success (trustworthy).
+- **Steer / follow-up:** re-run `pi -p --session-id <same-uuid> "<follow-up>"` — the session resumes with full context (verified: follow-ups modify prior artifacts, not recreate them).
+- **Parallel fan-out:** launch N background `pi -p` processes — truly concurrent, independent sessions.
+- **No sandbox:** pi workers CAN git commit, npm install, and reach the network. The flip side: no OS-level containment — scope with `-t` allowlists and explicit Do-NOT lines in the prompt, and treat untrusted-content tasks with care.
+- **Worker loop:** the bounded prompt is the argument; the worker self-loops to the goal and exits with the result in the output files (it cannot run `/use-loop` interactively).
 
 ### Supervision — arm a fallback heartbeat (5-10 min) by default, both engines
 
 Arm this right after spawning workers; do not wait for a stall. The cost is asymmetric — an unneeded heartbeat is one cheap tick then `CronDelete`, but a missing one lets a finished job sit silently unreported (observed: a background run sat ~6h until the user pinged).
 
 - **Schedule** with `/loop <5-10m> <check prompt>` (CronCreate underneath); pick an off-minute cadence so fleet load spreads.
-- **Keep each tick CHEAP:** `TaskList` for board status, plus `git status` / file mtimes / the worker's `-o`/`--json` tail for finished-but-unreported surfaces. NEVER dump a worker transcript (`TaskOutput`) on a routine tick.
-- **Why both engines need it:** a Claude worker's push breaks when it offloads to a detached process (a `run_in_background` command, a matrix/eval run, a deploy) then ends its turn; a `codex exec` worker has no live turn to push from at all — only a weak process-exit notification and no steering channel if it stalls.
-- **On a tick,** if a deliverable is complete but unreported: nudge the worker (`SendMessage` for Claude, `codex exec resume <thread_id>` for codex), or verify and commit it yourself when the worker is stale.
+- **Keep each tick CHEAP:** `TaskList` for board status, plus each pi worker's `hb.json` (timestamp, last event, token totals — one tiny read tells you alive vs stalled). NEVER dump a worker transcript (`TaskOutput`) on a routine tick.
+- **Why both engines need it:** a Claude worker's push breaks when it offloads to a detached process (a `run_in_background` command, a matrix/eval run, a deploy) then ends its turn; a pi worker has no live turn to push from at all — only the process-exit notification, and a stale `hb.json` timestamp is the only stall signal.
+- **On a tick,** if a deliverable is complete but unreported: nudge the worker (`SendMessage` for Claude, `pi -p --session-id <uuid> "<nudge>"` for pi), or verify and commit it yourself when the worker is stale.
 - **Shared state:** a `TaskCreate`/`TaskUpdate` board, one task per worker.
 - **END the heartbeat** (`CronDelete`) once every tracked deliverable is accepted and committed. Also heartbeat a standing orchestrator that must keep finding NEW work.
 
@@ -102,9 +110,9 @@ A live worker's push still lands first and is handled immediately; the heartbeat
 Gotchas:
 
 - A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs the fallback heartbeat, not push.
-- `codex exec resume` flag-parsing differs from the initial `exec` (no `-s`/`-C`) — don't reuse the spawn command verbatim for follow-ups.
-- `codex exec` `workspace-write` blocks `.git` writes and network: workers cannot `git init`/branch/commit or `npm install`. Route git-heavy tasks to a Claude worker, or let the codex worker edit files and do the git operations in the orchestrator. Read-only workers can't write report files either — have them return deliverables in the final message (`-o`) and save files yourself.
-- Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. `codex exec` isolates via `-C`/`--add-dir` or a worktree.
+- A pi `-t` allowlist applies to EXTENSION tools too: forgetting `report_result` in it silently disables structured results (exit 0, empty result file).
+- pi has no read-only sandbox mode: for research workers use `-t read,bash` (or `-t read,grep,find,ls`) plus explicit no-write instructions — soft policy, not enforcement.
+- Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. pi workers isolate by per-worker working dirs or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
 
 ## Worker Prompt
