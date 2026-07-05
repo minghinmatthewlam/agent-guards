@@ -11,10 +11,11 @@ Listen: these rules are persistent constraints, not initial suggestions. Apply t
 
 ## Workflow
 1. Clarify before acting when the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria first.
-2. For non-trivial work, plan verification up front with `self-test`. If the plan breaks, stop and re-plan.
-3. Execute continuously until the success criteria are met or a real blocker is surfaced.
-4. Do not mark work complete without proof on the real affected surface.
-5. Run `simplify` before closing non-trivial implementation work.
+2. Verify premises before designing around them: when a plan or estimate rests on a claimed platform limitation or behavior, probe it empirically or read the source first. Do not inherit unverified claims — platforms evolve.
+3. For non-trivial work, plan verification up front with `self-test`. If the plan breaks, stop and re-plan.
+4. Execute continuously until the success criteria are met or a real blocker is surfaced.
+5. Do not mark work complete without proof on the real affected surface.
+6. Run `simplify` before closing non-trivial implementation work.
 
 ## Code
 - Prefer clean reimplementation over patching around bad local complexity.
