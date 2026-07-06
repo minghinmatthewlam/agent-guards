@@ -76,6 +76,8 @@ Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude
 
 Shell out via `Bash` with `run_in_background: true`. Requires pi >= 0.80, pi-goal >= 0.3.0 (headless goal loop + exit codes), and the pi-worker extension (`pi install npm:@matthewlam/pi-goal`, `pi install npm:@matthewlam/pi-worker`). Verified end-to-end: goal-driven multi-turn completion, parallel fan-out, heartbeat supervision, schema results, session-resume follow-ups.
 
+**Preflight check** (do NOT inspect `~/.pi/agent/extensions/` — packages are registered in `~/.pi/agent/settings.json`, not that folder): `pi --help | grep -c 'last-message-file'` — nonzero means the extensions are loaded. If zero, run the two `pi install` commands above rather than falling back to Claude workers.
+
 - **Spawn (default):**
 
   ```bash
