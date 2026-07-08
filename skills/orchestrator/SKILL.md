@@ -98,7 +98,9 @@ Shell out via `Bash` with `run_in_background: true`. Requires pi >= 0.80, pi-goa
 - **Parallel fan-out:** N background `pi -p` processes — independent sessions, truly concurrent.
 - **No sandbox:** pi workers CAN git commit, npm install, and reach the network. The flip side: no OS-level containment — scope with `-t` allowlists and explicit Do-NOT lines in the prompt, and treat untrusted-content tasks with care.
 
-### Supervision — arm a fallback heartbeat (5-10 min) by default, both engines
+### Supervision — arm a fallback heartbeat by default, both engines
+
+Cadence is adaptive: 5-10 min while workers are actively implementing or a run is fragile; relax to ~20 min for long stable batch grinds (a multi-hour eval matrix doesn't need 8 checks an hour). Context overflow is survivable — pi auto-compacts on overflow and continues (probe-verified: 388k tokens summarized to ~450, task completed) — but compaction is lossy summarization at the moment the worker most needs its own details, so a worker deep in polish loops at high context is better nudged to converge (stop + resume the session with "commit as-is, report, no new work") than left to compact mid-implementation. That is a quality call, not a rescue.
 
 Arm this right after spawning workers; do not wait for a stall. The cost is asymmetric — an unneeded heartbeat is one cheap tick then `CronDelete`, but a missing one lets a finished job sit silently unreported (observed: a background run sat ~6h until the user pinged).
 
@@ -116,8 +118,18 @@ Gotchas:
 - A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs the fallback heartbeat, not push.
 - A pi `-t` allowlist applies to EXTENSION tools too: forgetting the goal tools silently disables the goal loop, and forgetting `report_result` silently disables structured results (exit 0, empty result file, no error).
 - pi has no read-only sandbox mode: for research workers use `-t read,bash` (or `-t read,grep,find,ls`) plus explicit no-write instructions — soft policy, not enforcement.
+- A pi worker that exits suspiciously fast with exit 0 and an empty last.txt likely died on a provider/billing error, not "finished trivially" — check the tail of the `--mode json` stream for `stopReason: "error"` (observed: an exhausted provider quota killed spawns instantly with exit 0).
+- pi sessions PIN the model they were created with; resuming a session ignores later settings changes. When the default model or its billing is in flux, pass `--provider`/`--model` explicitly on every spawn — including resumes.
+- `--no-extensions` also unloads pi-worker/pi-goal, so `--last-message-file`, `--worker-heartbeat-file`, and the goal tools disappear with it.
+- Multi-hour batch processes (eval matrices, deploys) should not run as harness-tracked background tasks — they can be reaped mid-run (observed twice in one evening). Launch them detached (`nohup`, pidfiles + logs to a known dir) and supervise via the cron heartbeat by output-count/pidfile, accepting that completion-push is lost. Better still, run them on an always-on box (laptop sleep kills detached processes too).
 - Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. pi workers isolate by per-worker working dirs or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
+
+## Worker Scope
+
+One primary deliverable per worker. Before spawning, count the distinct deliverables in the task; more than 2-3 means split it into multiple workers. Oversized scopes hurt two ways at once: the worker outgrows its context window mid-task (pi survives this by auto-compacting, but compaction is lossy summarization exactly when the worker most needs its own details — observed: a 5-deliverable worker hit 90% context in its polish phase), and work that could have run in parallel serializes inside one thread. Splitting is almost free — workers are cheap, and each split adds parallelism plus an independent report to review. Remember the worker also spends context on standing overhead (self-review passes, proof artifacts, explain-diff), so size the task for ~60% of the window, not 100%.
+
+Include a context budget line in every worker prompt ("wrap up with commits + report before ~70% context usage") and require granular commits as the worker goes — then even a worst-case failure loses only the final report, never the work.
 
 ## Worker Prompt
 
@@ -203,6 +215,8 @@ Before accepting a worker result:
 - Fully verify any finding that will drive implementation delegation; otherwise label it as worker-reported or source-inferred.
 - Resolve conflicts between workers in the orchestrator thread.
 - Ask follow-ups for missing evidence instead of filling gaps silently.
+- **Methodology-critical work gets orchestrator re-derivation, not spot-checks.** For measurement, metering, data schemas, accounting, comparability, or security — anything whose errors silently corrupt everything downstream — do not verify against the worker's own test artifacts: they share the worker's blind spot. Re-derive the claim from raw evidence yourself and run one independent probe the worker didn't design, chosen so the wrong interpretation and the right one produce different answers (observed: a worker's single-turn token probe passed its own tests while the parser undercounted multi-turn runs 16x; a orchestrator-designed multi-turn probe exposed it in minutes). The orchestrator usually runs a stronger model with fuller context than workers — verification is where that advantage pays, not implementation.
+- Before merging a worker branch, confirm nothing live is executing from the target checkout (a running eval/deploy mounts code from it; merging mid-run changes the thing being measured). Base successor workers' worktrees on the predecessor's branch so sequential merges don't conflict.
 
 When reporting worker output to the user, label the confidence level clearly:
 
