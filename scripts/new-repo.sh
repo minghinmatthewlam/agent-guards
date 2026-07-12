@@ -105,16 +105,22 @@ if [[ $WITH_AGENTS -eq 1 ]]; then
     fi
 fi
 
-# Next step: Create empty .gitignore
+# Next step: Create .gitignore
 print_step "Creating .gitignore"
-touch "$REPO_PATH/.gitignore"
-echo -e "${GREEN}Created .gitignore (empty)${NC}"
+cat > "$REPO_PATH/.gitignore" <<'EOF'
+# Local proof artifacts; durable shared proofs should live under ~/.codex/proofs/.
+/proofs/
+EOF
+echo -e "${GREEN}Created .gitignore${NC}"
 
-# Next step: Create docs folder
-print_step "Creating docs folder"
+# Next step: Create verification scaffold
+print_step "Creating verification scaffold"
 mkdir -p "$REPO_PATH/docs"
-touch "$REPO_PATH/docs/.gitkeep"
-echo -e "${GREEN}Created docs/ with .gitkeep${NC}"
+mkdir -p "$REPO_PATH/scripts"
+cp "$TEMPLATE_DIR/verify.md" "$REPO_PATH/docs/VERIFY.md"
+cp "$TEMPLATE_DIR/self-test.sh" "$REPO_PATH/scripts/self-test.sh"
+chmod +x "$REPO_PATH/scripts/self-test.sh"
+echo -e "${GREEN}Created docs/VERIFY.md and scripts/self-test.sh${NC}"
 
 # Next step: Initial commit
 print_step "Creating initial commit"
@@ -163,6 +169,8 @@ if [[ $WITH_AGENTS -eq 1 ]]; then
     echo "  ├── AGENTS.md"
     echo "  ├── CLAUDE.md -> AGENTS.md"
 fi
+echo "  ├── scripts/"
+echo "  │   └── self-test.sh"
 echo "  └── docs/"
-echo "      └── .gitkeep"
+echo "      └── VERIFY.md"
 echo ""

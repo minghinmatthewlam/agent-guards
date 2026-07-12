@@ -25,7 +25,9 @@ Agents are capable of figuring out complex paths on their own. The human's job i
 - **Plan for self-test, not just implementation.** A good plan includes how the agent will verify the work end-to-end, what tools or access are required, and what blockers must be resolved before coding.
 - **Confidence thresholds.** Prefer correctness over speed. Keep working until confident (85%+). Don't ship uncertain work.
 - **Simplify before final review.** Agents tend to overcomplicate solutions and inherit bad local patterns. After implementation, run `simplify` before the final review loop on non-trivial changes.
-- **Priority levels on all outputs.** Agents find too many things — focus on what matters. Tag findings by priority so humans can triage.
+- **Human attention is the bottleneck.** Agents can produce more work than a human can review line by line. Reports should keep the human in the loop by leading with the most important points, evidence, decisions, and residual risks; deeper detail can live in artifacts or follow-up answers.
+- **Reports are entry points, not accounts.** The human reads the most important points, then asks follow-up questions to go deeper. Agents write for that flow: surface what changes the human's next move, make it obvious what can be drilled into, and let the human pull the depth they want. Depth of investigation and depth of reporting are separate concerns — research broadly, report selectively.
+- **Priority levels on important outputs.** Agents find too many things — focus on what matters. Tag the highest-signal findings, blockers, risks, and options by priority so humans can triage.
 - **Don't limit token costs.** The output quality is worth the cost.
 
 ## Instruction Files (AGENTS.md / CLAUDE.md)

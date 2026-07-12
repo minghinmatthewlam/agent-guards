@@ -28,8 +28,8 @@ If that framing resonates, start with [`AGENTS.md`](AGENTS.md) and [`docs/agent-
 - `skills/`: reusable workflows like planning, self-test, review loops, CI repair, and iOS release work
 - `commands/`: shared prompt files that work in both ecosystems
 - `scripts/sync.sh`: syncs guardrails, commands, and skills into the right user-level locations
-- `scripts/new-repo.sh`: bootstraps a fresh repo with optional repo-local `AGENTS.md` / `CLAUDE.md`
-- `templates/repo-agents.md`: lightweight pointer template for repo-local instruction files
+- `scripts/new-repo.sh`: bootstraps a fresh repo with repo verification scaffolding and optional repo-local `AGENTS.md` / `CLAUDE.md`
+- `templates/`: repo bootstrap files plus reusable loop contracts for recurring automations
 
 ## Notable Skills
 
@@ -41,6 +41,7 @@ Core workflow skills:
 | `plan-loop` | Hardens plans with parallel review before execution |
 | `review-loop` | Reviews completed changes with multiple agents before shipping |
 | `self-test` | Forces the agent to prove the real surface works before closing |
+| `concise-report` | Keeps agent updates focused and priority-aware |
 | `simplify` | Cleanup pass after implementation to remove unnecessary complexity |
 | `audit-loop` | Read-only investigation with cross-checking and confidence gates |
 | `autoreview` | Runs OpenClaw structured code review as the default closeout check |
@@ -108,9 +109,10 @@ Use the setup wizard:
 It is interactive and will:
 1. create the repo directory
 2. run `git init`
-3. create `.gitignore` and `docs/.gitkeep`
-4. create an initial commit
-5. optionally create and push a GitHub repo with `gh`
+3. create `.gitignore`
+4. create `docs/VERIFY.md` and `scripts/self-test.sh`
+5. create an initial commit
+6. optionally create and push a GitHub repo with `gh`
 
 If you want repo-local pointer files too:
 
@@ -127,6 +129,15 @@ The template currently contains:
 ```markdown
 Always read the global `AGENTS.md` (synced to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`) before any repo-specific instructions.
 ```
+
+## Loop Templates
+
+`templates/loops/` contains lightweight starting points for recurring agent work:
+
+- `LOOP.md`: generic loop contract with concise reporting.
+- `daily-priorities.md`: daily priority scan and top-three focus loop.
+- `repo-verification.md`: improve a repo's self-test and proof lanes.
+- `thread-introspection.md`: review recent agent usage for repeated struggles, verbose reports, missing proof, or skill/setup improvements. Treat this as propose-first by default; only edit the explicitly allowed subset of skills or templates.
 
 ## Editing This Repo
 

@@ -7,7 +7,7 @@ description: "Default workflow for implementation and product goals: identify th
 
 Use this skill as the default execution shape for implementation and product goals.
 
-Your job is to run one verifiable loop for the current task. Do not rely on intention alone. Assume the current harness has `/goal`, including Codex and Claude. Set a clear goal with success criteria, verifier, and stop conditions, then keep working until the goal is verified or blocked. Report status, blockers, questions, and final proof clearly in the current thread.
+Your job is to run one verifiable loop for the current task. Do not rely on intention alone. Assume the current harness has `/goal`, including Codex and Claude. Set a clear goal with success criteria, verifier, and stop conditions, then keep working until the goal is verified or blocked. Report status, blockers, questions, and final proof concisely in the current thread.
 
 ## Default Loop Policy
 
@@ -36,6 +36,8 @@ Use this order before iterating:
 6. Repeat until the goal is reached or a stop condition triggers.
 
 The tool-access check is mandatory. Look for the same things `self-test` requires: test configs, build scripts, app launch paths, browser/Electron harnesses, Computer Use/browser access, API endpoints, credentials, fixtures, existing specs, and the loop continuation tool. If the agent cannot reach the highest-signal affected surface or cannot start the required continuation mechanism, stop and report the blocker instead of silently using weaker proof.
+
+If the target is reachable but the repo lacks a useful proof lane, include the missing verification structure in the loop work. Add the smallest appropriate focused test, script, fixture, browser check, Computer Use smoke, artifact capture, or `scripts/self-test.sh` lane needed to prove the goal. The loop should improve both the product behavior and the repo's ability to self-test that behavior.
 
 Plan proof artifacts before implementation when the target has any visual, UI, desktop, browser, animation, focus, timing, or multi-step interaction surface. Use screenshots for final visible state and short screen recordings for flows that cannot be proven by one still image. Store artifacts in a durable path such as `/Users/matthewlam/.codex/proofs/<thread-or-task>/<slug>/`, verify their metadata, and include the paths in the final report. Tool output alone is not durable proof if it cannot be reopened from a stable file path.
 
@@ -78,6 +80,7 @@ Target: <metric, tests, eval, QA check, review gate, validation count>
 Verifier: <exact command/tool/surface and expected result>
 Tool access: <available tools, credentials, runtime, browser/app/API access>
 Self-test path: <how the agent will prove the goal on the highest-signal surface>
+Verification structure: <existing proof lane or minimal lane the agent will add>
 Proof artifacts: <screenshot/video/log/trace paths required, or "not needed" with reason>
 Baseline: <current score/state, or "establish first">
 Iteration rule: <what may change per attempt>
@@ -161,16 +164,20 @@ Artifacts: <ledger, patch, screenshot, run, or PR links>
 
 ## Reporting Protocol
 
+Use `/concise-report` for loop updates and final reports. Focus on the most important loop state, evidence, blockers, and next decisions; store detail in the ledger, proof artifacts, logs, `/explain-diff`, or follow-up answers.
+
 Keep reports short and structured:
 
 ```text
 Status: <running | blocked | done>
-Current best: <best result so far>
-Latest verifier: <command/surface/result>
-Attempts: <kept/reverted count>
-Blocker/question: <only if needed>
-Next action: <what happens next>
+Result: <current best or final result in 1-2 sentences>
+Evidence: <latest verifier, artifact paths, or "not verified">
+Decision needed: <only if needed>
+Next: <one action>
+Risk: <residual risk or "low">
 ```
+
+Do not include exhaustive attempt logs in chat. Link the ledger when attempts matter.
 
 ## Loop Types
 
@@ -178,6 +185,7 @@ Common loop shapes:
 
 - **Product goal loop:** identify the product goal, identify or request tool access for `self-test` verification, implement, self-test, and iterate until the goal is verified or blocked.
 - **Tests loop:** write or expose failing test, implement, run test suite, keep only green progress.
+- **Verification scaffold loop:** add the smallest repeatable proof lane for a repo or feature, then prove one real behavior through that lane.
 - **Autoreview loop:** run structured autoreview, verify accepted findings against source, fix, rerun focused proof, then rerun autoreview until no accepted/actionable findings remain.
 - **QA loop:** run browser/app QA, inspect screenshots or UI state, fix, repeat until the real surface passes.
 - **Eval loop:** run eval or benchmark, keep only score improvements that do not break guardrails.
@@ -197,6 +205,8 @@ Do not call a loop complete just because it stopped. Close it with:
 - stop reason,
 - residual risks,
 - decisions still needed.
+
+Format the closeout with `/concise-report`. Include only the fields needed for the caller to accept, ask a follow-up, or make a decision.
 
 For implementation loops, run the normal closeout gates:
 

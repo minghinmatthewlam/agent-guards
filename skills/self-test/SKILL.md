@@ -13,18 +13,22 @@ Consider `$ARGUMENTS` if provided.
 
 Before planning, find what's available to prove the goal on the highest-signal affected surface. Search for test configs, test helpers, build scripts, app launch paths, browser/Electron harnesses, Computer Use skills, and existing specs. If you're missing a tool to reach the surface that matters, tell the user what you need and why — don't silently downgrade to lower-signal proof.
 
+Missing test structure is usually implementation work, not an excuse to skip verification. When a feature, bug fix, or product change lacks a useful proof lane, add the smallest appropriate test harness, script, fixture, browser check, app smoke path, or artifact capture while you implement. Prefer repo-local repeatable entrypoints such as `scripts/self-test.sh`, existing package scripts, focused tests, or documented Computer Use/browser steps so the next agent can rerun the proof.
+
 ## Before You Code
 
 - Define concrete, testable success criteria. If ambiguous or below 85% confidence, clarify first.
 - **Name the exact goal surface you'll verify on.** The surface is where the requested behavior is consumed, not where the code runs internally. Examples: for desktop/web UI changes -> "the running app with real user interactions through browser automation or Computer Use." For API changes -> "the HTTP endpoint hit by a real client." For CLI changes -> "the command run in a real terminal." For library changes -> "a calling program that exercises the public API."
 - **Name the exact proof path you'll use.** This may be commands, test files, browser/Electron automation, Computer Use steps, or a combination. If an existing repeatable test covers the goal surface, name it. If not, plan the smallest proof that can demonstrate the delivered behavior. If you can't reach the surface at all, surface that as a blocker.
+- **Name any missing proof structure you'll add.** For new features, this can be a focused unit/contract test, an integration or E2E spec, a local app launch script, a browser/Computer Use smoke, a fixture, or artifact capture. Keep it proportional to the change, but do not leave the repo unable to prove the behavior if you can reasonably add the lane yourself.
 - **Name the proof artifacts you'll create when the surface is visual or interactive.** Screenshots prove final visible state; short screen recordings prove multi-step flows, focus behavior, animation, scrolling, or timing. Store them under a durable path such as `/Users/matthewlam/.codex/proofs/<thread-or-task>/<slug>/`.
-- For new user-facing features, bias toward a real-surface smoke test of the completed workflow using Computer Use, browser automation, or the most product-like harness available. Use command-line checks as supporting repeatable proof unless the command/API/library is itself the user-facing surface.
+- For new user-facing features, bias toward a real-surface smoke test of the completed workflow using Computer Use, browser automation, or the most product-like harness available. If a human could manually test the workflow on this machine, Computer Use or browser tooling should usually be able to test it too. Use command-line checks as supporting repeatable proof unless the command/API/library is itself the user-facing surface.
 - Name exact verification blockers early: missing credentials, env vars, test data, local run path, preview/staging access, prod access, hardware, or anything else that prevents real verification.
 
 ## While You Code
 
 - Use whatever fast tests and checks you need while coding. The skill does not need to prescribe the inner loop.
+- Build or update the verification lane as part of the implementation when the existing repo cannot prove the new behavior. Examples: add the focused test you need, expose a local script, add fixture data, make the UI flow reachable in a dev build, or save Computer Use/browser artifacts from the real workflow.
 - If you discover you can't verify the final goal, surface the blocker immediately — what you tried, why it blocks, and the smallest user action that would unblock you.
 
 ## Before You Say Done
@@ -47,4 +51,5 @@ Before planning, find what's available to prove the goal on the highest-signal a
 - Command exit codes alone are not proof for user-visible behavior; verify the actual visible result. Command tests are primary proof when the command, API, or library call is the actual user-facing contract.
 - Computer Use state output is useful for live reasoning, but it is not a durable artifact unless it writes a stable file. Pair Computer Use observations with saved screenshots, screen recordings, browser traces, or app logs when reporting proof.
 - **Silently downgrading verification** — listing "manual E2E" or "the user should test" instead of using available product-surface tools. In Codex, Computer Use and browser tooling can prove many new feature workflows directly; use them when they are the highest-signal path.
+- Treating "there was no test" as the final answer when you had enough access to add a minimal self-test lane yourself.
 - If only a deployed environment can prove the change, use the safest production-like path available and state the exact scope you verified.

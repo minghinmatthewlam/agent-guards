@@ -48,6 +48,10 @@ Use `tool_search` to expose these tools when they are not already available:
 
 Use `automation_update` after worker creation. Default to a 3-minute heartbeat unless the user specifies a cadence. The heartbeat should wake the orchestrator thread, read the worker, summarize progress if still active, send a focused follow-up if the result is incomplete, and disable itself after the worker completes and the result is summarized.
 
+For Codex App heartbeats that should wake the current orchestrator thread, set `destination="thread"` and omit `targetThreadId`. Do not copy a source thread id, worker thread id, guessed current thread id, or stale id into `targetThreadId`; that can attach the heartbeat somewhere else or prevent the visible orchestrator loop from resuming. Only set `targetThreadId` when intentionally attaching to a specific known thread, and first verify that id with `list_threads` or an existing tool result.
+
+After creating a heartbeat, keep the returned `automationId` in the status/report. If the heartbeat appears not to fire, immediately `view` or `delete` that automation, manually read the workers once, and recreate the heartbeat with `destination="thread"` and no explicit `targetThreadId`.
+
 Keep heartbeat messages compact. Do not paste full worker histories, full logs, or large status inventories into every wakeup. The orchestrator thread already has context; the heartbeat only needs to wake it and point at the current supervision goal. Store detail in worker threads, PR/check links, patch artifacts, or a ledger.
 
 ```text
@@ -142,14 +146,17 @@ Goal: <specific outcome>.
 Permissions: <read-only or allowed edits>.
 Do not: <forbidden actions such as publish, push, destructive commands>.
 Success criteria: <evidence required before done>.
+Self-test: <expected proof lane; worker may add minimal tests/scripts/fixtures/browser or Computer Use checks needed to prove the goal unless forbidden>.
 Proof artifacts: <required screenshots/videos/traces/logs and where to save them; use "not needed" only with reason>.
 Explain diff: <for substantial code changes, invoke and use /explain-diff; return the HTML path, or "not needed" with reason>.
-Return in this thread: <concise report format: findings, files changed, tests run, proof artifact paths, explain-diff path, blockers, residual risk>.
+Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 only for the highest-signal findings, blockers, risks, or options.
 ```
 
-Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
+Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes `/concise-report` status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
 
 For UI, desktop, browser, animation, focus, scrolling, or multi-step interaction work, require durable proof artifacts from the worker. Ask for saved screenshots for final visible state and short recordings for flows that require motion or timing. Prefer a stable directory such as `/Users/matthewlam/.codex/proofs/<worker-thread-id>/<task-slug>/`, and ask the worker to report artifact metadata with the final result.
+
+For new features or fixes without a useful existing proof lane, explicitly allow the worker to add minimal verification structure while implementing: focused tests, fixtures, scripts, browser automation, Computer Use smoke checks, or artifact capture. The worker should not stop at "no test exists" when it can create the self-test path itself.
 
 For substantial code changes that the caller needs to understand, tell the worker to invoke and use `/explain-diff` before final reporting. The worker should return the generated HTML path. Do not inline explain-diff instructions into the worker prompt.
 
@@ -204,6 +211,12 @@ Important limitation: `read_thread` shows status, visible messages, and final ou
 
 Worker output is evidence, not an automatic final answer.
 
+Use independent verification proportional to the risk:
+
+- **Low risk:** accept worker self-test after checking the reported proof is specific, rerunnable, and tied to the requested surface.
+- **Medium or high risk:** spot-check the changed files, rerun the key verifier, inspect proof artifacts, or spawn a verifier worker with a different prompt.
+- **Methodology-critical:** use the stricter re-derivation rule below.
+
 Before accepting a worker result:
 
 - Check that every success criterion was answered.
@@ -223,6 +236,8 @@ When reporting worker output to the user, label the confidence level clearly:
 - **Orchestrator-accepted:** spot-checked or otherwise verified enough to drive decisions.
 - **Worker-reported:** plausible worker result that has not been independently checked.
 - **Unverified / needs proof:** useful lead that requires follow-up, live surface proof, or implementation-specific verification.
+
+Use `/concise-report` for user-facing orchestration summaries. Summarize only meaningful changes, accepted results, blockers, decisions, and next actions. Use P0/P1/P2 priority tags for the few items that most affect what the user should do or believe. Keep worker detail in the worker thread, proof artifacts, explain-diff HTML, PRs, or ledgers.
 
 ## Gotchas
 
