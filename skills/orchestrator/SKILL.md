@@ -80,25 +80,27 @@ Heuristic: if the deliverable is judged by how it *looks or feels*, use a Claude
 
 Shell out via `Bash` with `run_in_background: true`. Requires pi >= 0.80, pi-goal >= 0.3.0 (headless goal loop + exit codes), and the pi-worker extension (`pi install npm:@matthewlam/pi-goal`, `pi install npm:@matthewlam/pi-worker`). Verified end-to-end: goal-driven multi-turn completion, parallel fan-out, heartbeat supervision, schema results, session-resume follow-ups.
 
-**Preflight check** (do NOT inspect `~/.pi/agent/extensions/` — packages are registered in `~/.pi/agent/settings.json`, not that folder): `pi --help | grep -c 'last-message-file'` — nonzero means the extensions are loaded. If zero, run the two `pi install` commands above rather than falling back to Claude workers.
+**Preflight check** (do NOT inspect `~/.pi/agent/extensions/` — packages are registered in `~/.pi/agent/settings.json`, not that folder): confirm `pi --help` lists `--result-schema`, `--result-file`, and `--worker-heartbeat-file`. If any are missing, run the two `pi install` commands above rather than falling back to Claude workers.
 
 - **Spawn (default):**
 
   ```bash
-  pi -p --session-id <uuid> -t read,write,bash,create_goal,update_goal,get_goal \
-    --last-message-file <dir>/last.txt "<worker prompt>"
+  pi -p --session-id <uuid> -t read,write,bash,create_goal,update_goal,get_goal,report_result \
+    --result-schema ~/.agents/skills/orchestrator/result.schema.json \
+    --result-file <worker-dir>/result.json "<worker prompt>"
   ```
 
-  The worker prompt is the SAME template as the other backends (see Worker Prompt): "Use /use-loop... use create_goal for this delegated task..." — pi discovers /use-loop from ~/.agents/skills, and pi-goal keeps driving continuation turns until the goal is terminal.
-  - CRITICAL: the `-t` allowlist covers extension tools — it must include `create_goal,update_goal,get_goal` (and `report_result` if using --result-schema) or the worker silently cannot run the goal loop. Omit `-t` entirely for trusted workers.
+  The worker prompt is the SAME template as the other backends (see Worker Prompt): "Use /use-loop... use create_goal for this delegated task..." — pi discovers /use-loop from ~/.agents/skills, and pi-goal keeps driving continuation turns until the goal is terminal. Before finishing, the worker uses `/concise-report` to formulate the structured result, then calls `report_result` exactly once as its final action.
+  - CRITICAL: the `-t` allowlist covers extension tools — it must include `create_goal,update_goal,get_goal,report_result` or the worker silently cannot run the goal loop or save its structured result. Omit `-t` entirely for trusted workers.
   - Model/thinking default from `~/.pi/agent/settings.json`; override per worker with `--model <provider/model[:thinking]>` / `--thinking low|medium|high|xhigh`.
   - Give each parallel worker its own working dir; use `--session-id <uuid>` (not `--no-session`) so follow-ups are possible.
   - **Prepare the worker's directory BEFORE spawning** and launch with cwd already inside it (create the git worktree first, then spawn there). Never spawn in a protected checkout and tell the worker to "create and move into" a worktree — its early commands run in the wrong directory (observed: a worker mutated the main checkout's lockfile this way).
-- **Exit codes:** 0 = goal complete (or no goal); 4 = loop ended incomplete (blocked / budget_limited / usage_limited / --goal-max-turns cap). The orchestrator can triage from the exit code alone.
-- **Opt-in flags by task shape:** `--worker-heartbeat-file <hb.json>` for long tasks (stall detection: stale timestamp = hung); `--goal-state-file <gs.json>` for goal status + progress ledger on every change (tells you WHERE it is, not just that it's alive); `--result-schema/--result-file` when downstream code consumes the output; `--goal-max-turns <n>` (default 50) to bound the loop; `token_budget` in create_goal for checkpoint-style review.
-- **Live progress for long workers:** spawn with `pi --mode json -p ...` — stdout becomes a live JSONL event stream (every tool call, turn, message) you can tail mid-run. Plain `-p` text output buffers per turn, so a working worker looks silent; do not mistake that for a hang.
-- **Result:** `last.txt` = final message of the FINAL turn; `result.json` when schema is set.
-- **Follow-up / steer:** re-run `pi -p --session-id <same-uuid> "<clarification>"` — resumes with full context and re-enters the goal loop. Mid-run emergency: kill the process (sessions persist every turn), then resume the same way. Prompt workers to `update_goal blocked` with a question when ambiguous instead of guessing — blocked (exit 4) is the worker asking for steering.
+  - **Require a fresh result path for every invocation.** Before spawning, require that `<worker-dir>/result.json` does not exist. Archive an accepted prior result elsewhere before a resume; never let a new invocation inherit an existing result file.
+- **Exit codes:** 0 = goal complete (or no goal); 4 = loop ended incomplete (blocked / budget_limited / usage_limited / --goal-max-turns cap). Use the exit code for initial triage, but never accept a worker without the validated structured result.
+- **Opt-in flags by task shape:** `--worker-heartbeat-file <hb.json>` for long tasks (stall detection: stale timestamp = hung); `--goal-state-file <gs.json>` for goal status + progress ledger on every change (tells you WHERE it is, not just that it's alive); `--goal-max-turns <n>` (default 50) to bound the loop; `token_budget` in create_goal for checkpoint-style review. The default structured-result flow uses the orchestrator skill's reusable `result.schema.json` with explicit `--result-schema` and `--result-file` paths.
+- **Execution monitoring:** monitor only the process and `--worker-heartbeat-file` during normal execution. Do not tail or ingest the worker's JSONL event stream or transcript. `--mode json` remains an exceptional debug aid for diagnosing a concrete stall, not part of the default result flow.
+- **Result:** `result.json` is the authoritative worker result. After the process completes, confirm the previously absent file was created by that invocation, then read it once, parse it, and revalidate it against the same schema before accepting it. Then invoke `/concise-report` independently when integrating the worker's findings; do not forward the worker report verbatim. `--last-message-file <dir>/last.txt` remains available only as an optional legacy/debug fallback and is neither the default nor authoritative.
+- **Follow-up / steer:** archive the prior result so `<worker-dir>/result.json` is absent, then re-run the full default command with `--session-id <same-uuid>`, the same `-t` allowlist including `report_result`, the same `--result-schema`, and the same `--result-file`, replacing the prompt with the clarification. This resumes with full context, re-enters the goal loop, and can emit a fresh authoritative result. Mid-run emergency: kill the process (sessions persist every turn), then resume with that same full command. Prompt workers to `update_goal blocked` with a question when ambiguous instead of guessing — blocked (exit 4) is the worker asking for steering.
 - **Parallel fan-out:** N background `pi -p` processes — independent sessions, truly concurrent.
 - **No sandbox:** pi workers CAN git commit, npm install, and reach the network. The flip side: no OS-level containment — scope with `-t` allowlists and explicit Do-NOT lines in the prompt, and treat untrusted-content tasks with care.
 
@@ -109,9 +111,9 @@ Cadence is adaptive: 5-10 min while workers are actively implementing or a run i
 Arm this right after spawning workers; do not wait for a stall. The cost is asymmetric — an unneeded heartbeat is one cheap tick then `CronDelete`, but a missing one lets a finished job sit silently unreported (observed: a background run sat ~6h until the user pinged).
 
 - **Schedule** with `/loop <5-10m> <check prompt>` (CronCreate underneath); pick an off-minute cadence so fleet load spreads.
-- **Keep each tick CHEAP:** `TaskList` for board status, plus each pi worker's `hb.json` (timestamp, last event, token totals — one tiny read tells you alive vs stalled). NEVER dump a worker transcript (`TaskOutput`) on a routine tick.
+- **Keep each tick CHEAP:** while a pi worker is running, use `TaskList` for board status plus its process state and `hb.json` (timestamp, last event, token totals). NEVER dump a worker transcript (`TaskOutput`) on a routine tick. Once the process exits, stop polling and follow the Result lifecycle above.
 - **Why both engines need it:** a Claude worker's push breaks when it offloads to a detached process (a `run_in_background` command, a matrix/eval run, a deploy) then ends its turn; a pi worker has no live turn to push from at all — only the process-exit notification, and a stale `hb.json` timestamp is the only stall signal.
-- **On a tick,** if a deliverable is complete but unreported: nudge the worker (`SendMessage` for Claude, `pi -p --session-id <uuid> "<nudge>"` for pi), or verify and commit it yourself when the worker is stale.
+- **On a tick,** if a deliverable is complete but unreported: nudge the worker (`SendMessage` for Claude; for pi, use the full Follow-up / steer command and fresh-result lifecycle above), or verify and commit it yourself when the worker is stale.
 - **Shared state:** a `TaskCreate`/`TaskUpdate` board, one task per worker.
 - **END the heartbeat** (`CronDelete`) once every tracked deliverable is accepted and committed. Also heartbeat a standing orchestrator that must keep finding NEW work.
 
@@ -122,9 +124,9 @@ Gotchas:
 - A worker that launches a background job and then ends its turn will NOT push when that job finishes. Detached work needs the fallback heartbeat, not push.
 - A pi `-t` allowlist applies to EXTENSION tools too: forgetting the goal tools silently disables the goal loop, and forgetting `report_result` silently disables structured results (exit 0, empty result file, no error).
 - pi has no read-only sandbox mode: for research workers use `-t read,bash` (or `-t read,grep,find,ls`) plus explicit no-write instructions — soft policy, not enforcement.
-- A pi worker that exits suspiciously fast with exit 0 and an empty last.txt likely died on a provider/billing error, not "finished trivially" — check the tail of the `--mode json` stream for `stopReason: "error"` (observed: an exhausted provider quota killed spawns instantly with exit 0).
+- A pi worker that exits suspiciously fast with exit 0 and no valid `result.json` likely died on a provider/billing error, not "finished trivially" — check the tail of the `--mode json` stream for `stopReason: "error"` (observed: an exhausted provider quota killed spawns instantly with exit 0).
 - pi sessions PIN the model they were created with; resuming a session ignores later settings changes. When the default model or its billing is in flux, pass `--provider`/`--model` explicitly on every spawn — including resumes.
-- `--no-extensions` also unloads pi-worker/pi-goal, so `--last-message-file`, `--worker-heartbeat-file`, and the goal tools disappear with it.
+- `--no-extensions` also unloads pi-worker/pi-goal, so `--result-schema`, `--result-file`, `--last-message-file`, `--worker-heartbeat-file`, `report_result`, and the goal tools disappear with it.
 - Multi-hour batch processes (eval matrices, deploys) should not run as harness-tracked background tasks — they can be reaped mid-run (observed twice in one evening). Launch them detached (`nohup`, pidfiles + logs to a known dir) and supervise via the cron heartbeat by output-count/pidfile, accepting that completion-push is lost. Better still, run them on an always-on box (laptop sleep kills detached processes too).
 - Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. pi workers isolate by per-worker working dirs or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
@@ -153,6 +155,8 @@ Return in this thread: use /concise-report. Include status, result, evidence/pro
 ```
 
 Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes `/concise-report` status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
+
+For pi workers using the default structured-result flow, make the final instruction explicit: formulate the result with `/concise-report`, map it into the shared schema, then call `report_result` exactly once as the final action. The orchestrator accepts only the completed, parsed, independently revalidated `result.json`; it does not treat a worker's prose or legacy `last.txt` as authoritative.
 
 For UI, desktop, browser, animation, focus, scrolling, or multi-step interaction work, require durable proof artifacts from the worker. Ask for saved screenshots for final visible state and short recordings for flows that require motion or timing. Prefer a stable directory such as `/Users/matthewlam/.codex/proofs/<worker-thread-id>/<task-slug>/`, and ask the worker to report artifact metadata with the final result.
 
