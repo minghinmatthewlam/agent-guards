@@ -20,7 +20,7 @@ Verifier:
 
 Report:
 
-- top 3 missing proof lanes,
+- missing proof lanes that materially affect confidence, ordered by priority,
 - smallest structural update for each,
 - files changed,
 - tests/proof run,

@@ -152,7 +152,7 @@ Success criteria: <evidence required before done>.
 Self-test: <expected proof lane; worker may add minimal tests/scripts/fixtures/browser or Computer Use checks needed to prove the goal unless forbidden>.
 Proof artifacts: <required screenshots/videos/traces/logs and where to save them; use "not needed" only with reason>.
 Explain diff: <for substantial code changes, invoke and use /explain-diff; return the HTML path, or "not needed" with reason>.
-Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 only for the highest-signal findings, blockers, risks, or options.
+Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 for every finding, blocker, risk, or option that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count.
 ```
 
 Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes `/concise-report` status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
@@ -242,7 +242,7 @@ When reporting worker output to the user, label the confidence level clearly:
 - **Worker-reported:** plausible worker result that has not been independently checked.
 - **Unverified / needs proof:** useful lead that requires follow-up, live surface proof, or implementation-specific verification.
 
-Use `/concise-report` for user-facing orchestration summaries. Summarize only meaningful changes, accepted results, blockers, decisions, and next actions. Use P0/P1/P2 priority tags for the few items that most affect what the user should do or believe. Keep worker detail in the worker thread, proof artifacts, explain-diff HTML, PRs, or ledgers.
+Use `/concise-report` for user-facing orchestration summaries. Summarize meaningful changes, accepted results, blockers, decisions, and next actions. Use P0/P1/P2 priority tags for every item that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count. Keep supporting worker detail in the worker thread, proof artifacts, explain-diff HTML, PRs, or ledgers.
 
 ## Gotchas
 

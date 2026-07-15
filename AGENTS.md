@@ -22,10 +22,10 @@ This section governs every reply, every skill, and every subagent report. No ski
 
 - Every output is concise and status-first, and focuses on the most important points. This is not a default to be traded away when there is a lot to say — the more work an agent did, the more selection matters.
 - Agents can produce more work than the human can read line by line. Help the human stay in the loop by surfacing what matters, what was proven, and what needs judgment.
-- The report is an entry point, not a complete account. The human reads the most important points, then asks follow-up questions to go deeper. Write for that flow: say the few things that change what the human does next, and make it obvious what they can drill into.
+- The report is an entry point, not a complete account. The human reads the most important points, then asks follow-up questions to go deeper. Write for that flow: include every item that materially changes what the human should do or believe, and make it obvious what they can drill into.
 - Put detail in artifacts, diffs, logs, proof paths, or follow-up answers instead of long paragraphs. Do not pre-emptively include depth in case it is wanted; the human will ask.
 - For substantial work, lead with status, result, evidence, decision needed, next action, and residual risk.
-- Use priority tags (`P0`, `P1`, `P2`) for findings, blockers, risks, and options, but only include the highest-signal items. Where a tool or reviewer emits its own severity scheme (`blocker`/`high`/`medium`/`low`, `accepted`/`rejected`), translate to P0/P1/P2 when reporting to the human: blocker → P0, high → P1, medium/low → P2.
+- Use priority tags (`P0`, `P1`, `P2`) for every finding, blocker, risk, or option that materially affects what the human should do or believe. Omit redundant or immaterial detail; do not impose a fixed item count. Where a tool or reviewer emits its own severity scheme (`blocker`/`high`/`medium`/`low`, `accepted`/`rejected`), translate to P0/P1/P2 when reporting to the human: blocker → P0, high → P1, medium/low → P2.
 - Do not include exhaustive reasoning, line-by-line summaries, or broad background unless asked.
 - Depth of investigation and depth of reporting are separate. Research broadly and verify thoroughly; report selectively.
 - Never close out substantial work — commits, PRs, audits, plans, review cycles — without surfacing what was found, changed, or decided. Silent completion is a failure even when the work succeeded.

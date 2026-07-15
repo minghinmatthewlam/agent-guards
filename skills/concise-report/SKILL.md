@@ -23,7 +23,7 @@ Use priority tags when ranking matters:
 - `P1`: important and worth acting on soon.
 - `P2`: useful but not urgent.
 
-Only include the top few items. Use priorities to communicate importance, not to label every sentence.
+Include every item that materially affects what the human should do or believe. Omit redundant or immaterial detail. Use priorities to communicate importance, not as fixed report slots.
 
 When a tool or reviewer emits its own severity scheme, translate it before reporting to the human: `blocker` → P0, `high` → P1, `medium`/`low` → P2. The human reads one vocabulary.
 
@@ -44,7 +44,7 @@ Omit empty fields. For tiny answers, use one short paragraph instead.
 
 ## Findings Shape
 
-For audits, reviews, or research, lead with the highest-impact items only:
+For audits, reviews, or research, lead with the highest-impact findings and include every finding that materially affects what the human should do or believe:
 
 ```text
 P0: <critical item>
@@ -52,9 +52,11 @@ P1: <important item>
 P2: <nice-to-have item>
 ```
 
+Repeat priority-tagged items as needed; these are priority classes, not report slots.
+
 Keep each item focused on what matters and the evidence behind it. Do not write a full explanation for every item unless asked.
 
-If there are many possible findings, report the top 3 by default and put the rest in an artifact or say they are available on request.
+If there are many findings, report every finding that materially affects what the human should do or believe. Put supporting depth, redundant observations, and immaterial detail in artifacts or follow-up answers.
 
 ## Worker And Loop Reports
 

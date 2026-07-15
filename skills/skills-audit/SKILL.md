@@ -94,7 +94,7 @@ For each skill, show:
 
 ### Quick Wins
 
-Top 3-5 changes that would have the biggest impact across all skills. These are the "do these first" items.
+Highest-impact changes to do first, including every change that materially affects what the human should do or believe about the repository.
 
 ## Apply Mode
 
