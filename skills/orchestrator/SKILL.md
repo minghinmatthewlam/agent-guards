@@ -87,7 +87,8 @@ Shell out via `Bash` with `run_in_background: true`. Requires pi >= 0.80, pi-goa
   ```bash
   pi -p --session-id <uuid> -t read,write,bash,create_goal,update_goal,get_goal,report_result \
     --result-schema ~/.agents/skills/orchestrator/result.schema.json \
-    --result-file <worker-dir>/result.json "<worker prompt>"
+    --result-file <worker-dir>/result.json \
+    --worker-heartbeat-file <worker-dir>/hb.json "<worker prompt>"
   ```
 
   The worker prompt is the SAME template as the other backends (see Worker Prompt): "Use /use-loop... use create_goal for this delegated task..." — pi discovers /use-loop from ~/.agents/skills, and pi-goal keeps driving continuation turns until the goal is terminal. Before finishing, the worker uses `/concise-report` to formulate the structured result, then calls `report_result` exactly once as its final action.
