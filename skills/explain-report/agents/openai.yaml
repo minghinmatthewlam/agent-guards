@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain Report"
+  short_description: "Create focused self-contained HTML reports"
+  default_prompt: "Create a concise, evidence-backed HTML report that helps me understand and retain the important information."

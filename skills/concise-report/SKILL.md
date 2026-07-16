@@ -69,7 +69,9 @@ Workers and loop agents should report:
 - blockers or decisions,
 - residual risk.
 
-Do not include exhaustive logs, full reasoning traces, broad background, or line-by-line change summaries. Put those in `/explain-diff`, proof artifacts, PR descriptions, or a ledger.
+Do not include exhaustive logs, full reasoning traces, broad background, or line-by-line change summaries. Put important supporting understanding in `/explain-report` (`/explain-diff` for code changes), and put raw proof or operational detail in proof artifacts, PR descriptions, or a ledger.
+
+When an HTML report exists, keep chat as the entry point: include the outcome, every material decision item, the report path, decisions, next action, and residual risk. Do not repeat the report's supporting depth.
 
 ## Detail Policy
 

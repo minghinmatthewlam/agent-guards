@@ -1,31 +1,17 @@
 ---
 name: explain-diff
-description: "Create a rich self-contained HTML explanation of a code change, diff, branch, commit, PR, or worker implementation. Use when the user asks to explain code changes, wants to understand what an agent changed, needs a reviewable handoff artifact, or when an orchestrator/worker is asked to invoke /explain-diff for a substantial change."
+description: "Create a focused self-contained HTML explanation of a code change, diff, branch, commit, PR, or worker implementation. Use when the user asks to understand code changes, needs an important implementation kept visible as a learning or handoff artifact, or when an orchestrator/worker invokes /explain-diff for a substantial change. This is the code-change specialization of /explain-report."
 ---
 
 # Explain Diff
 
-Create a rich, readable HTML explanation of the specified code change.
+Read and follow `../explain-report/SKILL.md`, then apply the code-change requirements below using Change mode.
+
+Create a focused, readable HTML explanation of the specified code change. The report should help the user understand the surrounding subsystem and retain the important implementation knowledge, not merely inventory modified files.
 
 This skill is for human understanding, not verification. Do not replace tests, screenshots, videos, logs, or other proof artifacts. If proof artifacts exist, link to them from the explanation.
 
-## Output
-
-Write one self-contained `.html` file with embedded CSS and any small JavaScript needed for navigation or lightweight interactions.
-
-Use a global path outside the repo so the artifact does not enter version control. The filename must start with today's date in `YYYY-MM-DD-` format so explanations sort by time.
-
-Example:
-
-```text
-/tmp/2026-07-02-explanation-<slug>.html
-```
-
-Return the absolute file path when done.
-
-## Required Sections
-
-Use one long page with section headers and a table of contents. Do not use tabs for the top-level structure.
+## Change-Mode Sections
 
 Include:
 
@@ -35,9 +21,9 @@ Include:
 - **Behavior And Proof:** Explain what should behave differently now. Link or cite tests, commands, screenshots, videos, traces, logs, or other proof artifacts when available. Clearly state anything not verified.
 - **Risks And Follow-Ups:** Call out important edge cases, residual risk, migration concerns, product decisions, or follow-up work.
 
-## Style
+## Change-Mode Style
 
-Write with clear narrative flow. The explanation should teach the change, not dump a diff summary.
+Write with clear narrative flow. Teach the change and its surrounding subsystem; do not dump a diff summary.
 
 Use:
 
@@ -54,7 +40,7 @@ Avoid:
 - pretending unverified behavior was tested,
 - copying large raw diffs into the page without explanation.
 
-## Diagrams
+## Change-Mode Diagrams
 
 Prefer a small number of reusable diagram families throughout the page.
 
@@ -67,18 +53,11 @@ Useful diagram types:
 
 Use normal HTML and CSS for diagrams. Do not use ASCII art.
 
-## Code Blocks
-
-Use `<pre>` tags for code blocks.
-
-If you use custom wrappers for code, ensure the CSS preserves line breaks with `white-space: pre` or `white-space: pre-wrap`. Before saving, scan code-block CSS and confirm whitespace preservation is present.
-
 ## Closeout
 
 Before reporting completion:
 
-1. Confirm the HTML file exists outside the repo.
-2. Confirm it has a date-prefixed filename.
-3. Confirm it includes the required sections.
-4. Confirm code blocks preserve whitespace.
-5. Return the absolute HTML path and mention any residual uncertainty.
+1. Complete the `/explain-report` closeout checks.
+2. Confirm the report includes the change-mode sections or clearly justified equivalents.
+3. Confirm changed behavior is separated from proof and from unverified expectations.
+4. Return the absolute HTML path and mention any residual uncertainty.

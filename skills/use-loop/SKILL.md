@@ -164,7 +164,7 @@ Artifacts: <ledger, patch, screenshot, run, or PR links>
 
 ## Reporting Protocol
 
-Use `/concise-report` for loop updates and final reports. Focus on the most important loop state, evidence, blockers, and next decisions; store detail in the ledger, proof artifacts, logs, `/explain-diff`, or follow-up answers.
+Use `/concise-report` for loop updates and final reports. Focus on the most important loop state, evidence, blockers, and next decisions; store important supporting understanding in `/explain-report` (`/explain-diff` for code changes), and store raw operational detail in the ledger, proof artifacts, logs, or follow-up answers.
 
 Keep reports short and structured:
 
@@ -200,7 +200,7 @@ Do not call a loop complete just because it stopped. Close it with:
 - final best result,
 - verifier evidence,
 - proof artifact paths and metadata when the affected surface is visual or interaction-based,
-- for substantial code changes where the caller needs to understand the implementation, invoke and use `/explain-diff` and include the generated HTML path,
+- when important accepted information should keep the user in the loop or teach them about the project, invoke `/explain-report` and include the HTML path; use `/explain-diff` for substantial code changes,
 - attempts kept and reverted,
 - stop reason,
 - residual risks,

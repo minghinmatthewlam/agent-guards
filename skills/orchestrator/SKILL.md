@@ -134,7 +134,7 @@ Gotchas:
 
 ## Worker Scope
 
-One primary deliverable per worker. Before spawning, count the distinct deliverables in the task; more than 2-3 means split it into multiple workers. Oversized scopes hurt two ways at once: the worker outgrows its context window mid-task (pi survives this by auto-compacting, but compaction is lossy summarization exactly when the worker most needs its own details — observed: a 5-deliverable worker hit 90% context in its polish phase), and work that could have run in parallel serializes inside one thread. Splitting is almost free — workers are cheap, and each split adds parallelism plus an independent report to review. Remember the worker also spends context on standing overhead (self-review passes, proof artifacts, explain-diff), so size the task for ~60% of the window, not 100%.
+One primary deliverable per worker. Before spawning, count the distinct deliverables in the task; more than 2-3 means split it into multiple workers. Oversized scopes hurt two ways at once: the worker outgrows its context window mid-task (pi survives this by auto-compacting, but compaction is lossy summarization exactly when the worker most needs its own details — observed: a 5-deliverable worker hit 90% context in its polish phase), and work that could have run in parallel serializes inside one thread. Splitting is almost free — workers are cheap, and each split adds parallelism plus an independent report to review. Remember the worker also spends context on standing overhead (self-review passes, proof artifacts, explain-report or explain-diff), so size the task for ~60% of the window, not 100%.
 
 Include a context budget line in every worker prompt ("wrap up with commits + report before ~70% context usage") and require granular commits as the worker goes — then even a worst-case failure loses only the final report, never the work.
 
@@ -151,8 +151,8 @@ Do not: <forbidden actions such as publish, push, destructive commands>.
 Success criteria: <evidence required before done>.
 Self-test: <expected proof lane; worker may add minimal tests/scripts/fixtures/browser or Computer Use checks needed to prove the goal unless forbidden>.
 Proof artifacts: <required screenshots/videos/traces/logs and where to save them; use "not needed" only with reason>.
-Explain diff: <for substantial code changes, invoke and use /explain-diff; return the HTML path, or "not needed" with reason>.
-Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 for every finding, blocker, risk, or option that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count.
+Explain report: <needed or not needed; if needed, name the mode, audience, questions it must answer, accepted evidence, and artifact path. Use /explain-diff for code changes>.
+Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-report or explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 for every finding, blocker, risk, or option that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count.
 ```
 
 Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes `/concise-report` status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
@@ -163,7 +163,9 @@ For UI, desktop, browser, animation, focus, scrolling, or multi-step interaction
 
 For new features or fixes without a useful existing proof lane, explicitly allow the worker to add minimal verification structure while implementing: focused tests, fixtures, scripts, browser automation, Computer Use smoke checks, or artifact capture. The worker should not stop at "no test exists" when it can create the self-test path itself.
 
-For substantial code changes that the caller needs to understand, tell the worker to invoke and use `/explain-diff` before final reporting. The worker should return the generated HTML path. Do not inline explain-diff instructions into the worker prompt.
+Use `/explain-report` when accepted information is important enough to keep the user in the loop and teach them about the project, or when research, architecture, decisions, audits, incidents, comparisons, or several accepted findings materially benefit from a durable HTML explanation. Importance, not raw task size, is the deciding factor; routine status remains in chat.
+
+For substantial code changes that the caller needs to understand, tell the worker to invoke `/explain-diff`, the Change-mode specialization. Do not ask every worker for separate HTML. Normally integrate and verify worker results first, then create one report from accepted findings. A single research or learning worker may create the report directly when HTML is its primary deliverable. Do not inline either skill's instructions into the worker prompt.
 
 Broad discovery tasks are allowed when the desired output is broad. Examples:
 
@@ -228,7 +230,7 @@ Before accepting a worker result:
 - Separate verified facts from inference.
 - Confirm claimed file edits, tests, links, or timestamps where practical.
 - For visual or interaction work, confirm the worker provided durable proof artifact paths and enough metadata to reopen them.
-- For substantial code changes, confirm the worker either returned an `/explain-diff` HTML path or gave a clear reason it was not needed.
+- When an explain report was required, confirm it was built from accepted evidence and returned a valid HTML path. For substantial code changes, confirm the worker either returned an `/explain-diff` path or gave a clear reason it was not needed.
 - For broad audits or discovery, check the response shape for every finding, then spot-check the highest-impact P0/P1 claims against the cited source before presenting them as accepted.
 - Fully verify any finding that will drive implementation delegation; otherwise label it as worker-reported or source-inferred.
 - Resolve conflicts between workers in the orchestrator thread.
@@ -242,7 +244,7 @@ When reporting worker output to the user, label the confidence level clearly:
 - **Worker-reported:** plausible worker result that has not been independently checked.
 - **Unverified / needs proof:** useful lead that requires follow-up, live surface proof, or implementation-specific verification.
 
-Use `/concise-report` for user-facing orchestration summaries. Summarize meaningful changes, accepted results, blockers, decisions, and next actions. Use P0/P1/P2 priority tags for every item that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count. Keep supporting worker detail in the worker thread, proof artifacts, explain-diff HTML, PRs, or ledgers.
+Use `/concise-report` for user-facing orchestration summaries. Summarize meaningful changes, accepted results, blockers, decisions, and next actions. Use P0/P1/P2 priority tags for every item that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count. Link one integrated `/explain-report` or `/explain-diff` artifact when important supporting understanding should remain available; keep raw worker detail in worker threads, proof artifacts, PRs, or ledgers.
 
 ## Gotchas
 
