@@ -1,4 +1,4 @@
 interface:
   display_name: "Explain Diff"
-  short_description: "Create rich HTML explanations of code changes"
+  short_description: "Create focused HTML explanations of code changes"
   default_prompt: "Explain this diff or PR as a self-contained HTML artifact."

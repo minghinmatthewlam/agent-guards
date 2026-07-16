@@ -30,7 +30,7 @@ Choose the mode without requiring the user to name it:
 - **Decision:** options, trade-offs, recommendation, assumptions, and decision criteria.
 - **Audit or incident:** findings, impact, timeline when relevant, evidence, remediation, and residual risk.
 - **System or architecture:** components, boundaries, ownership, data or control flow, and operational behavior.
-- **Change:** use `/explain-diff`, which applies this skill's shared rules plus code-change requirements.
+- **Change:** when this skill was invoked directly for a code change, switch to `/explain-diff`. When already following this skill from `/explain-diff`, continue with these shared rules and add its code-change requirements.
 
 Combine modes only when it improves the user's understanding. Do not create separate reports when one coherent report can cover the accepted material.
 
@@ -38,13 +38,13 @@ Combine modes only when it improves the user's understanding. Do not create sepa
 
 Write one self-contained `.html` file with embedded CSS and only small optional JavaScript for navigation or lightweight interaction. The page must remain readable without JavaScript.
 
-Default to a durable global path outside the repository:
+Use a durable global path when the user requested the artifact, the orchestrator designated it as the integrated report, or the report is intended as retained project knowledge:
 
 ```text
 ~/.codex/artifacts/reports/YYYY-MM-DD-<slug>.html
 ```
 
-Use `/tmp/YYYY-MM-DD-<slug>.html` only when the artifact is explicitly disposable. Create the parent directory when needed. Return the absolute path.
+Use `/tmp/YYYY-MM-DD-<slug>.html` for forward tests, exploratory or worker-local reports, and other disposable artifacts. Create the parent directory when needed. Return the absolute path.
 
 Adapt depth to the subject. Do not force a long report when a compact page is clearer.
 
@@ -87,7 +87,7 @@ Use `<pre>` for code or literal text. If custom wrappers are used, preserve line
 
 ## Relationship To Chat
 
-After creating the artifact, use `/concise-report` for the chat response. Include the status, result, every material decision item, the HTML path, decision needed, next action, and residual risk. Do not duplicate the report's supporting depth in chat.
+After creating the artifact, defer to `/concise-report` for the chat response and include the HTML path. Do not duplicate the report's supporting depth in chat.
 
 ## Closeout
 

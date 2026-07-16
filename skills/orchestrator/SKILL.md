@@ -151,7 +151,7 @@ Do not: <forbidden actions such as publish, push, destructive commands>.
 Success criteria: <evidence required before done>.
 Self-test: <expected proof lane; worker may add minimal tests/scripts/fixtures/browser or Computer Use checks needed to prove the goal unless forbidden>.
 Proof artifacts: <required screenshots/videos/traces/logs and where to save them; use "not needed" only with reason>.
-Explain report: <needed or not needed; if needed, name the mode, audience, questions it must answer, accepted evidence, and artifact path. Use /explain-diff for code changes>.
+Explain report: <needed or not needed under /explain-report's trigger policy; if needed, name the single report owner, mode, audience, questions, accepted evidence, and artifact path. Use /explain-diff for code changes>.
 Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-report or explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 for every finding, blocker, risk, or option that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count.
 ```
 
@@ -163,9 +163,9 @@ For UI, desktop, browser, animation, focus, scrolling, or multi-step interaction
 
 For new features or fixes without a useful existing proof lane, explicitly allow the worker to add minimal verification structure while implementing: focused tests, fixtures, scripts, browser automation, Computer Use smoke checks, or artifact capture. The worker should not stop at "no test exists" when it can create the self-test path itself.
 
-Use `/explain-report` when accepted information is important enough to keep the user in the loop and teach them about the project, or when research, architecture, decisions, audits, incidents, comparisons, or several accepted findings materially benefit from a durable HTML explanation. Importance, not raw task size, is the deciding factor; routine status remains in chat.
+Use `/explain-report` as the sole owner of report trigger policy. The orchestrator decides whether that policy applies after considering the accepted material and the user's need to stay oriented or learn the project.
 
-For substantial code changes that the caller needs to understand, tell the worker to invoke `/explain-diff`, the Change-mode specialization. Do not ask every worker for separate HTML. Normally integrate and verify worker results first, then create one report from accepted findings. A single research or learning worker may create the report directly when HTML is its primary deliverable. Do not inline either skill's instructions into the worker prompt.
+Designate exactly one report owner. Normally integrate and verify worker results first, then have the orchestrator or one report worker create one artifact from accepted findings. A single implementation, research, or learning worker may own `/explain-diff` or `/explain-report` when its prompt explicitly names HTML as a primary deliverable. All other workers return evidence only. Do not inline either skill's instructions into the worker prompt.
 
 Broad discovery tasks are allowed when the desired output is broad. Examples:
 
@@ -230,7 +230,7 @@ Before accepting a worker result:
 - Separate verified facts from inference.
 - Confirm claimed file edits, tests, links, or timestamps where practical.
 - For visual or interaction work, confirm the worker provided durable proof artifact paths and enough metadata to reopen them.
-- When an explain report was required, confirm it was built from accepted evidence and returned a valid HTML path. For substantial code changes, confirm the worker either returned an `/explain-diff` path or gave a clear reason it was not needed.
+- When the worker prompt designated that worker as report owner, confirm the artifact was built from accepted evidence and returned a valid path. Otherwise, accept evidence without requiring per-worker HTML and create the integrated report after verification when `/explain-report` policy calls for it.
 - For broad audits or discovery, check the response shape for every finding, then spot-check the highest-impact P0/P1 claims against the cited source before presenting them as accepted.
 - Fully verify any finding that will drive implementation delegation; otherwise label it as worker-reported or source-inferred.
 - Resolve conflicts between workers in the orchestrator thread.

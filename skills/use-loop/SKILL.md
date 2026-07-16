@@ -200,7 +200,7 @@ Do not call a loop complete just because it stopped. Close it with:
 - final best result,
 - verifier evidence,
 - proof artifact paths and metadata when the affected surface is visual or interaction-based,
-- when important accepted information should keep the user in the loop or teach them about the project, invoke `/explain-report` and include the HTML path; use `/explain-diff` for substantial code changes,
+- when the caller or worker prompt explicitly designates this loop as the single report owner, invoke `/explain-report` and include the HTML path; use `/explain-diff` for code changes,
 - attempts kept and reverted,
 - stop reason,
 - residual risks,
