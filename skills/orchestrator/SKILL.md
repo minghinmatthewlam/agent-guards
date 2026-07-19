@@ -38,11 +38,24 @@ Use `tool_search` to expose these tools when they are not already available:
 
 `create_thread` basics:
 
-- Use a project local target by default, especially for read-only investigation, planning, review, explanation, and normal same-branch app work.
-- Use a project worktree target only when isolation is useful: parallel edit-heavy workers, risky experiments, or tasks that should not touch the shared checkout.
+- Choose local versus worktree using Worktree lifecycle below; local is the default unless isolation is required.
 - Include model/thinking only when the task needs an override; otherwise inherit defaults.
 - After a successful creation, report the created thread id using the Codex App thread directive required by the host.
 - After starting a worker, immediately establish heartbeat supervision, including for short tasks, unless the user explicitly wants the current turn to stay open.
+
+### Worktree lifecycle
+
+Worktrees are isolation resources, not the default worker target.
+
+- Use the shared local checkout for read-only work and for one edit worker only when no other worker or live process owns it, its status is understood, and it is safe to mutate. Use one worktree per concurrent edit worker, risky experiment, conflicting branch, or task that needs an independently reviewable branch.
+- Before creating one, inspect `git worktree list --porcelain`. Reuse only a registered worktree owned by the same task, worker, and branch, with no active worker or process using it. Resume and follow-up work should normally reuse that worktree. Never reuse another active, unknown, or user-created worktree.
+- Let Codex App manage its own worktree location. Record and inspect the returned registered path immediately after creation; pause or steer the worker if the result is wrong. For manually created Claude or pi worktrees, preallocate a short unique task id before creation, then use `~/.agents/worktrees/<repo-slug>/<task-slug>-<task-id>/` and a branch named `agent/<task-slug>-<task-id>`, where the repository slug is unique in the orchestration. Record the eventual worker thread or session id as its owner after spawn. Do not use the interactive `cmux-worktree.sh` convention or create new agent worktrees beside repositories under `~/dev`.
+- Record each worktree in orchestration status with its owner thread or session id, path, and purpose. Record the exact base commit for manually created or dependency-based worktrees, and report a retained reason at closeout.
+- Resolve the integration base explicitly and record its commit before manual creation. Use the current task branch, the verified default branch, or a predecessor worker branch according to the task dependency; never branch from ambiguous `HEAD` or silently change the base.
+- For manual Claude or pi worktrees, create and validate the worktree before spawning: verify its registered path, checked-out branch, and clean status, then launch the worker with cwd already set there.
+- Worker completion does not authorize cleanup. Remove an orchestrator-owned worktree only after its result is accepted, proof is stored outside it, no process or thread uses it, and all wanted changes are committed and integrated or otherwise preserved. Never discard uncommitted or unreachable work without explicit approval.
+- Remove with `git worktree remove <path>` without `--force`; never use `rm -rf`. When stale administrative records are suspected, inspect `git worktree prune --dry-run --verbose` before pruning them. Never remove or prune active or user-owned work based only on age.
+- At orchestration closeout, report retained and removed worktrees and why each retained worktree still exists.
 
 `read_thread` is the normal inspection mechanism. Worker threads do not return results directly to the caller and should not normally message the orchestrator thread. Use it for immediate spot checks, heartbeat wakeups, final result reads, and focused follow-up review.
 
@@ -95,7 +108,7 @@ Shell out via `Bash` with `run_in_background: true`. Requires pi >= 0.80, pi-goa
   - CRITICAL: the `-t` allowlist covers extension tools — it must include `create_goal,update_goal,get_goal,report_result` or the worker silently cannot run the goal loop or save its structured result. Omit `-t` entirely for trusted workers.
   - Model/thinking default from `~/.pi/agent/settings.json`; override per worker with `--model <provider/model[:thinking]>` / `--thinking low|medium|high|xhigh`.
   - Give each parallel worker its own working dir; use `--session-id <uuid>` (not `--no-session`) so follow-ups are possible.
-  - **Prepare the worker's directory BEFORE spawning** and launch with cwd already inside it (create the git worktree first, then spawn there). Never spawn in a protected checkout and tell the worker to "create and move into" a worktree — its early commands run in the wrong directory (observed: a worker mutated the main checkout's lockfile this way).
+  - **Follow Worktree lifecycle above. Prepare and validate the selected worker directory BEFORE spawning** and launch with cwd already inside it. Create a worktree first only when the lifecycle rules require isolation. Never spawn in a protected checkout and tell the worker to "create and move into" a worktree — its early commands run in the wrong directory (observed: a worker mutated the main checkout's lockfile this way).
   - **Require a fresh result path for every invocation.** Before spawning, require that `<worker-dir>/result.json` does not exist. Archive an accepted prior result elsewhere before a resume; never let a new invocation inherit an existing result file.
 - **Exit codes:** 0 = goal complete (or no goal); 4 = loop ended incomplete (blocked / budget_limited / usage_limited / --goal-max-turns cap). Use the exit code for initial triage, but never accept a worker without the validated structured result.
 - **Opt-in flags by task shape:** `--worker-heartbeat-file <hb.json>` for long tasks (stall detection: stale timestamp = hung); `--goal-state-file <gs.json>` for goal status + progress ledger on every change (tells you WHERE it is, not just that it's alive); `--goal-max-turns <n>` (default 50) to bound the loop; `token_budget` in create_goal for checkpoint-style review. The default structured-result flow uses the orchestrator skill's reusable `result.schema.json` with explicit `--result-schema` and `--result-file` paths.
@@ -129,7 +142,7 @@ Gotchas:
 - pi sessions PIN the model they were created with; resuming a session ignores later settings changes. When the default model or its billing is in flux, pass `--provider`/`--model` explicitly on every spawn — including resumes.
 - `--no-extensions` also unloads pi-worker/pi-goal, so `--result-schema`, `--result-file`, `--last-message-file`, `--worker-heartbeat-file`, `report_result`, and the goal tools disappear with it.
 - Multi-hour batch processes (eval matrices, deploys) should not run as harness-tracked background tasks — they can be reaped mid-run (observed twice in one evening). Launch them detached (`nohup`, pidfiles + logs to a known dir) and supervise via the cron heartbeat by output-count/pidfile, accepting that completion-push is lost. Better still, run them on an always-on box (laptop sleep kills detached processes too).
-- Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; use a git worktree per worker for true isolation on parallel edits. pi workers isolate by per-worker working dirs or a worktree.
+- Same-repo Claude workers share persistent memory and CLAUDE.md. Good for shared context; follow Worktree lifecycle for parallel edits. pi workers isolate by per-worker working dirs or a worktree.
 - Agent Teams is NOT the backend: teammates cannot spawn teammates, which breaks orchestrator to worker delegation.
 
 ## Worker Scope
@@ -236,7 +249,7 @@ Before accepting a worker result:
 - Resolve conflicts between workers in the orchestrator thread.
 - Ask follow-ups for missing evidence instead of filling gaps silently.
 - **Methodology-critical work gets orchestrator re-derivation, not spot-checks.** For measurement, metering, data schemas, accounting, comparability, or security — anything whose errors silently corrupt everything downstream — do not verify against the worker's own test artifacts: they share the worker's blind spot. Re-derive the claim from raw evidence yourself and run one independent probe the worker didn't design, chosen so the wrong interpretation and the right one produce different answers (observed: a worker's single-turn token probe passed its own tests while the parser undercounted multi-turn runs 16x; a orchestrator-designed multi-turn probe exposed it in minutes). The orchestrator usually runs a stronger model with fuller context than workers — verification is where that advantage pays, not implementation.
-- Before merging a worker branch, confirm nothing live is executing from the target checkout (a running eval/deploy mounts code from it; merging mid-run changes the thing being measured). Base successor workers' worktrees on the predecessor's branch so sequential merges don't conflict.
+- Before merging a worker branch, confirm nothing live is executing from the target checkout (a running eval/deploy mounts code from it; merging mid-run changes the thing being measured). Follow Worktree lifecycle when basing successor work on a predecessor branch.
 
 When reporting worker output to the user, label the confidence level clearly:
 
