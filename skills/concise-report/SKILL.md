@@ -7,6 +7,8 @@ description: "Communicate agent work concisely while keeping the human oriented,
 
 Human attention is the bottleneck. Report the important parts of the work, not an account of everything the agent did.
 
+When this skill is invoked for an ordinary human-facing Markdown response, begin with `## Concise Report` so its use is visible. Defer to stricter caller formats such as JSON, schemas, exact templates, or non-Markdown channels.
+
 Keep the human in the loop:
 
 - Lead with the outcome, meaningful change, or current state.
