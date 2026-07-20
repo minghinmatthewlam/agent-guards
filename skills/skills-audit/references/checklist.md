@@ -87,6 +87,17 @@ Does the skill have proper YAML frontmatter with name and description?
 - **Partial**: Has frontmatter but missing description
 - **Missing**: No frontmatter at all
 
+### 9. Context Efficiency
+Does each instruction prevent a real failure or materially improve behavior?
+
+Skills share model context with the user request, repository state, and other instructions. Trust capable agents with implementation details they can infer.
+
+- **Pass**: Concise shared guidance in `SKILL.md`; conditional, host-specific, or detailed operations load through references only when relevant
+- **Partial**: Useful content with repetition, model-obvious explanation, incident history that can become a rule, or backend details always loaded unnecessarily
+- **Missing**: The skill behaves like an exhaustive manual; important decisions are buried in material that rarely affects execution
+
+Do not impose a fixed line limit. Judge context cost against behavioral value and recommend progressive disclosure when it preserves useful detail without loading it every time.
+
 ---
 
 ## Claude-Specific Checks (`.claude/skills/` only)
