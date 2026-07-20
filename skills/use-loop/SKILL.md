@@ -166,18 +166,7 @@ Artifacts: <ledger, patch, screenshot, run, or PR links>
 
 Use `/concise-report` for loop updates and final reports. Focus on the most important loop state, evidence, blockers, and next decisions; store important supporting understanding in `/explain-report` (`/explain-diff` for code changes), and store raw operational detail in the ledger, proof artifacts, logs, or follow-up answers.
 
-Keep reports short and structured:
-
-```text
-Status: <running | blocked | done>
-Result: <current best or final result in 1-2 sentences>
-Evidence: <latest verifier, artifact paths, or "not verified">
-Decision needed: <only if needed>
-Next: <one action>
-Risk: <residual risk or "low">
-```
-
-Do not include exhaustive attempt logs in chat. Link the ledger when attempts matter.
+Include only the loop state, evidence, blocker, decision, next action, or residual risk that matters. Do not include exhaustive attempt logs in chat; link the ledger when attempts matter.
 
 ## Loop Types
 

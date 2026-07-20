@@ -41,7 +41,7 @@ Core workflow skills:
 | `plan-loop` | Hardens plans with parallel review before execution |
 | `review-loop` | Reviews completed changes with multiple agents before shipping |
 | `self-test` | Forces the agent to prove the real surface works before closing |
-| `concise-report` | Keeps agent updates focused and priority-aware |
+| `concise-report` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
 | `simplify` | Cleanup pass after implementation to remove unnecessary complexity |
 | `audit-loop` | Read-only investigation with cross-checking and confidence gates |
 | `autoreview` | Runs OpenClaw structured code review as the default closeout check |

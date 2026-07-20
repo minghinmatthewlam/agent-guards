@@ -1,4 +1,4 @@
 interface:
   display_name: "Concise Report"
-  short_description: "Focused, priority-aware agent updates"
-  default_prompt: "Use $concise-report to summarize this work with the most important points, evidence, and next decision."
+  short_description: "Concise, orienting reports focused on what matters"
+  default_prompt: "Use $concise-report to communicate the important outcome, evidence, learning, and anything needing my attention."

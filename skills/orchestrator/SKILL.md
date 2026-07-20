@@ -169,7 +169,7 @@ Success criteria: <evidence required before done>.
 Self-test: <expected proof lane; worker may add minimal tests/scripts/fixtures/browser or Computer Use checks needed to prove the goal unless forbidden>.
 Proof artifacts: <required screenshots/videos/traces/logs and where to save them; use "not needed" only with reason>.
 Explain report: <needed or not needed under /explain-report's trigger policy; if needed, name the single report owner, mode, audience, questions, accepted evidence, and artifact path. Use /explain-diff for code changes>.
-Return in this thread: use /concise-report. Include status, result, evidence/proof paths, files changed, explain-report or explain-diff path, blockers or decisions, next action, and residual risk. Use P0/P1/P2 for every finding, blocker, risk, or option that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count.
+Return in this thread: use /concise-report. Keep the orchestrator oriented to the outcome and include task-specific evidence, proof or report paths, changed files, blockers, decisions, next action, and residual risk when they matter. Use priorities only when they improve triage.
 ```
 
 Use `/use-loop` by default in worker prompts. The worker identifies the verifiable target, checks tool/self-test access, starts `/goal` or the harness goal tool for its assigned task, iterates until the target is met or blocked, and writes `/concise-report` status/blocker/final reports in its own thread. The orchestrator supervises by reading that thread and by maintaining heartbeat automation in the orchestrator thread.
@@ -248,7 +248,7 @@ Before accepting a worker result:
 - Confirm claimed file edits, tests, links, or timestamps where practical.
 - For visual or interaction work, confirm the worker provided durable proof artifact paths and enough metadata to reopen them.
 - When the worker prompt designated that worker as report owner, confirm the artifact was built from accepted evidence and returned a valid path. Otherwise, accept evidence without requiring per-worker HTML and create the integrated report after verification when `/explain-report` policy calls for it.
-- For broad audits or discovery, check the response shape for every finding, then spot-check the highest-impact P0/P1 claims against the cited source before presenting them as accepted.
+- For broad audits or discovery, check the response shape for every finding, then spot-check the highest-impact claims, especially any labeled P0/P1, against the cited source before presenting them as accepted.
 - Fully verify any finding that will drive implementation delegation; otherwise label it as worker-reported or source-inferred.
 - Resolve conflicts between workers in the orchestrator thread.
 - Ask follow-ups for missing evidence instead of filling gaps silently.
@@ -261,7 +261,7 @@ When reporting worker output to the user, label the confidence level clearly:
 - **Worker-reported:** plausible worker result that has not been independently checked.
 - **Unverified / needs proof:** useful lead that requires follow-up, live surface proof, or implementation-specific verification.
 
-Use `/concise-report` for user-facing orchestration summaries. Summarize meaningful changes, accepted results, blockers, decisions, and next actions. Use P0/P1/P2 priority tags for every item that materially affects what the user should do or believe; omit redundant or immaterial detail without imposing a fixed count. Link one integrated `/explain-report` or `/explain-diff` artifact when important supporting understanding should remain available; keep raw worker detail in worker threads, proof artifacts, PRs, or ledgers.
+Use `/concise-report` for user-facing orchestration summaries. Keep the human oriented to meaningful changes, accepted results, important project behavior, blockers, decisions, and next actions. Use priorities when they improve triage, not as required fields. Link one integrated `/explain-report` or `/explain-diff` artifact when important supporting understanding should remain available; keep raw worker detail in worker threads, proof artifacts, PRs, or ledgers.
 
 ## Gotchas
 
