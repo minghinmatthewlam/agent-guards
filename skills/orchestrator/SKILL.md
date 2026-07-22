@@ -46,6 +46,8 @@ Tell the worker:
 
 Trust workers to choose implementation details. Split work when outcomes can run independently or one worker would accumulate unrelated deliverables. Use one integrated `/explain-report` or `/explain-diff` owner only when its trigger policy applies; other workers return evidence.
 
+Give bounded workers a self-contained task contract and the minimum inherited conversation context. For Codex subagents, default to `fork_turns: "none"` or the smallest useful recent-turn count; use full history only when the worker genuinely needs it.
+
 ## Supervision Contract
 
 Every worker must have a supervision path established immediately after spawn:
