@@ -25,7 +25,7 @@ If that framing resonates, start with [`AGENTS.md`](AGENTS.md) and [`docs/agent-
 ## What You Get
 
 - `AGENTS.md`: one global guardrail file, symlinked to both Codex and Claude
-- `skills/`: reusable workflows like planning, self-test, review loops, CI repair, and iOS release work
+- `skills/`: reusable workflows like orchestration, self-test, code review, CI repair, and iOS release work
 - `commands/`: shared prompt files that work in both ecosystems
 - `scripts/sync.sh`: syncs guardrails, commands, and skills into the right user-level locations
 - `scripts/new-repo.sh`: bootstraps a fresh repo with repo verification scaffolding and optional repo-local `AGENTS.md` / `CLAUDE.md`
@@ -37,15 +37,11 @@ Core workflow skills:
 
 | Skill | What it does |
 |---|---|
-| `orchestrator` | Runs the full clarify -> plan -> implement -> simplify -> review flow with agent teams |
-| `plan-loop` | Hardens plans with parallel review before execution |
-| `review-loop` | Reviews completed changes with multiple agents before shipping |
+| `orchestrator` | Coordinates complex work across workers while keeping product context in the main session |
 | `self-test` | Forces the agent to prove the real surface works before closing |
 | `concise-report` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
 | `simplify` | Cleanup pass after implementation to remove unnecessary complexity |
-| `audit-loop` | Read-only investigation with cross-checking and confidence gates |
-| `autoreview` | Runs OpenClaw structured code review as the default closeout check |
-| `codex-review` | Runs Codex's built-in review command as an explicit fallback/comparison check |
+| `autoreview` | Runs OpenClaw structured code review for local changes, branches, commits, and PRs |
 | `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, learning, decisions, and accepted findings |
 | `explain-diff` | Applies explain-report's code-change mode for implementation understanding and handoff |
 

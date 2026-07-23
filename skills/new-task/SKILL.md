@@ -1,6 +1,6 @@
 ---
 name: new-task
-description: "Iteratively clarify requirements for a new task until reaching 90%+ confidence, then auto-invoke plan-loop."
+description: "Iteratively clarify requirements for a new task until reaching 90%+ confidence, then hand off a testable brief for planning or execution."
 ---
 
 # New Task
@@ -25,17 +25,16 @@ Keep iterating until confidence reaches 90%+.
 - Make questions concrete with examples when ambiguity is high.
 - Group related questions; don't repeat answered ones.
 
-## Transition to Planning
+## Transition
 
 Once confidence reaches 90%+:
 
 1. Explicitly call out the specific use cases and features you'll test end-to-end (`self-test`).
-2. **Use the Skill tool to invoke `plan-loop`** with the finalized requirements and e2e test targets as context. Do NOT plan on your own — `plan-loop` uses multi-agent research, dual-model review, structured verification design, and `self-test` integration that ad-hoc planning skips.
-
-If `plan-loop` is unavailable, tell the user and stop — do not substitute your own planning.
+2. Return the finalized requirements, assumptions, success criteria, and test targets as a compact implementation brief.
+3. Continue with the host's normal planning or execution workflow when the user has authorized implementation.
 
 ## Gotchas
 
-- **The #1 failure mode:** agent reaches 90% confidence and starts planning/implementing directly instead of invoking `plan-loop` via the Skill tool. This defeats the entire purpose of `new-task` — the value is the structured handoff, not just the clarification.
+- Do not let the transition discard decisions made during clarification.
 - Don't inflate confidence to reach 90% faster. If key questions remain, stay in the loop.
 - Don't ask questions the user already answered in earlier rounds.
