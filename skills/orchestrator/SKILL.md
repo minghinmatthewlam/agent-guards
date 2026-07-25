@@ -38,15 +38,16 @@ Continue until the requested outcome is accepted or a real blocker requires the 
 Tell the worker:
 
 - the specific goal and why it matters;
+- the relevant starting commit or ref and working-tree state when conclusions depend on repository state;
 - allowed edits and forbidden actions;
 - success criteria and the highest-signal self-test surface;
 - required proof artifacts and where they should live;
 - the expected result: outcome, important evidence, changed files, blockers, decisions, and residual risk;
 - to use `/use-loop` and wrap up before context exhaustion.
 
-Trust workers to choose implementation details. Split work when outcomes can run independently or one worker would accumulate unrelated deliverables. Use one integrated `/explain-report` owner only when its trigger policy applies; other workers return evidence.
+Trust workers to choose implementation details. Split work when outcomes can run independently or one worker would accumulate unrelated deliverables. Give concurrent implementation workers disjoint write scopes and integrate shared files centrally. Use one integrated `/explain-report` owner only when its trigger policy applies; other workers return evidence.
 
-Give bounded workers a self-contained task contract and the minimum inherited conversation context. For Codex subagents, default to `fork_turns: "none"` or the smallest useful recent-turn count; use full history only when the worker genuinely needs it.
+Give bounded workers a self-contained task contract and the minimum inherited conversation context. For Codex subagents, use `fork_turns: "none"` for independent research or review, the smallest useful recent-turn count when task history matters, and full history only when genuinely necessary. Reuse the same worker when implementation directly follows its audit or prior reasoning remains important.
 
 ## Supervision Contract
 
@@ -56,7 +57,7 @@ Every worker must have a supervision path established immediately after spawn:
 - **Claude/Pi:** `/loop` checks process state and `hb.json`, not the transcript.
 - **Cursor:** use native agent-window status and completion signals. Add fallback monitoring only for detached shell work.
 
-Keep checks cheap and adaptive. Report only meaningful changes, blockers, or final completion. Do not repeatedly ingest worker histories or streams. Stop and delete fallback supervision after every tracked result is accepted.
+Keep checks cheap and adaptive. Report only meaningful changes, blockers, or final completion. Do not repeatedly ingest worker histories or streams. After accepting a result, remove its supervision and promptly archive or terminate worker resources that are no longer needed.
 
 Treat a quiet active worker as working unless status, heartbeat age, process state, or a task-specific timeout shows otherwise. Steer only for new user context, an explicit blocker, incorrect scope, or concrete stall evidence.
 
