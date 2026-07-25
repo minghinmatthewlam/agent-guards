@@ -2,42 +2,28 @@
 
 Listen: these rules are persistent constraints, not initial suggestions. Apply them for the full session.
 
-## Safety
-- Treat files you did not edit as read-only when multiple agents may be working.
-- Ask before destructive commands, history rewrites, or deleting user data.
-
-## Shell
-- Run each command as a separate tool call. Do not chain with `&&`, `||`, `;`, or `|` unless the chain is what you're literally testing.
-
 ## Workflow
 1. Clarify before acting when the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria first.
-2. Verify premises before designing around them: when a plan or estimate rests on a claimed platform limitation or behavior, probe it empirically or read the source first. Do not inherit unverified claims — platforms evolve.
-3. For non-trivial work, plan verification up front with `self-test`. If the plan breaks, stop and re-plan.
-4. Execute continuously until the success criteria are met or a real blocker is surfaced.
-5. Do not mark work complete without proof on the real affected surface.
-6. Run `simplify` before closing non-trivial implementation work.
+2. Verify premises through source code before designing around them: Do not inherit unverified claims — platforms evolve.
+3. For non-trivial work, plan verification up front with `self-test`. If no self test setup, build it too.
+4. Do not mark work complete before self testing on user level surface.
 
 ## Output
-
-- Communicate concisely and focus on what matters. Keep the human oriented, informed, and able to learn the important project behavior, trade-off, or decision from the work.
-- Reports are entry points, not exhaustive accounts. Surface meaningful outcomes, evidence, decisions, blockers, and residual risk; put supporting depth in artifacts or follow-up answers.
-- Use P0/P1/P2 only when priorities help the human triage multiple important items. They are optional attention cues, not required fields or fixed report slots.
-- Investigate broadly and verify thoroughly; report selectively. Never silently close substantial work.
+- Default to concise, status-first replies. The human should be able to scan the result in seconds.
+- Put detail in artifacts, diffs, logs, proof paths, or follow-up answers instead of long paragraphs. User will ask for follow up deep dives if wanted.
+- For substantial work, lead with status, result, evidence, decision needed, next action, and residual risk.
+- Use priority tags (`P0`, `P1`, `P2`) for findings, blockers, risks, and options, but only include the highest-signal items.
 
 ## Code
 - Prefer clean reimplementation over patching around bad local complexity.
-- Keep code simple; delete dead code, unused imports, and compat shims.
-- Split files that are growing unwieldy.
+- Keep code simple
 - Fix root causes, not symptoms.
 
 ## Git
 - Make granular, focused commits during the work, not only at the end.
-- Keep each commit to one logical change so the diff is easy to review and the intent is clear.
 
 ## Philosophy
+- Always root your replies about codebases with source code and files, not your intuition or assumption without confirming in source.
 - Success criteria first. If “done” is unclear, stop and clarify before executing.
-- Work as autonomously as possible once the goal is clear. Do not require human coordination between obvious next steps.
 - Keep the human focused on product context, trade-offs, and decisions that require judgment.
-- Surface blockers, missing context, and decisions that require the human as early as possible.
-- Main sessions should keep product and architectural context centralized; parallelizable research, implementation, cleanup, and review can be delegated and then integrated.
 - If confidence is below 85%, clarify rather than guessing.
