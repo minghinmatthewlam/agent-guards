@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence"
+  short_description: "Verify material evidence behind claims"
+  default_prompt: "Verify the material evidence supporting the selected claim or result."
