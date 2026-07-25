@@ -50,11 +50,8 @@ Task-specific skills:
 
 | Skill | What it does |
 |---|---|
-| `fix-ci` | Waits for checks, inspects failures, fixes issues, and loops until CI is green |
 | `ios-dev` | Simulator-first iOS development and debugging workflow |
 | `ios-release` | Preflight-gated TestFlight / App Store release workflow |
-| `mcporter` | Calls MCP tools via CLI without loading server schemas into context |
-| `oracle` | Bundles repo context for second-model consultation |
 | `skills-audit` | Audits a repo's skills against practical quality checks |
 
 ## Cross-Tool Sync Model

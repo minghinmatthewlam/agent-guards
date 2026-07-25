@@ -454,7 +454,7 @@ def build_prompt(repo: Path, target: str, target_ref: str | None, bundle: str, e
         {json.dumps(SCHEMA, indent=2)}
         - Do not modify files.
         - Do not invoke nested reviewers or review tools.
-        - Forbidden nested review commands include: codex review, autoreview, claude review, oracle review.
+        - Forbidden nested review commands include: codex review, autoreview, and claude review.
         - You may use read-only tools and web search to inspect files, dependency contracts, upstream docs, current behavior, and security implications.
         - Shell commands, if available, must be read-only inspection commands. Do not run tests, formatters, package installs, generators, network mutation commands, git mutation commands, or commands that write files.
         - Report only actionable defects introduced or exposed by this change.
