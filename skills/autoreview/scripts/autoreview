@@ -18,6 +18,8 @@ from typing import Any, Callable
 
 
 ENGINES = ("codex", "claude", "droid", "copilot")
+PRIORITIES = ("P0", "P1", "P2", "P3")
+PRIORITY_RANK = {priority: index for index, priority in enumerate(PRIORITIES)}
 THINKING_LEVELS_BY_ENGINE = {
     "codex": {"low", "medium", "high", "xhigh"},
     "claude": {"low", "medium", "high", "xhigh", "max"},
@@ -52,7 +54,7 @@ SCHEMA: dict[str, Any] = {
                 "properties": {
                     "title": {"type": "string", "minLength": 1, "maxLength": 140},
                     "body": {"type": "string", "minLength": 1, "maxLength": 2000},
-                    "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+                    "priority": {"type": "string", "enum": list(PRIORITIES)},
                     "confidence": {"type": "number", "minimum": 0, "maximum": 1},
                     "category": {
                         "type": "string",
@@ -457,6 +459,13 @@ def build_prompt(repo: Path, target: str, target_ref: str | None, bundle: str, e
         - Shell commands, if available, must be read-only inspection commands. Do not run tests, formatters, package installs, generators, network mutation commands, git mutation commands, or commands that write files.
         - Report only actionable defects introduced or exposed by this change.
         - Prefer high-signal findings over style feedback.
+        - Assign priorities consistently:
+          P0 = immediate catastrophic risk such as exploitable compromise, irreversible data loss, or a universally broken release.
+          P1 = likely user-facing correctness, security, or reliability failure that should block completion.
+          P2 = concrete but limited-impact defect, edge case, test gap, or maintainability risk that should remain visible but is normally advisory.
+          P3 = low-impact optional improvement; do not use it for style preferences or speculative hardening.
+        - Do not assume backward compatibility is required. Report a compatibility regression only when an existing public contract, supported consumer, documented migration guarantee, test, or explicit review context demonstrates it.
+        - Do not recommend fallback paths, dual implementations, compatibility shims, or migration code for hypothetical consumers. Prefer the simplest implementation that satisfies the demonstrated current contract.
         - Include security findings: injection, secret leaks, authz/authn bypass, path traversal, unsafe deserialization, unsafe filesystem or shell use, privacy leaks, and credential handling.
         - Do not reject legitimate functionality merely because it touches shell, filesystem, network, auth, or sensitive data. Report a security finding only when the patch creates a concrete exploitable risk, removes an important safety check, or lacks validation at a trust boundary.
         - For each finding, use the smallest file/line location that demonstrates the issue.
@@ -882,7 +891,7 @@ def validate_report(report: dict[str, Any], repo: Path, changed_paths: set[str],
         if not isinstance(body, str) or not body or len(body) > 2000:
             raise SystemExit(f"finding {index} has invalid body")
         priority = finding.get("priority")
-        if priority not in {"P0", "P1", "P2", "P3"}:
+        if priority not in PRIORITY_RANK:
             raise SystemExit(f"finding {index} has invalid priority: {priority}")
         if not number_in_range(finding.get("confidence")):
             raise SystemExit(f"finding {index} has invalid confidence")
@@ -911,12 +920,23 @@ def validate_report(report: dict[str, Any], repo: Path, changed_paths: set[str],
                 file=sys.stderr,
             )
             print(bounded_field(str(finding.get("body", "")), 500), file=sys.stderr)
-        report["findings"] = kept_findings
         if not kept_findings and report["overall_correctness"] == "patch is incorrect":
             note = f"Ignored {len(ignored_findings)} out-of-scope finding(s) outside the reviewed change."
             explanation = report["overall_explanation"].rstrip()
             report["overall_correctness"] = "patch is correct"
             report["overall_explanation"] = bounded_field(f"{explanation}\n\n{note}", 3000)
+    report["findings"] = sorted(
+        kept_findings,
+        key=lambda finding: (
+            PRIORITY_RANK[finding["priority"]],
+            -finding["confidence"],
+            finding["code_location"]["file_path"],
+            finding["code_location"]["line"],
+            finding["title"].lower(),
+        ),
+    )
+    if not report["findings"] and report["overall_correctness"] == "patch is incorrect":
+        raise SystemExit("review JSON marks patch incorrect without a discrete prioritized finding")
     haystack = finding_text.lower()
     for needle in required:
         if needle.lower() not in haystack:
@@ -927,10 +947,40 @@ def number_in_range(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and 0 <= value <= 1
 
 
-def print_report(report: dict[str, Any], *, label: str = "autoreview") -> None:
+def blocking_findings(report: dict[str, Any], fail_on: str) -> list[dict[str, Any]]:
+    threshold = PRIORITY_RANK[fail_on]
+    return [
+        finding
+        for finding in report["findings"]
+        if PRIORITY_RANK[finding["priority"]] <= threshold
+    ]
+
+
+def review_blocks(report: dict[str, Any], fail_on: str) -> bool:
+    if blocking_findings(report, fail_on):
+        return True
+    return not report["findings"] and report["overall_correctness"] == "patch is incorrect"
+
+
+def review_exit_code(
+    report: dict[str, Any],
+    *,
+    tests_status: int,
+    fail_on: str,
+    expect_findings: bool,
+) -> int:
+    if tests_status != 0:
+        return 1
+    if expect_findings:
+        return 0 if report["findings"] else 1
+    return 1 if review_blocks(report, fail_on) else 0
+
+
+def print_report(report: dict[str, Any], *, label: str = "autoreview", fail_on: str = "P1") -> None:
     findings = report["findings"]
+    blocking = blocking_findings(report, fail_on)
     if findings:
-        print(f"{label} findings: {len(findings)}")
+        print(f"{label} findings: {len(findings)} ({len(blocking)} blocking at {fail_on} or higher)")
     elif report["overall_correctness"] == "patch is incorrect":
         print(f"{label} verdict: patch is incorrect without discrete findings")
     else:
@@ -941,7 +991,9 @@ def print_report(report: dict[str, Any], *, label: str = "autoreview") -> None:
         print(f"{loc['file_path']}:{loc['line']}")
         print(f"{finding['body']}")
         print()
-    print(f"overall: {report['overall_correctness']} ({report['overall_confidence']})")
+    threshold_result = "fail" if review_blocks(report, fail_on) else "pass"
+    print(f"threshold: {threshold_result} (--fail-on {fail_on})")
+    print(f"reviewer verdict: {report['overall_correctness']} ({report['overall_confidence']})")
     print(report["overall_explanation"])
 
 
@@ -1014,10 +1066,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--require-finding", action="append", default=[], help="Require finding text to contain this substring.")
     parser.add_argument("--expect-findings", action="store_true", help="Treat findings as success; for harness acceptance tests.")
+    parser.add_argument(
+        "--fail-on",
+        choices=PRIORITIES,
+        default=os.environ.get("AUTOREVIEW_FAIL_ON", "P1"),
+        help="Exit nonzero when this priority or higher is reported. Default: P1.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     if args.engine not in ENGINES:
         raise SystemExit(f"invalid --engine/AUTOREVIEW_ENGINE: {args.engine}")
+    if args.fail_on not in PRIORITY_RANK:
+        raise SystemExit(f"invalid --fail-on/AUTOREVIEW_FAIL_ON: {args.fail_on}")
     return args
 
 
@@ -1125,7 +1185,7 @@ def run_reviewer(args: argparse.Namespace, repo: Path, prompt: str, changed_path
 
 def merge_panel_reports(reports: list[tuple[str, dict[str, Any]]]) -> dict[str, Any]:
     findings: list[dict[str, Any]] = []
-    seen: set[tuple[str, int, str, str]] = set()
+    index_by_key: dict[tuple[str, int, str, str], int] = {}
     for label, report in reports:
         for finding in report["findings"]:
             location = finding["code_location"]
@@ -1135,12 +1195,18 @@ def merge_panel_reports(reports: list[tuple[str, dict[str, Any]]]) -> dict[str, 
                 finding["category"],
                 " ".join(finding["title"].lower().split()),
             )
-            if key in seen:
-                continue
-            seen.add(key)
             merged = copy.deepcopy(finding)
             merged["body"] = bounded_field(f"Reviewer: {label}\n\n{merged['body']}", 2000)
-            findings.append(merged)
+            existing_index = index_by_key.get(key)
+            if existing_index is None:
+                index_by_key[key] = len(findings)
+                findings.append(merged)
+                continue
+            existing = findings[existing_index]
+            candidate_rank = (PRIORITY_RANK[merged["priority"]], -merged["confidence"])
+            existing_rank = (PRIORITY_RANK[existing["priority"]], -existing["confidence"])
+            if candidate_rank < existing_rank:
+                findings[existing_index] = merged
     incorrect = bool(findings) or any(report["overall_correctness"] == "patch is incorrect" for _, report in reports)
     summary = ", ".join(f"{label}: {len(report['findings'])} finding(s)" for label, report in reports)
     return {
@@ -1232,20 +1298,19 @@ def main() -> int:
             original_stdout = sys.stdout
             with Path(args.output).open("w") as handle:
                 sys.stdout = Tee(original_stdout, handle)
-                print_report(report, label=label)
+                print_report(report, label=label, fail_on=args.fail_on)
                 sys.stdout = original_stdout
         else:
-            print_report(report, label=label)
+            print_report(report, label=label, fail_on=args.fail_on)
     finally:
         tests_status = finish_parallel_tests(*tests_proc) if tests_proc else 0
 
-    has_findings = bool(report["findings"])
-    overall_incorrect = report["overall_correctness"] == "patch is incorrect"
-    if tests_status != 0:
-        return 1
-    if args.expect_findings:
-        return 0 if has_findings else 1
-    return 1 if has_findings or overall_incorrect else 0
+    return review_exit_code(
+        report,
+        tests_status=tests_status,
+        fail_on=args.fail_on,
+        expect_findings=args.expect_findings,
+    )
 
 
 class Tee:

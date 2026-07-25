@@ -148,7 +148,7 @@ After changes:
 
 ```bash
 ./scripts/validate-skills.sh
-python3 -m py_compile skills/autoreview/scripts/autoreview skills/autoreview/scripts/test-review-harness.py
+python3 -m py_compile skills/autoreview/scripts/autoreview skills/autoreview/scripts/test-autoreview-unit.py skills/autoreview/scripts/test-review-harness.py
 bash -n skills/autoreview/scripts/test-review-harness
 ./scripts/sync.sh --dry-run
 ./scripts/sync.sh
