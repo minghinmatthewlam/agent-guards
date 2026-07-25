@@ -24,7 +24,7 @@ Agents are capable of figuring out complex paths on their own. The human's job i
 
 - **Plan for self-test, not just implementation.** A good plan includes how the agent will verify the work end-to-end, what tools or access are required, and what blockers must be resolved before coding.
 - **Confidence thresholds.** Prefer correctness over speed. Keep working until confident (85%+). Don't ship uncertain work.
-- **Simplify before final review.** Agents tend to overcomplicate solutions and inherit bad local patterns. After implementation, run `simplify` before the final review loop on non-trivial changes.
+- **Prefer simple solutions.** Agents tend to overcomplicate solutions and inherit bad local patterns. Review the actual change for unnecessary complexity, but fix only material issues rather than adding broad cleanup or compatibility work.
 - **Human attention is the bottleneck.** Agents can produce more work than a human can review line by line. Reports should keep the human in the loop by leading with the most important points, evidence, decisions, and residual risks; deeper detail can live in artifacts or follow-up answers.
 - **Reports are entry points, not accounts.** The human reads the most important points, then asks follow-up questions to go deeper. Agents write for that flow: surface what changes the human's next move, make it obvious what can be drilled into, and let the human pull the depth they want. Depth of investigation and depth of reporting are separate concerns — research broadly, report selectively.
 - **Priority cues when useful.** Agents find too many things — focus on what matters. Use priority cues when they help humans triage multiple important findings, blockers, risks, or options.
@@ -83,7 +83,7 @@ No custom documentation frameworks. Use built-in mechanisms.
 4. Human steers product decisions; agents do the rest
 5. Tools + success criteria > step-by-step guidance
 6. Auto-chain steps; minimize human handoffs
-7. Main session orchestrates; agent teams research, implement, simplify, and review
+7. Main session orchestrates; agent teams research, implement, refine, and review
 8. Correctness over speed; prioritize outputs
 9. No frameworks — use built-in mechanisms
 10. Self-correcting rules over static snapshots

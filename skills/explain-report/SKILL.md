@@ -30,7 +30,7 @@ Choose the mode without requiring the user to name it:
 - **Decision:** options, trade-offs, recommendation, assumptions, and decision criteria.
 - **Audit or incident:** findings, impact, timeline when relevant, evidence, remediation, and residual risk.
 - **System or architecture:** components, boundaries, ownership, data or control flow, and operational behavior.
-- **Change:** when this skill was invoked directly for a code change, switch to `/explain-diff`. When already following this skill from `/explain-diff`, continue with these shared rules and add its code-change requirements.
+- **Change:** background, the core intuition, code grouped by behavior, changed behavior and proof, and important risks or follow-ups. Explore enough surrounding code to teach the subsystem rather than merely inventorying files. Separate verified behavior from expected but unverified behavior.
 
 Combine modes only when it improves the user's understanding. Do not create separate reports when one coherent report can cover the accepted material.
 
@@ -73,6 +73,8 @@ Choose the smallest useful visual:
 - a simplified system or UI representation when spatial relationships matter.
 
 Use normal semantic HTML and CSS. Avoid ASCII diagrams, decorative dashboards, quizzes, excessive cards, top-level tabs, and visuals that merely repeat prose. Prefer a table of contents for longer pages and `<details>` for optional supporting depth.
+
+For Change mode, prefer a small before/after, data-flow, sequence, or simplified UI visual when it materially clarifies the implementation. Use concrete examples or toy data where helpful; do not paste a large raw diff in place of explanation.
 
 Make the artifact:
 

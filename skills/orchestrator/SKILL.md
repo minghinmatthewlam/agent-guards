@@ -44,7 +44,7 @@ Tell the worker:
 - the expected result: outcome, important evidence, changed files, blockers, decisions, and residual risk;
 - to use `/use-loop` and wrap up before context exhaustion.
 
-Trust workers to choose implementation details. Split work when outcomes can run independently or one worker would accumulate unrelated deliverables. Use one integrated `/explain-report` or `/explain-diff` owner only when its trigger policy applies; other workers return evidence.
+Trust workers to choose implementation details. Split work when outcomes can run independently or one worker would accumulate unrelated deliverables. Use one integrated `/explain-report` owner only when its trigger policy applies; other workers return evidence.
 
 Give bounded workers a self-contained task contract and the minimum inherited conversation context. For Codex subagents, default to `fork_turns: "none"` or the smallest useful recent-turn count; use full history only when the worker genuinely needs it.
 

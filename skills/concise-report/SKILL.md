@@ -18,4 +18,4 @@ Keep the human in the loop:
 - Agents work a lot faster and output a lot more than humans have attention or can read, so keep in mind prioritization, and emphasizing helping human keep in the loop and learn most important points/decisions.
 - User will ask follow up questions for deeper dives when needed
 
-Investigate broadly and verify thoroughly; report selectively. Put supporting depth in artifacts or provide it when asked. When `/explain-report` or `/explain-diff` produced an HTML artifact, link it and keep chat focused on the outcome and anything requiring attention.
+Investigate broadly and verify thoroughly; report selectively. Put supporting depth in artifacts or provide it when asked. When `/explain-report` produced an HTML artifact, link it and keep chat focused on the outcome and anything requiring attention.

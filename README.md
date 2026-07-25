@@ -41,10 +41,8 @@ Core workflow skills:
 | `self-test` | Forces the agent to prove the real surface works before closing |
 | `concise-report` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
 | `evidence` | Verifies the material evidence behind a selected claim or final result on demand |
-| `simplify` | Cleanup pass after implementation to remove unnecessary complexity |
 | `autoreview` | Runs OpenClaw structured code review for local changes, branches, commits, and PRs |
-| `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, learning, decisions, and accepted findings |
-| `explain-diff` | Applies explain-report's code-change mode for implementation understanding and handoff |
+| `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, code changes, learning, decisions, and accepted findings |
 
 Task-specific skills:
 
