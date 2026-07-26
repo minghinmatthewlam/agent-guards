@@ -14,7 +14,7 @@ The main session owns product context, task decomposition, supervision, integrat
 Keep host mechanisms separate:
 
 - **Codex:** use native subagents.
-- **Claude Code:** use native subagents. Use [headless Pi workers](references/claude-pi.md) only when explicitly requested or detached schema-bound execution is required.
+- **Claude Code:** use native subagents, with [headless Pi workers](references/claude-pi.md) as the fallback when native subagents are unavailable or unsuitable.
 - **Cursor:** use Cursor's native worker/subagent capabilities from the IDE or agent window, with **Grok 4.5 High** as the default worker model. Trust Cursor's built-in orchestration rather than adding CLI wrappers.
 
 Do not mix host mechanisms unless the user explicitly wants cross-host work.
