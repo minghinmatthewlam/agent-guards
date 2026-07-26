@@ -1,0 +1,6 @@
+interface:
+  display_name: "Learn From Mistake"
+  short_description: "Prevent a model mistake from recurring"
+  default_prompt: "Use $learn-from-mistake to diagnose this failure, improve the setup, and verify the prevention before retrying."
+policy:
+  allow_implicit_invocation: false
