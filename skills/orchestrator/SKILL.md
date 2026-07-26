@@ -13,8 +13,8 @@ The main session owns product context, task decomposition, supervision, integrat
 
 Keep host mechanisms separate:
 
-- **Codex App:** use native Codex App worker threads. Read [references/codex-app.md](references/codex-app.md) before spawning.
-- **Claude Code:** use headless Pi workers. Read [references/claude-pi.md](references/claude-pi.md) before spawning.
+- **Codex:** use native collaboration subagents. Read [references/codex-subagents.md](references/codex-subagents.md) before spawning.
+- **Claude Code:** use native `Agent` subagents. Read [references/claude-subagents.md](references/claude-subagents.md) before spawning. Use [headless Pi workers](references/claude-pi.md) only when explicitly requested or when detached external execution with a structured result file is required.
 - **Cursor:** use Cursor's native worker/subagent capabilities from the IDE or agent window, with **Grok 4.5 High** as the default worker model. Trust Cursor's built-in orchestration rather than adding CLI wrappers.
 
 Do not mix host mechanisms unless the user explicitly wants cross-host work.
@@ -53,11 +53,11 @@ Give bounded workers a self-contained task contract and the minimum inherited co
 
 Every worker must have a supervision path established immediately after spawn:
 
-- **Codex App:** heartbeat automation wakes the orchestrator and checks the worker with `read_thread`.
-- **Claude/Pi:** `/loop` checks process state and `hb.json`, not the transcript.
+- **Codex:** use native agent status, mailbox updates, and bounded waits.
+- **Claude Code:** use `Agent` results and `/tasks` for background subagents.
 - **Cursor:** use native agent-window status and completion signals. Add fallback monitoring only for detached shell work.
 
-Keep checks cheap and adaptive. Report only meaningful changes, blockers, or final completion. Do not repeatedly ingest worker histories or streams. After accepting a result, remove its supervision and promptly archive or terminate worker resources that are no longer needed.
+Keep checks cheap and adaptive. Report only meaningful changes, blockers, or final completion. Do not repeatedly ingest worker histories or streams. Detached external workers require their own liveness and completion monitoring; remove that monitoring after acceptance.
 
 Treat a quiet active worker as working unless status, heartbeat age, process state, or a task-specific timeout shows otherwise. Steer only for new user context, an explicit blocker, incorrect scope, or concrete stall evidence.
 
@@ -88,4 +88,5 @@ Use `/concise-report` to keep the human oriented to meaningful outcomes, evidenc
 - Do not over-steer active workers.
 - Do not let worker confidence replace real-surface proof.
 - Do not reuse unknown, active, or user-owned worktrees.
+- Do not create user-visible tasks when a bounded native subagent is sufficient.
 - Detached background jobs need their own liveness and completion monitoring.

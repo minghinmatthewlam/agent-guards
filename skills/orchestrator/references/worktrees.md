@@ -7,8 +7,8 @@ Worktrees are isolation resources, not the default worker target.
 - Use the shared checkout for read-only work and one safe edit worker when no other worker or live process owns it and its status is understood.
 - Use a worktree for concurrent editors, risky experiments, conflicting branches, or independently reviewable work.
 - Inspect `git worktree list --porcelain` before creating one. Reuse only a registered worktree owned by the same task and branch with no active user or process.
-- Let Codex App manage its own worktree location.
-- For manual Claude/Pi worktrees, preallocate a task id and use `<repo>/.worktrees/<task>-<id>/` with branch `agent/<task>-<id>`.
+- For native Codex or Claude subagents, create and validate any required worktree before spawning, then give the worker its exact path.
+- For manual subagent or Pi worktrees, preallocate a task id and use `<repo>/.worktrees/<task>-<id>/` with branch `agent/<task>-<id>`.
 - Resolve and record the exact integration-base commit before manual creation. Use the task branch, verified default branch, or predecessor branch according to dependency.
 
 Before the first repo-local worktree, ensure `/.worktrees/` exists in the local exclude file returned by `git rev-parse --git-path info/exclude`. Do not change committed `.gitignore` only for agent infrastructure.
