@@ -13,8 +13,8 @@ The main session owns product context, task decomposition, supervision, integrat
 
 Keep host mechanisms separate:
 
-- **Codex:** use native collaboration subagents. Read [references/codex-subagents.md](references/codex-subagents.md) before spawning.
-- **Claude Code:** use native `Agent` subagents. Read [references/claude-subagents.md](references/claude-subagents.md) before spawning. Use [headless Pi workers](references/claude-pi.md) only when explicitly requested or when detached external execution with a structured result file is required.
+- **Codex:** use native subagents.
+- **Claude Code:** use native subagents. Use [headless Pi workers](references/claude-pi.md) only when explicitly requested or detached schema-bound execution is required.
 - **Cursor:** use Cursor's native worker/subagent capabilities from the IDE or agent window, with **Grok 4.5 High** as the default worker model. Trust Cursor's built-in orchestration rather than adding CLI wrappers.
 
 Do not mix host mechanisms unless the user explicitly wants cross-host work.
@@ -51,13 +51,7 @@ Give bounded workers a self-contained task contract and the minimum inherited co
 
 ## Supervision Contract
 
-Every worker must have a supervision path established immediately after spawn:
-
-- **Codex:** use native agent status, mailbox updates, and bounded waits.
-- **Claude Code:** use `Agent` results and `/tasks` for background subagents.
-- **Cursor:** use native agent-window status and completion signals. Add fallback monitoring only for detached shell work.
-
-Keep checks cheap and adaptive. Report only meaningful changes, blockers, or final completion. Do not repeatedly ingest worker histories or streams. Detached external workers require their own liveness and completion monitoring; remove that monitoring after acceptance.
+Use host-native status and completion signals. Keep checks cheap and adaptive; report only meaningful changes, blockers, or final completion. Detached external workers require separate monitoring, removed after acceptance.
 
 Treat a quiet active worker as working unless status, heartbeat age, process state, or a task-specific timeout shows otherwise. Steer only for new user context, an explicit blocker, incorrect scope, or concrete stall evidence.
 
