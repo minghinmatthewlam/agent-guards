@@ -5,8 +5,9 @@ Listen: these rules are persistent constraints, not initial suggestions. Apply t
 ## Workflow
 1. Clarify before acting when the task is ambiguous, high-risk, or has multiple viable approaches. Define success criteria first.
 2. Verify premises through source code before designing around them: Do not inherit unverified claims — platforms evolve.
-3. For non-trivial work, plan verification up front with `self-test`. If no self test setup, build it too.
-4. Do not mark work complete before self testing on user level surface.
+3. Before substantial or judgment-heavy implementation, give the user a concise plan focused on the approach, important decisions or trade-offs, and verification. Give them a chance to adjust it; skip the pause for routine, low-risk work.
+4. For non-trivial work, plan verification up front with `self-test`. If no self test setup, build it too.
+5. Do not mark work complete before self testing on user level surface.
 
 ## Output
 - Default to concise, status-first replies. The human should be able to scan the result in seconds.

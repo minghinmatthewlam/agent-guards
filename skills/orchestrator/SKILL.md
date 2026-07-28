@@ -13,7 +13,7 @@ The main session owns product context, task decomposition, supervision, integrat
 
 Keep host mechanisms separate:
 
-- **Codex:** use native subagents.
+- **Codex:** use native subagents for bounded work. When the user approves and work needs durable context isolation, an independent lifecycle, or follow-up across turns, use a separate Codex task managed through the pinned project orchestrator. The orchestrator remains the user's interface: send messages, surface questions and meaningful progress, integrate results, and archive completed tasks.
 - **Claude Code:** use native subagents, with [headless Pi workers](references/claude-pi.md) as the fallback when native subagents are unavailable or unsuitable.
 - **Cursor:** use Cursor's native worker/subagent capabilities from the IDE or agent window, with **Grok 4.5 High** as the default worker model. Trust Cursor's built-in orchestration rather than adding CLI wrappers.
 
@@ -29,7 +29,7 @@ If edit isolation is needed, read [references/worktrees.md](references/worktrees
 4. Give each worker the task contract below.
 5. Arm supervision immediately after spawning.
 6. Review the result and claimed evidence; follow up on the same worker when context should be preserved.
-7. Independently verify in proportion to risk, integrate centrally, and report with `/concise-report`.
+7. Independently verify in proportion to risk, integrate centrally, and report with `/concisely`.
 
 Continue until the requested outcome is accepted or a real blocker requires the user. Creating workers is not completion.
 
@@ -74,7 +74,7 @@ Label results when the distinction matters:
 
 ## Reporting
 
-Use `/concise-report` to keep the human oriented to meaningful outcomes, evidence, project learning, decisions, blockers, next actions, and residual risk. Keep raw detail in worker threads, proof artifacts, PRs, or ledgers.
+Use `/concisely` to keep the human oriented to meaningful outcomes, evidence, project learning, decisions, blockers, next actions, and residual risk. Keep raw detail in worker threads, proof artifacts, PRs, or ledgers.
 
 ## Gotchas
 
@@ -82,5 +82,5 @@ Use `/concise-report` to keep the human oriented to meaningful outcomes, evidenc
 - Do not over-steer active workers.
 - Do not let worker confidence replace real-surface proof.
 - Do not reuse unknown, active, or user-owned worktrees.
-- Do not create user-visible tasks when a bounded native subagent is sufficient.
+- Do not create separate Codex tasks when a bounded native subagent is sufficient.
 - Detached background jobs need their own liveness and completion monitoring.

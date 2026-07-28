@@ -1,147 +1,56 @@
 ---
 name: ios-release
-description: "Run a preflight-gated iOS release workflow with asc for TestFlight and App Store: auth check, ID resolution, validation, blocker triage, then controlled publish/submit commands. Use when: (1) shipping to TestFlight, (2) preparing App Store submission, (3) diagnosing release blockers, (4) creating repeatable release playbooks."
+description: "Run a preflight-gated iOS release with asc for TestFlight or App Store delivery. Use when preparing, validating, publishing, submitting, diagnosing blockers, or creating a repeatable iOS release workflow."
 ---
 
-# iOS Release (ASC)
+# iOS Release
 
-## Goal
-Use one release skill for both TestFlight and App Store flows with a strict gate:
-- Phase A: read-only preflight
-- Phase B: mutating execution (only after explicit approval)
+Separate every release into read-only preflight and explicitly approved mutation.
 
-## Reference map (load only when needed)
-- `references/id-resolution-and-cli.md`: auth, output formats, ID lookup, pagination, timeouts.
-- `references/testflight-orchestration.md`: groups, testers, notes, distribution operations.
-- `references/submission-health.md`: encryption/compliance, metadata checks, submission error recovery.
-- `references/workflow-automation.md`: `.asc/workflow.json` validation and CI-safe automation.
+## Load Relevant References
 
-## Required inputs
-- `APP_ID`
-- `VERSION_ID` (for App Store validation/submission)
-- `BUILD_ID` (for TestFlight validation/submission)
-- IPA path for upload/publish flows
+- `references/id-resolution-and-cli.md`: authentication, IDs, output formats, pagination, and timeouts.
+- `references/testflight-orchestration.md`: groups, testers, notes, and distribution.
+- `references/submission-health.md`: compliance, metadata, validation, and submission recovery.
+- `references/workflow-automation.md`: `.asc/workflow.json` and CI-safe automation.
+- `references/publish-commands.md`: concrete TestFlight and App Store publish/submit commands.
 
-## Phase A: Preflight (read-only, default)
+Load only the references required for the selected route or blocker.
 
-### 0) Auth and environment health
-```bash
-asc auth status --verbose
-asc doctor
-```
+## Required State
 
-### 1) Resolve and verify release identifiers
-```bash
-asc apps list --limit 20 --output json
-asc versions list --app "<APP_ID>" --limit 20 --output json
-asc builds list --app "<APP_ID>" --limit 20 --output json
-asc testflight beta-groups list --app "<APP_ID>" --output json
-```
+Resolve and verify the app, version, build, intended route, artifact path, target groups, and current pipeline state. Prefer immutable IDs over names.
 
-### 2) Pipeline state snapshot
-```bash
-asc status --app "<APP_ID>" --output json
-asc review submissions-list --app "<APP_ID>" --limit 10 --output json
-```
+## Phase A: Preflight
 
-### 3) Validation gates
-TestFlight gate:
-```bash
-asc validate testflight --app "<APP_ID>" --build "<BUILD_ID>" --output json
-```
+1. Verify `asc` authentication and environment health.
+2. Resolve the exact app, version, build, and TestFlight groups.
+3. Inspect current version, build, review, and submission state.
+4. Run the route-specific validation.
+5. Stop on blockers and return exact remediation evidence.
 
-App Store gate:
-```bash
-asc validate --app "<APP_ID>" --version-id "<VERSION_ID>" --output json
-```
+Preflight is read-only. Do not upload, distribute, publish, submit, or confirm.
 
-If any validation returns blocking errors:
-- stop execution mode
-- return a prioritized blocker checklist
-- include the exact remediation command or ASC UI field for each blocker
-- if blockers involve encryption/content-rights/localizations, load `references/submission-health.md`
+## Phase B: Execute
 
-## Phase B: Execute (mutating; explicit approval required)
+Proceed only after explicit approval for the concrete release route and scope in the current session.
 
-### Route 1: TestFlight publish
-One-shot path:
-```bash
-asc publish testflight \
-  --app "<APP_ID>" \
-  --ipa "<PATH_TO_IPA>" \
-  --group "<GROUP_ID_OR_NAME>" \
-  --wait \
-  --output json
-```
+1. Reconfirm identifiers and artifact immediately before mutation.
+2. Run the narrowest approved publish or submit operation from `references/publish-commands.md`.
+3. Wait for processing when supported.
+4. Inspect resulting build, distribution, or submission state.
+5. Stop if validation changes or the command would broaden distribution.
 
-Optional notes and notifications:
-```bash
-asc publish testflight \
-  --app "<APP_ID>" \
-  --ipa "<PATH_TO_IPA>" \
-  --group "<GROUP_ID_OR_NAME>" \
-  --test-notes "<WHAT_TO_TEST>" \
-  --locale "en-US" \
-  --wait \
-  --notify \
-  --output json
-```
+## Gotchas
 
-If validation flags missing beta review fields, see `references/submission-health.md` for review detail recovery commands.
+- Authentication success does not prove release metadata is complete.
+- Names can be ambiguous or stale; resolve deterministic IDs.
+- Build processing, TestFlight validation, and App Store validation are different gates.
+- `--confirm` is a real submission boundary and always requires explicit approval.
+- Never hide blocker details behind a generic validation failure.
+- Validate `.asc/workflow.json` before relying on it in CI.
+- Verify current `asc` help when command syntax drifts.
 
-### Route 2: App Store publish and submission
-One-shot publish:
-```bash
-asc publish appstore \
-  --app "<APP_ID>" \
-  --ipa "<PATH_TO_IPA>" \
-  --version "<VERSION_STRING>" \
-  --wait \
-  --output json
-```
+## Closeout
 
-Publish and submit:
-```bash
-asc publish appstore \
-  --app "<APP_ID>" \
-  --ipa "<PATH_TO_IPA>" \
-  --version "<VERSION_STRING>" \
-  --wait \
-  --submit \
-  --confirm \
-  --output json
-```
-
-Manual submission path:
-```bash
-asc submit create \
-  --app "<APP_ID>" \
-  --version-id "<VERSION_ID>" \
-  --build "<BUILD_ID>" \
-  --confirm \
-  --output json
-
-asc submit status --version-id "<VERSION_ID>" --output json
-```
-
-If validation flags missing app review fields, see `references/submission-health.md` for review detail recovery commands.
-
-## Release checklist output format
-For each release run, return:
-- route (`testflight` or `appstore`)
-- identifiers used (`APP_ID`, `VERSION_ID`, `BUILD_ID`)
-- preflight status (pass/fail + blocker count)
-- executed mutating commands
-- resulting submission/build IDs
-- next manual step (if any)
-
-## Guardrails
-- Never run mutating commands in preflight mode.
-- Never submit (`--confirm`) without explicit user approval in the current session.
-- Prefer deterministic IDs over names when both are available.
-- Keep JSON output for machine-readability; use table only for quick human scans.
-- If `.asc/workflow.json` exists, validate before CI use:
-```bash
-asc workflow validate
-```
-- If a step needs details not in this file, load only the relevant reference file from this skill.
+Report the route, identifiers, artifact, preflight result, exact mutation performed, resulting state or IDs, blockers, and next manual action. Keep machine-readable JSON as evidence when available.

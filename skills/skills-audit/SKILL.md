@@ -1,108 +1,51 @@
 ---
 name: skills-audit
-description: "Audit agent skills in a repo against best practices — checks .claude/skills/ and .agents/skills/ for quality, structure, and coverage gaps. Use when the user wants to review, improve, or evaluate their skills, or when they mention skill quality, skill audit, or skill best practices."
+description: "Audit agent skills for triggering quality, correctness, context efficiency, redundancy, structure, failure guidance, and coverage gaps. Use when the user asks to review, improve, compare, simplify, or evaluate skills in global, repo-local, Claude, Codex, or custom skill paths."
 ---
 
 # Audit Skills
 
-Scan a repo's agent skills and audit them against field-tested best practices. Works across agent systems — Claude Code (`.claude/skills/`), Codex (`.agents/skills/`), or custom paths.
+Perform a read-only, evidence-backed audit of the requested skills. Default to decision-relevant findings, not an exhaustive ceremony.
 
-## What This Skill Does
+## Discover
 
-1. **Discover** all skills in the repo across agent systems
-2. **Classify** each skill into a known category (flag skills that straddle multiple)
-3. **Score** each skill against a quality checklist (agent-system-aware)
-4. **Identify gaps** — skill categories missing given what the repo actually contains
-5. **Output** a prioritized scorecard with specific, actionable recommendations
+Inspect the paths in scope, including when relevant:
 
-## Phase 1: Discover Skills
+- `~/.agents/skills/`, `~/.claude/skills/`, and `~/.claude/commands/`;
+- repo-local `.agents/skills/` and `.claude/skills/`;
+- custom paths named by the user.
 
-Search for skills in both user-level and project-level locations:
+Deduplicate synced or linked copies and identify the source of truth. Note agent system, folder resources, frontmatter, and broken links or scripts.
 
-**User-level (global installs):**
-- `~/.claude/skills/` — Claude Code skills
-- `~/.agents/skills/` — Codex / generic agent skills
-- `~/.claude/commands/` — Claude Code commands
+## Evaluate
 
-**Project-level (repo-local):**
-- `.claude/skills/` — Claude Code skills checked into the repo
-- `.agents/skills/` — Codex skills checked into the repo
+Read `references/checklist.md` and apply only relevant checks. Use `references/categories.md` when classification helps reveal mixed responsibilities or a repository-level coverage gap; do not force classification when it adds no decision value.
 
-Also check any custom paths the user provides. Deduplicate if the same skill appears in both locations.
+Prioritize:
 
-For each skill found, note:
-- Its agent system (claude, codex, generic)
-- Whether it's a single file or a folder with resources
-- The presence of frontmatter (name, description fields)
+- incorrect, stale, conflicting, or unsafe instructions;
+- duplicated guidance likely to drift;
+- always-loaded detail better routed through references or scripts;
+- weak trigger descriptions;
+- missing real-world failure guidance;
+- rigid procedures that prevent capable agents from adapting;
+- missing skills only when repository evidence shows repeated value.
 
-If no skills are found, tell the user and offer to help them create their first one.
+Numeric scores are optional comparison aids, not required output. Never penalize a short behavioral skill for lacking unnecessary resources.
 
-## Phase 2: Classify Each Skill
+## Report
 
-Assign each skill to one of the 9 categories in `references/categories.md`. Read that file for the full taxonomy.
+Use `concisely`. Include every material finding, ordered by impact, with exact file evidence and the smallest useful change. Group clean or low-priority skills rather than producing filler.
 
-**Classification signals:**
-- The skill name and description
-- What the skill body instructs the agent to do
-- What tools/scripts it references
-
-If a skill clearly straddles two categories, flag it — this is a smell. Good skills fit cleanly into one category. Suggest how to split or refocus.
-
-## Phase 3: Score Each Skill
-
-Apply the checklist from `references/checklist.md` to each skill. The checklist has two tiers:
-
-- **Universal checks** — apply to all skills regardless of agent system
-- **Claude-specific checks** — only apply to skills in `.claude/skills/`
-
-**Use judgment about applicability.** Not every check applies to every skill. The checklist has N/A options — use them. A 25-line behavioral skill shouldn't be penalized for lacking progressive disclosure or bundled scripts. A generic cross-repo skill shouldn't be penalized for "stating the obvious" when stating principles IS its purpose. Score only checks that are meaningful for that skill's purpose and size. The score denominator should reflect only the checks that apply (e.g., 5/6 if 2 checks were N/A out of 8).
-
-For each applicable check, score as:
-- **Pass** — the skill does this well
-- **Partial** — present but could be better (explain how)
-- **Missing** — not present (explain why it matters and how to add it)
-- **N/A** — check doesn't apply to this skill (doesn't count toward total)
-
-## Phase 4: Repo-Level Gap Analysis
-
-Look at the repo's actual contents to identify missing skill categories:
-
-- Has CI config (`.github/workflows/`, etc.) but no CI/CD skill?
-- Has a test suite but no verification skill?
-- Has internal libraries/SDKs but no library reference skill?
-- Has deployment scripts but no deployment skill?
-- Has data pipelines but no data fetching skill?
-
-Suggest the highest-value skills to create, prioritized by how much time they'd save.
-
-## Phase 5: Output the Scorecard
-
-Present findings as a prioritized scorecard. Structure:
-
-### Per-Skill Findings (ordered by priority)
-
-For each skill, show:
-- **Category**: which of the 9 types
-- **Agent system**: claude / codex / generic
-- **Score**: X/Y checks passing
-- **Top issues** (P1 first): what to fix and how, with specific suggestions
-
-### Repo-Level Gaps
-
-- Missing skill categories with rationale
-- Suggested new skills, ordered by estimated impact
-
-### Quick Wins
-
-Highest-impact changes to do first, including every change that materially affects what the human should do or believe about the repository.
+Distinguish observed evidence from inference. Do not impose a fixed findings count.
 
 ## Apply Mode
 
-If the user asks to fix/improve a specific skill, interactively apply the audit findings:
+Audit first. If the user asks for changes, edit only the approved scope, preserve useful non-obvious guidance through progressive disclosure, validate the changed skills, and report proof.
 
-1. Show the specific issues for that skill
-2. Propose concrete changes (restructure into folder, add gotchas section, rewrite description, etc.)
-3. Get approval before making changes
-4. Make the changes
+## Gotchas
 
-Don't batch-apply fixes across all skills without asking — let the user pick which to improve.
+- Do not audit installed mirrors as independent skills when they share one source.
+- Do not optimize for line count at the cost of deleting real failure knowledge.
+- Do not treat a large command reference as always-loaded context when it is properly routed.
+- Do not recommend generic new skills without repository evidence that they would recur.
