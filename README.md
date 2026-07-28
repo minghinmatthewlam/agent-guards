@@ -39,7 +39,7 @@ Core workflow skills:
 |---|---|
 | `orchestrator` | Coordinates complex work across workers while keeping product context in the main session |
 | `self-test` | Forces the agent to prove the real surface works before closing |
-| `concise-report` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
+| `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
 | `evidence` | Verifies the material evidence behind a selected claim or final result on demand |
 | `learn-from-mistake` | Diagnoses a model failure, strengthens the owning system, and proves recurrence prevention before retrying |
 | `autoreview` | Runs OpenClaw structured code review for local changes, branches, commits, and PRs |

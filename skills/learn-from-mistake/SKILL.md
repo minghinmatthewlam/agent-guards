@@ -45,7 +45,7 @@ Treat invocation as authorization to investigate and propose. Ask before changin
 
 ## Report
 
-Use `concise-report`. State:
+Use `concisely`. State:
 
 - what failed and its verified cause;
 - the prevention implemented or proposed and why it is the best fit;

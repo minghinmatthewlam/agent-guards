@@ -89,7 +89,7 @@ Use `<pre>` for code or literal text. If custom wrappers are used, preserve line
 
 ## Relationship To Chat
 
-After creating the artifact, defer to `/concise-report` for the chat response and include the HTML path. Do not duplicate the report's supporting depth in chat.
+After creating the artifact, defer to `/concisely` for the chat response and include the HTML path. Do not duplicate the report's supporting depth in chat.
 
 ## Closeout
 

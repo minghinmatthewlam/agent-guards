@@ -15,7 +15,7 @@ Verifier:
 
 - calendar facts are separated from inferred priorities,
 - top 3 goals each have a done condition,
-- output uses `/concise-report`,
+- output uses `/concisely`,
 - no emails/calendar changes are made unless explicitly requested.
 
 Report:

@@ -57,4 +57,4 @@ For implementation loops:
 1. Run `self-test` on the declared surface.
 2. Run `autoreview` and resolve accepted findings.
 
-Use `concise-report` for the final response. Include the best result, verifier evidence, stop reason, durable artifacts when relevant, residual risk, and decisions still needed. Use `explain-report` only when important supporting understanding merits a retained artifact.
+Use `concisely` for the final response. Include the best result, verifier evidence, stop reason, durable artifacts when relevant, residual risk, and decisions still needed. Use `explain-report` only when important supporting understanding merits a retained artifact.

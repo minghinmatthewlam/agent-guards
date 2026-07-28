@@ -30,7 +30,7 @@
 
 ## Report
 
-Use `/concise-report`:
+Use `/concisely`:
 
 ```text
 Status:

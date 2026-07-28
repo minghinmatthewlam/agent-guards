@@ -1,0 +1,4 @@
+interface:
+  display_name: "Concisely"
+  short_description: "Concise, orienting reports focused on what matters"
+  default_prompt: "Use $concisely to communicate the important outcome, evidence, learning, and anything needing my attention."
