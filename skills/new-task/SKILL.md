@@ -1,40 +1,17 @@
 ---
 name: new-task
-description: "Iteratively clarify requirements for a new task until reaching 90%+ confidence, then hand off a testable brief for planning or execution."
+description: "Clarify a new task by stating the goal the agent believes the user wants, showing its current understanding, and asking only product-related or high-priority questions that could materially change the outcome. Use before planning or implementation when the task needs alignment."
 ---
 
 # New Task
 
-Iterative clarification loop: refine understanding of a new task until it is precise, testable, and ready for planning.
-
 Consider `$ARGUMENTS` if provided.
 
-## Loop
+Before planning or implementation:
 
-Each round:
+1. Present a concise **Current understanding**, beginning with the **Goal** you believe the user wants to achieve, followed by the important product behavior, constraints, assumptions, and intended deliverable.
+2. Ask only product-related or high-priority questions whose answers could materially change scope, behavior, architecture, or success.
+3. Update the understanding after the user answers and repeat only when a material ambiguity remains.
 
-1. **Present** current understanding: problem statement, requirements, assumptions. Show confidence as a single percentage.
-2. **Ask** 3-7 targeted questions, prioritized by what will increase confidence most. Focus on: edge cases, product decisions, integration points, success criteria.
-3. **Wait** for user answers — update understanding and recalculate confidence.
-
-Keep iterating until confidence reaches 90%+.
-
-## Question Strategy
-
-- Start broad (problem space, users, goals), narrow each round (edge cases, constraints, acceptance criteria).
-- Make questions concrete with examples when ambiguity is high.
-- Group related questions; don't repeat answered ones.
-
-## Transition
-
-Once confidence reaches 90%+:
-
-1. Explicitly call out the specific use cases and features you'll test end-to-end (`self-test`).
-2. Return the finalized requirements, assumptions, success criteria, and test targets as a compact implementation brief.
-3. Continue with the host's normal planning or execution workflow when the user has authorized implementation.
-
-## Gotchas
-
-- Do not let the transition discard decisions made during clarification.
-- Don't inflate confidence to reach 90% faster. If key questions remain, stay in the loop.
-- Don't ask questions the user already answered in earlier rounds.
+When aligned, return a compact confirmed brief with success criteria and any
+remaining assumptions, then continue only as authorized.

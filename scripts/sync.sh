@@ -240,6 +240,7 @@ current_skills=()
 claude_skills=()
 for skill_dir in "$GUARDS_DIR/skills"/*/; do
   [ -d "$skill_dir" ] || continue
+  [ -f "$skill_dir/SKILL.md" ] || continue
   name=$(basename "$skill_dir")
   current_skills+=("$name")
   if is_agent_only "$skill_dir"; then
