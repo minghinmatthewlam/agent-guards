@@ -1,0 +1,4 @@
+interface:
+  display_name: "Find Bugs"
+  short_description: "Find high-confidence correctness bugs"
+  default_prompt: "Use $find-bugs to inspect this codebase for important correctness bugs and edge cases."
