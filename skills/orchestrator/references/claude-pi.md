@@ -19,7 +19,7 @@ Use `~/.agents/runs/<repo>/<task-id>/` for result, heartbeat, optional goal-stat
 
 The tool allowlist must include `create_goal`, `update_goal`, `get_goal`, and `report_result`; omit `-t` for a trusted worker rather than accidentally disabling extension tools. Pi has no OS-level sandbox, so use explicit permissions and avoid untrusted work.
 
-Use a persistent session id. Let the worker run `/use-loop`, drive its goal terminal, formulate a concise structured result, and call `report_result` once as its final action.
+Use a persistent session id. Let the worker drive its goal terminal, formulate a concise structured result, and call `report_result` once as its final action.
 
 ## Supervise
 

@@ -459,6 +459,7 @@ def build_prompt(repo: Path, target: str, target_ref: str | None, bundle: str, e
         - Shell commands, if available, must be read-only inspection commands. Do not run tests, formatters, package installs, generators, network mutation commands, git mutation commands, or commands that write files.
         - Report only actionable defects introduced or exposed by this change.
         - Prefer high-signal findings over style feedback.
+        - Flag unnecessary layers, duplicate paths, and speculative fallbacks. Prefer deleting or consolidating code.
         - Assign priorities consistently:
           P0 = immediate catastrophic risk such as exploitable compromise, irreversible data loss, or a universally broken release.
           P1 = likely user-facing correctness, security, or reliability failure that should block completion.

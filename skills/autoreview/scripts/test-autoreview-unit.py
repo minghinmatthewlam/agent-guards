@@ -91,6 +91,8 @@ class AutoReviewUnitTests(unittest.TestCase):
         )
         self.assertIn("Do not assume backward compatibility is required", prompt)
         self.assertIn("compatibility shims", prompt)
+        self.assertIn("unnecessary layers", prompt)
+        self.assertIn("Prefer deleting or consolidating code", prompt)
         self.assertIn("P1 = likely user-facing", prompt)
 
     def test_report_makes_advisory_threshold_pass_explicit(self) -> None:

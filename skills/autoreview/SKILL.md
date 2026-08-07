@@ -26,6 +26,7 @@ Read `references/commands.md` when choosing flags, panels, paths, or parallel te
 
 - Treat findings as advisory. Reject speculative risks, unrealistic edge cases, and fixes that add more complexity than value.
 - Prefer narrow root-cause fixes; do not broaden the refactor merely to satisfy a reviewer.
+- Flag unnecessary layers, duplicate paths, and speculative fallbacks. Prefer deleting or consolidating code.
 - Do not assume backward compatibility is required. Require evidence of a public contract, supported consumer, migration guarantee, test, or explicit user requirement before adding compatibility work.
 - Do not add fallback paths, dual implementations, compatibility shims, or migrations for hypothetical consumers.
 - Do not impose a findings cap. Use priority and impact to distinguish blocking work from advisory observations.

@@ -16,8 +16,12 @@ Listen: these rules are persistent constraints, not initial suggestions. Apply t
 - Use priority tags (`P0`, `P1`, `P2`) for findings, blockers, risks, and options, but only include the highest-signal items.
 
 ## Code
-- Prefer clean reimplementation over patching around bad local complexity.
-- Keep code simple
+- KISS: Use the simplest architecture that meets the current goal. The user and
+  future agents must be able to understand what happens and why; simple control
+  flow is easier to verify, maintain, and extend.
+- Prefer one clear path. Fail fast with a clear error; add a fallback only after
+  a real failure shows it is needed.
+- When refactoring, remove old and duplicate paths instead of keeping both.
 - Fix root causes, not symptoms.
 
 ## Git

@@ -43,7 +43,7 @@ Tell the worker:
 - success criteria and the highest-signal self-test surface;
 - required proof artifacts and where they should live;
 - the expected result: outcome, important evidence, changed files, blockers, decisions, and residual risk;
-- to use `/use-loop` and wrap up before context exhaustion.
+- to wrap up before context exhaustion.
 
 Trust workers to choose implementation details. Split work when outcomes can run independently or one worker would accumulate unrelated deliverables. Give concurrent implementation workers disjoint write scopes and integrate shared files centrally. Use one integrated `/explain-report` owner only when its trigger policy applies; other workers return evidence.
 
@@ -64,6 +64,7 @@ Worker output is evidence, not an automatic final answer.
 - Require durable screenshots or recordings when visual state, focus, timing, or interaction matters.
 - Re-derive methodology-critical claims from raw evidence with an independent probe; do not validate measurement, accounting, schema, comparability, or security claims only against worker-authored tests.
 - Resolve overlap and conflicts centrally.
+- Integrate worker changes into one simple design. Remove duplicate paths and unnecessary fallbacks.
 - Preserve contributor credit and verify no live process is using a checkout before merging into it.
 
 Label results when the distinction matters:
