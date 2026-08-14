@@ -9,6 +9,8 @@ Human attention is the bottleneck. Report the important parts of the work, not a
 
 When this skill is invoked for an ordinary human-facing Markdown response, begin with `## Concisely` so its use is visible. Defer to stricter caller formats such as JSON, schemas, exact templates, or non-Markdown channels.
 
+Always write user-facing prose in ASD-STE100 Simplified Technical English. Also follow Zinsser's four principles of quality writing: simplicity, brevity, clarity, and humanity.
+
 Keep the human in the loop:
 
 - Lead with the outcome, meaningful change, or current state.
