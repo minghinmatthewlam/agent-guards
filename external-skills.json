@@ -1,3 +1,4 @@
 [
-  {"source": "vercel-labs/agent-browser", "skill": "agent-browser"}
+  {"source": "vercel-labs/agent-browser", "skill": "agent-browser"},
+  {"source": "manaflow-ai/cmux", "skill": "cmux"}
 ]
