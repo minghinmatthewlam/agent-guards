@@ -4,9 +4,9 @@
 
 Skills vary widely in purpose and size. Before scoring, classify the skill:
 
-- **Behavioral skills** (e.g., self-test) — short, philosophy-driven, meant to work across all repos. Don't penalize for missing scripts or references. Gotchas still apply — even behavioral skills have failure modes (e.g., agent claiming it verified without actually running anything).
-- **Tool wrapper skills** (e.g., ios-dev, agent-browser) — reference material for a specific tool. Most checks apply.
-- **Workflow skills** (e.g., orchestrator, use-loop) — define a multi-step process. Most checks apply.
+- **Behavioral skills** — short, philosophy-driven, meant to work across all repos. Don't penalize them for missing scripts or references. Gotchas still apply, such as an agent claiming verification without running anything.
+- **Tool wrapper skills** — reference material for a specific tool. Most checks apply.
+- **Workflow skills** — define a multi-step process. Most checks apply.
 - **Simple/short skills** (<~100 lines) — don't penalize for missing progressive disclosure or folder structure. A 30-line file doesn't need a references/ folder.
 
 If a check genuinely doesn't apply to a skill, score it **N/A** — it doesn't count toward the total. Only score checks that are meaningful for that specific skill's purpose and size.

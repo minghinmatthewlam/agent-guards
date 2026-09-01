@@ -1,6 +1,6 @@
 # Repo Verification Loop
 
-Goal: Improve a repo so agents can confidently verify changes without human line-by-line review.
+Goal: Keep the repo's verification skill and commands useful, current, and able to prove real product behavior.
 
 Trigger: manual or scheduled repo-health pass.
 
@@ -13,7 +13,7 @@ Inputs:
 
 Verifier:
 
-- at least one default self-test lane exists,
+- at least one repeatable verification path exists,
 - user-facing surfaces have a browser, app, or Computer Use proof path,
 - blocked proof reports name the missing tool/access/setup,
 - proof artifact convention is documented.

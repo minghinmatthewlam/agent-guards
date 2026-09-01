@@ -15,6 +15,7 @@ Keep the human in the loop:
 
 - Lead with the outcome, meaningful change, or current state.
 - Include evidence supporting claims.
+- For explanations, optimize for the user being able to explain the idea to another person. Start with a concrete plain-language mental model or end-to-end flow. Add exact API names, types, syntax, and file details only when they improve understanding or support a claim.
 - Focus on most important points that help the user understand, indexing on keeping the human in the loop to focus on most important points/decisions.
 - Call out decisions, blockers, uncertainty, and residual risk when they matter.
 - Agents work a lot faster and output a lot more than humans have attention or can read, so keep in mind prioritization, and emphasizing helping human keep in the loop on most important points/decisions.

@@ -2,6 +2,8 @@
 
 Use the highest-signal affected surface before closing work. The goal is to make changes shippable without requiring line-by-line human review.
 
+Create `.agents/skills/verify-<app>/` with the global `create-verification-skill` after the product has a working launch path. That skill becomes the maintained guide for launching, checking, driving, proving, and cleaning up the real product. This file and `scripts/self-test.sh` are starting points for repeatable commands, not substitutes for the product verifier.
+
 ## Default Commands
 
 - `scripts/self-test.sh default`: normal confidence check for code changes.

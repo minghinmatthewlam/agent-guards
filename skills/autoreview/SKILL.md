@@ -14,7 +14,7 @@ Run the bundled structured review helper as the default code-review closeout. Co
    - branch or PR: `--mode branch --base <actual-base>`
    - committed change: `--mode commit --commit <ref>`
 2. Run `~/.agents/skills/autoreview/scripts/autoreview` with that target.
-   Pass the task intent and success criteria through `--prompt` or `--prompt-file` when they are not obvious from the diff.
+   Pass the task intent and success criteria through `--prompt` or `--prompt-file` whenever they are available.
 3. Verify findings against the real code path, demonstrated contracts, and task intent.
 4. Fix accepted blocking findings at the correct ownership boundary. P0/P1 block by default; keep P2/P3 visible but advisory.
 5. After blocking fixes, rerun focused proof and autoreview once. Continue further only while a verified P0/P1 remains unresolved.
@@ -25,6 +25,7 @@ Read `references/commands.md` when choosing flags, panels, paths, or parallel te
 ## Judgment
 
 - Treat findings as advisory. Reject speculative risks, unrealistic edge cases, and fixes that add more complexity than value.
+- Prefer the simplest clear implementation that meets the current task and demonstrated contracts. Flag complexity that materially makes the code harder to understand, maintain, verify, or extend. Do not recommend unrelated cleanup, speculative future-proofing, or scope beyond the stated goal.
 - Prefer narrow root-cause fixes; do not broaden the refactor merely to satisfy a reviewer.
 - Flag unnecessary layers, duplicate paths, and speculative fallbacks. Prefer deleting or consolidating code.
 - Do not assume backward compatibility is required. Require evidence of a public contract, supported consumer, migration guarantee, test, or explicit user requirement before adding compatibility work.
@@ -33,7 +34,7 @@ Read `references/commands.md` when choosing flags, panels, paths, or parallel te
 - Keep web search enabled unless the user requests offline review or the material should not leave the local environment.
 - Do not override an explicitly requested engine, model, or thinking level.
 - Do not push merely to obtain a review.
-- Do not substitute review for `self-test`; code review does not prove product behavior.
+- Do not substitute review for the repository's verification path; code review does not prove product behavior.
 - Multi-reviewer panels are opt-in unless the change is high-risk or the first result needs arbitration.
 
 ## Gotchas

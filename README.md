@@ -11,21 +11,21 @@ This repo is the source of truth for:
 
 ## Why This Exists
 
-Most agent setups get bloated fast: long global prompts, duplicated config across tools, and too much workflow guidance inline.
+Agent setups get bloated when the same rules appear in global prompts, skills, and repository documentation.
 
-This repo takes the opposite approach:
-- keep global instruction files lean
-- move repeated workflows into skills
-- keep product context in the main session
-- use parallel agents for research, implementation, cleanup, and review
-- optimize for tools + success criteria, not micromanaged step-by-step prompts
+This repo keeps one simple operating model:
+- read the code first;
+- define and run a real verification path;
+- make the correct repository path the easiest path;
+- prevent important mistakes from recurring;
+- report the important result and proof clearly.
 
 If that framing resonates, start with [`AGENTS.md`](AGENTS.md) and [`docs/agent-philosophy.md`](docs/agent-philosophy.md).
 
 ## What You Get
 
 - `AGENTS.md`: one global guardrail file, symlinked to both Codex and Claude
-- `skills/`: reusable workflows like orchestration, self-test, code review, CI repair, and iOS release work
+- `skills/`: reusable workflows for verification, repository setup, recurrence prevention, review, and specialized work
 - `commands/`: shared prompt files that work in both ecosystems
 - `scripts/sync.sh`: syncs guardrails, commands, and skills into the right user-level locations
 - `scripts/new-repo.sh`: bootstraps a fresh repo with repo verification scaffolding and optional repo-local `AGENTS.md` / `CLAUDE.md`
@@ -37,11 +37,11 @@ Core workflow skills:
 
 | Skill | What it does |
 |---|---|
-| `orchestrator` | Coordinates complex work across workers while keeping product context in the main session |
-| `self-test` | Forces the agent to prove the real surface works before closing |
+| `create-verification-skill` | Builds and proves a repo-local guide for running and checking the real product |
+| `maintain-verification-skill` | Checks that guide against current code and live behavior, then repairs drift |
+| `repo-setup` | Makes the intended architecture obvious and important violations fail mechanically |
+| `learn-from-mistake` | Diagnoses an agent failure, strengthens the owning system, and retries the task |
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
-| `evidence` | Verifies the material evidence behind a selected claim or final result on demand |
-| `learn-from-mistake` | Diagnoses a model failure, strengthens the owning system, and proves recurrence prevention before retrying |
 | `autoreview` | Runs OpenClaw structured code review for local changes, branches, commits, and PRs |
 | `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, code changes, learning, decisions, and accepted findings |
 
@@ -49,8 +49,6 @@ Task-specific skills:
 
 | Skill | What it does |
 |---|---|
-| `ios-dev` | Simulator-first iOS development and debugging workflow |
-| `ios-release` | Preflight-gated TestFlight / App Store release workflow |
 | `skills-audit` | Audits a repo's skills against practical quality checks |
 
 ## Cross-Tool Sync Model
@@ -118,10 +116,14 @@ If you want repo-local pointer files too:
 - `AGENTS.md` from [`templates/repo-agents.md`](templates/repo-agents.md)
 - `CLAUDE.md` as a symlink to `AGENTS.md` when possible, with a copy fallback otherwise
 
+After the product has a working launch path, invoke `$repo-setup` and `$create-verification-skill`. They make the intended implementation path obvious and give agents a real way to prove the product works.
+
 The template currently contains:
 
 ```markdown
 Always read the global `AGENTS.md` (synced to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`) before any repo-specific instructions.
+
+Before implementation, look for `.agents/skills/verify-*`. If none exists for the product surface, use the global `create-verification-skill`.
 ```
 
 ## Loop Templates
@@ -130,7 +132,7 @@ Always read the global `AGENTS.md` (synced to `~/.claude/CLAUDE.md` and `~/.code
 
 - `LOOP.md`: generic loop contract with concise reporting.
 - `daily-priorities.md`: daily priority scan and top-three focus loop.
-- `repo-verification.md`: improve a repo's self-test and proof lanes.
+- `repo-verification.md`: improve a repo's verification skill and proof paths.
 - `thread-introspection.md`: review recent agent usage for repeated struggles, verbose reports, missing proof, or skill/setup improvements. Treat this as propose-first by default; only edit the explicitly allowed subset of skills or templates.
 
 ## Editing This Repo

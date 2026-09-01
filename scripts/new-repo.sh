@@ -174,3 +174,5 @@ echo "  │   └── self-test.sh"
 echo "  └── docs/"
 echo "      └── VERIFY.md"
 echo ""
+echo 'Next: after the product has a working launch path, invoke $repo-setup and $create-verification-skill from this repository.'
+echo ""

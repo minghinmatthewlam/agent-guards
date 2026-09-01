@@ -7,6 +7,8 @@ description: "Create a self-contained HTML explanation when the user requests on
 
 Create a focused HTML artifact that helps the user understand and retain important project knowledge. Default to concise chat when an artifact would not add meaningful value.
 
+Apply `concisely`'s teaching guidance throughout the artifact.
+
 ## Content
 
 - Lead with the essential mental model, result, or decision.

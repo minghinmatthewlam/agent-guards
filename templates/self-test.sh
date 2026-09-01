@@ -15,22 +15,50 @@ run_if_present() {
   fi
 }
 
-run_node_default() {
+node_package_manager() {
   if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then
-    pnpm run lint --if-present
-    pnpm run test --if-present
-    pnpm run build --if-present
-    return 0
+    echo "pnpm"
+  elif command -v npm >/dev/null 2>&1; then
+    echo "npm"
+  else
+    return 1
+  fi
+}
+
+node_has_script() {
+  local script="$1"
+  node -e 'const p = require("./package.json"); process.exit(p.scripts?.[process.argv[1]] ? 0 : 1)' "$script"
+}
+
+run_node_script() {
+  local script="$1"
+  local manager
+
+  if ! manager="$(node_package_manager)"; then
+    echo "[self-test] no Node package manager available." >&2
+    return 2
   fi
 
-  if command -v npm >/dev/null 2>&1; then
-    npm run lint --if-present
-    npm test --if-present
-    npm run build --if-present
-    return 0
-  fi
+  "$manager" run "$script"
+  echo "[self-test] passed: $manager run $script"
+}
 
-  return 1
+run_node_default() {
+  local script
+  local checks_run=0
+
+  for script in lint test build; do
+    if node_has_script "$script"; then
+      run_node_script "$script"
+      checks_run=$((checks_run + 1))
+    fi
+  done
+
+  if [ "$checks_run" -eq 0 ]; then
+    echo "[self-test] package.json has no lint, test, or build scripts." >&2
+    echo "[self-test] add at least one real verification command." >&2
+    return 2
+  fi
 }
 
 case "$mode" in
@@ -47,10 +75,11 @@ case "$mode" in
     ;;
   build)
     if [ -f package.json ]; then
-      if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then
-        run_if_present "pnpm run build --if-present" "pnpm build"
+      if node_has_script "build"; then
+        run_node_script "build"
       else
-        run_if_present "npm run build --if-present" "npm build"
+        echo "[self-test] package.json has no build script." >&2
+        exit 2
       fi
     else
       echo "[self-test] no build lane configured yet."
