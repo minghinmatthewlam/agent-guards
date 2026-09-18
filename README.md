@@ -42,7 +42,8 @@ Core workflow skills:
 | `repo-setup` | Makes the intended architecture obvious and important violations fail mechanically |
 | `learn-from-mistake` | Diagnoses an agent failure, strengthens the owning system, and retries the task |
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
-| `autoreview` | Runs OpenClaw structured code review for local changes, branches, commits, and PRs |
+| `architect` | Designs changes through explicit code ownership, dependency boundaries, data models, and caller interfaces |
+| `autoreview` | Uses independent native subagents to review changes for concrete defects and unnecessary complexity |
 | `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, code changes, learning, decisions, and accepted findings |
 
 Task-specific skills:
@@ -147,8 +148,6 @@ After changes:
 
 ```bash
 ./scripts/validate-skills.sh
-python3 -m py_compile skills/autoreview/scripts/autoreview skills/autoreview/scripts/test-autoreview-unit.py skills/autoreview/scripts/test-review-harness.py
-bash -n skills/autoreview/scripts/test-review-harness
 ./scripts/sync.sh --dry-run
 ./scripts/sync.sh
 git status

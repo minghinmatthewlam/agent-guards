@@ -8,8 +8,8 @@ Vendored from OpenClaw `agent-skills`:
 
 Local changes:
 
-- Skill prose is adapted for this machine's Codex/Claude workflow.
-- `codex` is the default review engine for normal closeout.
-- Web search remains enabled by default, matching upstream.
+- The workflow now uses native subagents rather than the upstream CLI helper.
+- The helper, engine-specific references, and helper tests have been retired.
+- Review judgment retains local scope, simplicity, evidence, and priority rules.
 
-Keep the helper script close to upstream unless a local behavior change is intentional and documented here.
+This is a local workflow adaptation, not a drop-in copy of the upstream helper.
