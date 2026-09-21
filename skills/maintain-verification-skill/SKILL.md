@@ -12,7 +12,7 @@ A feature map rots the moment the app changes. This skill is the upkeep loop for
 Pick one, and say which:
 
 - **clean** — every feature got source and live coverage; nothing worth shipping. No branch, no PR.
-- **changed** — one PR ships proven doc, harness, or map corrections.
+- **changed** — one PR ships proven doc, harness, or map corrections; an independent `$autoreview` confirms that PR.
 - **blocked** — coverage could not finish or a proven fix could not ship safely. Say exactly what blocked it.
 
 ## Edit scope
@@ -33,6 +33,6 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
 
 5. **Triage.** Wrong or missing user-POV description → doc drift, fix it. Working behavior the harness can't drive → harness gap, fix it; a harness fix follows the same helpers rule as generation (scripts executable, invocation documented in the skill body). App behavior that's actually broken → product gap; record it for the user, keep it out of this PR.
 
-6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first. For clean or blocked: no PR, report the outcome and the coverage honestly.
+6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first, then run `$autoreview` on that PR/diff. Spawn one independent reviewer; stay on this pass. Do not treat the coordinator re-read as review. Apply only in-scope accepted blockers (verify skill directory only) and re-drive any harness fix live before it ships. For clean or blocked: no PR, no review agents, report the outcome and the coverage honestly.
 
 Keep concise run notes (features covered, unreachable prerequisites, confirmed drift, outcome) in a scratch location; don't commit them.
