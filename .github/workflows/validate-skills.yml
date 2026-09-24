@@ -3,15 +3,19 @@ name: Validate Skills
 on:
   push:
     paths:
-      - "skills/**/SKILL.md"
-      - "scripts/validate-skills.sh"
-      - "scripts/sync.sh"
+      - "AGENTS.md"
+      - "README.md"
+      - "commands/**"
+      - "skills/**"
+      - "scripts/**"
       - ".github/workflows/validate-skills.yml"
   pull_request:
     paths:
-      - "skills/**/SKILL.md"
-      - "scripts/validate-skills.sh"
-      - "scripts/sync.sh"
+      - "AGENTS.md"
+      - "README.md"
+      - "commands/**"
+      - "skills/**"
+      - "scripts/**"
       - ".github/workflows/validate-skills.yml"
 
 jobs:
@@ -28,3 +32,6 @@ jobs:
 
       - name: Validate skills
         run: ./scripts/validate-skills.sh
+
+      - name: Sync smoke test
+        run: ./scripts/test-sync.sh

@@ -52,9 +52,9 @@ if [[ -z "$REPO_NAME" ]]; then
 fi
 
 REPO_PATH="$(pwd)/$REPO_NAME"
-TOTAL_STEPS=6
+TOTAL_STEPS=5
 if [[ $WITH_AGENTS -eq 1 ]]; then
-    TOTAL_STEPS=7
+    TOTAL_STEPS=6
 fi
 CURRENT_STEP=1
 
@@ -107,20 +107,8 @@ fi
 
 # Next step: Create .gitignore
 print_step "Creating .gitignore"
-cat > "$REPO_PATH/.gitignore" <<'EOF'
-# Local proof artifacts; durable shared proofs should live under ~/.codex/proofs/.
-/proofs/
-EOF
+echo ".DS_Store" > "$REPO_PATH/.gitignore"
 echo -e "${GREEN}Created .gitignore${NC}"
-
-# Next step: Create verification scaffold
-print_step "Creating verification scaffold"
-mkdir -p "$REPO_PATH/docs"
-mkdir -p "$REPO_PATH/scripts"
-cp "$TEMPLATE_DIR/verify.md" "$REPO_PATH/docs/VERIFY.md"
-cp "$TEMPLATE_DIR/self-test.sh" "$REPO_PATH/scripts/self-test.sh"
-chmod +x "$REPO_PATH/scripts/self-test.sh"
-echo -e "${GREEN}Created docs/VERIFY.md and scripts/self-test.sh${NC}"
 
 # Next step: Initial commit
 print_step "Creating initial commit"
@@ -164,15 +152,13 @@ echo ""
 echo "Structure:"
 echo "  $REPO_NAME/"
 echo "  ├── .git/"
-echo "  ├── .gitignore"
 if [[ $WITH_AGENTS -eq 1 ]]; then
+    echo "  ├── .gitignore"
     echo "  ├── AGENTS.md"
-    echo "  ├── CLAUDE.md -> AGENTS.md"
+    echo "  └── CLAUDE.md -> AGENTS.md"
+else
+    echo "  └── .gitignore"
 fi
-echo "  ├── scripts/"
-echo "  │   └── self-test.sh"
-echo "  └── docs/"
-echo "      └── VERIFY.md"
 echo ""
 echo 'Next: after the product has a working launch path, invoke $repo-setup and $create-verification-skill from this repository.'
 echo ""

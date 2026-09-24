@@ -28,7 +28,7 @@ If that framing resonates, start with [`AGENTS.md`](AGENTS.md) and [`docs/agent-
 - `skills/`: reusable workflows for verification, repository setup, recurrence prevention, review, and specialized work
 - `commands/`: shared prompt files that work in both ecosystems
 - `scripts/sync.sh`: syncs guardrails, commands, and skills into the right user-level locations
-- `scripts/new-repo.sh`: bootstraps a fresh repo with repo verification scaffolding and optional repo-local `AGENTS.md` / `CLAUDE.md`
+- `scripts/new-repo.sh`: bootstraps a fresh git repo with optional repo-local `AGENTS.md` / `CLAUDE.md`
 - `templates/`: repo bootstrap files plus reusable loop contracts for recurring automations
 
 ## Notable Skills
@@ -42,6 +42,7 @@ Core workflow skills:
 | `repo-setup` | Makes the intended architecture obvious and important violations fail mechanically |
 | `learn-from-mistake` | Diagnoses an agent failure, strengthens the owning system, and retries the task |
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
+| `teach` | Builds a code-grounded mental model through components, interfaces, and end-to-end steps |
 | `architect` | Designs changes through explicit code ownership, dependency boundaries, data models, and caller interfaces |
 | `autoreview` | Uses independent native subagents to review changes for concrete defects and unnecessary complexity |
 | `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, code changes, learning, decisions, and accepted findings |
@@ -51,23 +52,31 @@ Task-specific skills:
 | Skill | What it does |
 |---|---|
 | `skills-audit` | Audits a repo's skills against practical quality checks |
+| `find-bugs` | Finds high-confidence correctness bugs and edge cases in existing code |
+| `new-task` | Aligns on the goal and asks only questions that could change the outcome |
+| `record-screen` | Records a UI change as a small MP4 proof: the private virtual display in Linux cloud sessions, only the app window on macOS |
 
 ## Cross-Tool Sync Model
 
-One source repo fans out to both ecosystems:
+One source repo fans out to Codex, Claude, and Cursor:
 
-| Source | Codex destination | Claude destination |
-|---|---|---|
-| `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` |
-| `commands/*.md` | `~/.codex/prompts/` | `~/.claude/commands/` |
-| `skills/*/` | `~/.agents/skills/` | `~/.claude/skills/` |
+| Source | Codex destination | Claude destination | Cursor destination |
+|---|---|---|---|
+| `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | — |
+| `commands/*.md` | `~/.codex/prompts/` | `~/.claude/commands/` | — |
+| `skills/*/` | `~/.agents/skills/` | `~/.claude/skills/` | `~/.cursor/skills/` |
+
+To use these skills in Cursor Cloud Agents, enable **Settings → Agents → Context and Tools → Sync Skills for Cloud Agents** in Cursor after running the script. Cursor uploads personal skills from `~/.cursor/skills/`; it does not upload `~/.agents/skills/`. The script copies the full skill folders, including supporting files, into Cursor's sync directory.
+
+Cursor moves uploaded skills into its managed User Context, so the local staging folders may disappear after syncing. Keep editing this source repo. The script's pruning only covers local files; remove retired cloud skills through Cursor's Customize UI.
 
 `scripts/sync.sh` also:
-- validates every `SKILL.md` before syncing
+- validates every `SKILL.md`, relative skill links, and this README's skill list before syncing
+- warns when skills, commands, or `AGENTS.md` have uncommitted changes, since sync publishes the working tree
 - skips command sync when a same-name skill exists
 - prunes stale agent-guards-managed commands and skills by default
 - skips `agent-only` skills for Claude
-- installs external skills from [`external-skills.json`](external-skills.json) when `npx` and `jq` are available
+- compares skills uploaded to claude.ai (for cloud agents, as cached by Claude desktop) with this repo, and packages any out-of-date ones as zips in `~/.cache/agent-guards/upload/` for re-upload
 
 ## First-Time Setup
 
@@ -75,7 +84,6 @@ Prerequisites:
 - `bash`
 - `rsync`
 - `ruby` for `./scripts/validate-skills.sh`
-- `jq` and `npx` if you want external skills installed from `external-skills.json`
 - `gh` if you want `new-repo.sh` to create a GitHub repo
 
 ```bash
@@ -103,9 +111,8 @@ It is interactive and will:
 1. create the repo directory
 2. run `git init`
 3. create `.gitignore`
-4. create `docs/VERIFY.md` and `scripts/self-test.sh`
-5. create an initial commit
-6. optionally create and push a GitHub repo with `gh`
+4. create an initial commit
+5. optionally create and push a GitHub repo with `gh`
 
 If you want repo-local pointer files too:
 
@@ -160,7 +167,6 @@ agent-guards/
 ├── AGENTS.md
 ├── commands/
 ├── docs/
-├── external-skills.json
 ├── scripts/
 ├── skills/
 └── templates/

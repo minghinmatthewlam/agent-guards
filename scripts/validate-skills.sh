@@ -4,6 +4,9 @@
 # - valid YAML frontmatter
 # - required fields: name, description
 # - unique skill name values
+# - name matches its directory
+# - relative Markdown links resolve
+# - README mentions every skill
 
 set -euo pipefail
 
@@ -25,7 +28,7 @@ errors = []
 seen = {}
 
 paths.each do |path|
-  content = File.read(path)
+  content = File.read(path, encoding: "UTF-8")
   match = content.match(/\A---\n(.*?)\n---\n/m)
   unless match
     errors << "#{path}: missing YAML frontmatter block"
@@ -50,6 +53,11 @@ paths.each do |path|
     errors << "#{path}: missing or empty `description`"
   end
 
+  dir_name = File.basename(File.dirname(path))
+  if name.is_a?(String) && name != dir_name
+    errors << "#{path}: name `#{name}` does not match directory `#{dir_name}`"
+  end
+
   if name.is_a?(String) && !name.strip.empty?
     if seen.key?(name)
       errors << "#{path}: duplicate skill name `#{name}` (already defined in #{seen[name]})"
@@ -57,6 +65,20 @@ paths.each do |path|
       seen[name] = path
     end
   end
+end
+
+Dir.glob(File.join(skills_dir, "**/*.md")).sort.each do |md|
+  File.read(md, encoding: "UTF-8").scan(/\]\(([^)\s]+)\)/).flatten.each do |target|
+    next if target.match?(%r{\A[a-z]+:|\A#})
+    resolved = File.expand_path(target.sub(/#.*/, ""), File.dirname(md))
+    errors << "#{md}: broken link `#{target}`" unless File.exist?(resolved)
+  end
+end
+
+readme_path = File.join(File.dirname(skills_dir), "README.md")
+readme = File.exist?(readme_path) ? File.read(readme_path, encoding: "UTF-8") : ""
+seen.each_key do |name|
+  errors << "README.md: skill `#{name}` is not listed" unless readme.include?("`#{name}`")
 end
 
 if errors.empty?

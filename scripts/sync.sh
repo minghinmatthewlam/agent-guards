@@ -19,11 +19,15 @@ CLAUDE_COMMANDS="$HOME/.claude/commands"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 AGENT_SKILLS="$HOME/.agents/skills"
-LOCAL_BIN="$HOME/.local/bin"
+CURSOR_SKILLS="$HOME/.cursor/skills"
+# Claude desktop caches skills uploaded to the claude.ai account (used by cloud agents) here.
+CLAUDE_UPLOADED_CACHE="$HOME/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin"
+UPLOAD_DIR="$HOME/.cache/agent-guards/upload"
 
 CODEX_MANIFEST="$CODEX_PROMPTS/.agent-guards-managed-commands"
 CLAUDE_MANIFEST="$CLAUDE_COMMANDS/.agent-guards-managed-commands"
 AGENT_SKILLS_MANIFEST="$AGENT_SKILLS/.agent-guards-managed-skills"
+CURSOR_SKILLS_MANIFEST="$CURSOR_SKILLS/.agent-guards-managed-skills"
 CLAUDE_SKILLS_MANIFEST="$CLAUDE_SKILLS/.agent-guards-managed-skills"
 
 DRY_RUN=false
@@ -36,14 +40,12 @@ Usage: ./scripts/sync.sh [--dry-run|-n] [--no-prune]
 Syncs:
   - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md
   - commands/*.md -> ~/.codex/prompts, ~/.claude/commands
-  - skills/*/ -> ~/.agents/skills, ~/.claude/skills
-  - external-skills.json -> installed via npx skills (global)
+  - skills/*/ -> ~/.agents/skills, ~/.claude/skills, ~/.cursor/skills
 
 Behavior:
   - Validates SKILL.md frontmatter before syncing
   - Skips command sync when a same-name skill exists (skills take precedence)
   - Prunes stale entries previously managed by agent-guards (unless --no-prune)
-  - Installs/updates external skills from external-skills.json via npx skills
 EOF
 }
 
@@ -220,18 +222,24 @@ if [ -x "$GUARDS_DIR/scripts/validate-skills.sh" ]; then
   "$GUARDS_DIR/scripts/validate-skills.sh"
 fi
 
+if git -C "$GUARDS_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+  dirty=$(git -C "$GUARDS_DIR" status --porcelain -- AGENTS.md commands skills)
+  if [ -n "$dirty" ]; then
+    echo "  Warning: syncing uncommitted changes:" >&2
+    echo "$dirty" | sed 's/^/    /' >&2
+  fi
+fi
+
 shopt -s nullglob
 
 mkdir_p "$CODEX_PROMPTS"
 mkdir_p "$CLAUDE_COMMANDS"
 mkdir_p "$AGENT_SKILLS"
-mkdir_p "$LOCAL_BIN"
+mkdir_p "$CURSOR_SKILLS"
 
 log "  Linking AGENTS.md..."
 link_file "$GUARDS_DIR/AGENTS.md" "$CODEX_AGENTS"
 link_file "$GUARDS_DIR/AGENTS.md" "$CLAUDE_MD"
-
-log "  Linking scripts to PATH..."
 
 log "  Ensuring ~/.claude/skills is a real directory..."
 ensure_claude_skills_dir
@@ -273,33 +281,37 @@ write_manifest "$CLAUDE_MANIFEST" "${current_commands[@]}"
 log "  Syncing skills to ~/.agents/skills..."
 sync_skills_to "$AGENT_SKILLS" "${current_skills[@]}"
 
+log "  Syncing skills to ~/.cursor/skills (for Cursor Cloud sync)..."
+sync_skills_to "$CURSOR_SKILLS" "${current_skills[@]}"
+
 log "  Syncing skills to ~/.claude/skills (excluding agent-only)..."
 sync_skills_to "$CLAUDE_SKILLS" "${claude_skills[@]}"
 
 prune_from_manifest "$AGENT_SKILLS_MANIFEST" "$AGENT_SKILLS" "${current_skills[@]}"
+prune_from_manifest "$CURSOR_SKILLS_MANIFEST" "$CURSOR_SKILLS" "${current_skills[@]}"
 prune_from_manifest "$CLAUDE_SKILLS_MANIFEST" "$CLAUDE_SKILLS" "${claude_skills[@]}"
 write_manifest "$AGENT_SKILLS_MANIFEST" "${current_skills[@]}"
+write_manifest "$CURSOR_SKILLS_MANIFEST" "${current_skills[@]}"
 write_manifest "$CLAUDE_SKILLS_MANIFEST" "${claude_skills[@]}"
 
-external_count=0
-EXTERNAL_SKILLS_FILE="$GUARDS_DIR/external-skills.json"
-if [ -f "$EXTERNAL_SKILLS_FILE" ] && command -v npx &>/dev/null && command -v jq &>/dev/null; then
-  log "  Installing/updating external skills..."
-  while IFS= read -r entry; do
-    source=$(echo "$entry" | jq -r '.source')
-    skill=$(echo "$entry" | jq -r '.skill')
+stale_uploads=()
+for cached in "$CLAUDE_UPLOADED_CACHE"/*/*/skills/*/; do
+  name=$(basename "$cached")
+  list_contains "$name" "${current_skills[@]}" || continue
+  if ! diff -rq -x .DS_Store "$GUARDS_DIR/skills/$name" "$cached" >/dev/null 2>&1; then
+    stale_uploads+=("$name")
+  fi
+done
+if [ "${#stale_uploads[@]}" -gt 0 ]; then
+  remove_path "$UPLOAD_DIR"
+  mkdir_p "$UPLOAD_DIR"
+  for name in "${stale_uploads[@]}"; do
     if $DRY_RUN; then
-      echo "  [dry-run] npx skills add $source -g -a universal claude-code --skill $skill"
+      echo "  [dry-run] zip $UPLOAD_DIR/$name.zip"
     else
-      if npx -y skills add "$source" -g -y -a universal claude-code --skill "$skill" </dev/null 2>/dev/null; then
-        external_count=$((external_count + 1))
-      else
-        echo "  Warning: failed to install external skill $skill from $source" >&2
-      fi
+      (cd "$GUARDS_DIR/skills" && zip -qr -X "$UPLOAD_DIR/$name.zip" "$name" -x '*.DS_Store')
     fi
-  done < <(jq -c '.[]' "$EXTERNAL_SKILLS_FILE")
-elif [ -f "$EXTERNAL_SKILLS_FILE" ]; then
-  echo "  Skipping external skills (requires npx and jq)"
+  done
 fi
 
 command_count=${#current_commands[@]}
@@ -312,5 +324,15 @@ echo "Done! Synced:"
 echo "  - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md"
 echo "  - $command_count commands -> ~/.codex/prompts, ~/.claude/commands"
 echo "  - $skill_count skills -> ~/.agents/skills"
+echo "  - $skill_count skills -> ~/.cursor/skills (enable Sync Skills for Cloud Agents in Cursor)"
 echo "  - $claude_skill_count skills -> ~/.claude/skills ($agent_only_count agent-only skipped)"
-echo "  - $external_count external skills (via npx skills)"
+
+if [ "${#stale_uploads[@]}" -gt 0 ]; then
+  echo ""
+  echo "Action needed: ${#stale_uploads[@]} skill(s) uploaded to claude.ai (cloud agents) are out of date:"
+  for name in "${stale_uploads[@]}"; do
+    echo "  - $name -> $UPLOAD_DIR/$name.zip"
+  done
+  echo "Re-upload these zips in claude.ai skill settings, replacing the existing skill."
+  echo "The local cache refreshes after Claude desktop picks up the upload, so this may repeat briefly."
+fi

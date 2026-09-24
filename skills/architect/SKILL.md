@@ -5,15 +5,19 @@ description: "Design features, subsystems, and substantial refactors through com
 
 # Architect
 
-Design a system the user can understand and agents can implement without inventing its architecture along the way. Keep the design focused on the current goal. Favor simple structures that make the correct path obvious over layers, fallbacks, or abstractions for hypothetical needs.
+Work through the architecture until you can implement it without unresolved material design decisions. Keep the design focused on the current goal. Favor simple structures that make the correct path obvious over layers, fallbacks, or abstractions for hypothetical needs.
+
+Design readiness and human presentation are separate responsibilities. Resolve the important implementation questions and keep supporting detail available for implementation. Concision limits what you present to the user, not how deeply you design; it does not require an exhaustive user-facing design document.
 
 ## Ground The Design
 
 Code is the source of truth for existing behavior. Trace the affected implementation, call paths, state ownership, and verification commands. Do not infer behavior from names or familiar patterns. Separate verified constraints from assumptions and proposed changes. Use `new-task` when product intent needs alignment.
 
+Treat existing implementation as changeable, not a constraint to preserve. When designing a feature, consider redesigning or reimplementing the affected parts if that produces a simpler, clearer solution than extending them. Optimize for the resulting system, not the smallest diff. Keep changes tied to the goal, preserve required behavior, and explain significant replacements and their verification before implementation.
+
 ## Sketch Before Filling In Bodies
 
-Start from a concrete caller or user example and work backwards to the design. Show:
+Start from a concrete caller or user example and work backwards to the design. Work out:
 
 - The components involved, their responsibilities, and where their code belongs in the actual repository.
 - The end-to-end steps: who calls whom, what data crosses each boundary, and where state changes.
@@ -45,4 +49,12 @@ For broad or consequential designs, use independent subagent review focused on t
 
 Define observable success and how to verify the main path and important failure cases. A compiling interface sketch is not proof of runtime behavior. During authorized implementation, revisit the design if callers need repeated workarounds, unexpected state, or unsafe escapes instead of hiding the mismatch behind fallbacks.
 
-Use `teach` to explain the components, boundaries, and end-to-end flow, and `concisely` for presentation. Surface material decisions while the user can still adjust the design. An architecture request alone does not authorize implementation, broad refactoring, or external changes.
+## Present The Design To The Human
+
+Use `teach` and `concisely`. Treat the user's attention as scarce: present the highest-priority behavior and decisions needed to understand and assess the design, rather than a record of everything you worked through.
+
+Start with a concrete mental model. For changes to an existing system, prefer a simple before-and-after flow in a few steps or short pseudocode. Introduce only the types, states, or function signatures needed to understand that flow; use actual function names as references after explaining their roles. Keep routine internals, exhaustive edge cases, and supporting implementation detail outside the main explanation unless requested.
+
+Surface significant replacements, trade-offs, decisions needing user input, material uncertainty, and the essential verification plan while the user can still adjust the design. Keep detail available without making the user read it to understand the recommendation.
+
+An architecture request alone does not authorize implementation, broad refactoring, or external changes.

@@ -6,8 +6,7 @@ Trigger: manual or scheduled repo-health pass.
 
 Inputs:
 
-- `docs/VERIFY.md`,
-- `scripts/self-test.sh`,
+- `.agents/skills/verify-*` and its feature map,
 - existing test/build scripts,
 - recent failed/blocked verification reports.
 
