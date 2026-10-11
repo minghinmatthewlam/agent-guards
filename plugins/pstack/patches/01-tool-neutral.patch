@@ -1,15 +1,23 @@
-From 4591aecb214546f0be118edd169d3a92e07b22e6 Mon Sep 17 00:00:00 2001
+From 706f789f3c6d2380fee64f68246c4b018218dae8 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
-Date: Sun, 11 Oct 2026 17:21:26 -0400
+Date: Sun, 11 Oct 2026 18:13:25 -0400
 Subject: [PATCH] Make pstack tool-neutral
 
-Five fixes only: point every model-roles read and write at
-plugins/pstack/models.md (with Matthew's roles), run a role whose model the
-tool can't select natively with codex exec -m <slug>, name Claude Code and
-Codex transcript paths next to the Cursor ones, offer the repo's verify-*
-skill / driver next to control-cli and control-ui, and name the repo's
-review bots (e.g. Bugbot, Devin, perry) where pstack triages Bugbot. All
-other pstack wording stays verbatim.
+Fixes only, all other pstack wording verbatim:
+1. Every model-roles read and write names ~/.config/pstack/models.md, a
+   symlink to the tracked plugins/pstack/models.md (Matthew's roles).
+2. Codex ignores disable-model-invocation, so every skill gets
+   agents/openai.yaml with policy.allow_implicit_invocation: false.
+   Explicit $pstack:<skill> still works. poteto-mode and make-bot-ui get
+   hyphenated frontmatter names so $pstack:poteto-mode resolves.
+3. A role whose model the tool can't select natively runs with
+   codex exec -m <slug>, and one marked sentence maps Task /
+   subagent_type / readonly to the tool's own subagent tool.
+4. Claude Code and Codex transcript paths are named next to the Cursor ones.
+5. The repo's verify-* skill / driver is offered next to control-cli and
+   control-ui.
+6. The repo's review bots (e.g. Bugbot, Devin, perry) are named where pstack
+   triages Bugbot.
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ---
@@ -34,11 +42,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>
  .../skills/interrogate/agents/openai.yaml     |  2 ++
  .../pstack/skills/ketchup/agents/openai.yaml  |  2 ++
  .../agents/openai.yaml                        |  2 ++
+ plugins/pstack/skills/make-bot-ui/SKILL.md    |  2 +-
  .../skills/make-bot-ui/agents/openai.yaml     |  2 ++
  .../skills/no-comments/agents/openai.yaml     |  2 ++
  plugins/pstack/skills/poteto-help/SKILL.md    |  4 ++--
  .../skills/poteto-help/agents/openai.yaml     |  2 ++
- plugins/pstack/skills/poteto-mode/SKILL.md    |  8 ++++---
+ plugins/pstack/skills/poteto-mode/SKILL.md    | 10 ++++----
  .../skills/poteto-mode/agents/openai.yaml     |  2 ++
  .../poteto-mode/playbooks/autopilot-full.md   |  4 ++--
  .../poteto-mode/playbooks/autopilot-stack.md  |  2 +-
@@ -91,7 +100,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
  .../pstack/skills/unslop/agents/openai.yaml   |  2 ++
  plugins/pstack/skills/why/SKILL.md            |  2 +-
  plugins/pstack/skills/why/agents/openai.yaml  |  2 ++
- 78 files changed, 171 insertions(+), 37 deletions(-)
+ 79 files changed, 173 insertions(+), 39 deletions(-)
  create mode 100644 plugins/pstack/models.md
  create mode 100644 plugins/pstack/skills/architect/agents/openai.yaml
  create mode 100644 plugins/pstack/skills/arena/agents/openai.yaml
@@ -380,6 +389,17 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/make-bot-ui/SKILL.md b/plugins/pstack/skills/make-bot-ui/SKILL.md
+index 285df75..446342c 100644
+--- a/plugins/pstack/skills/make-bot-ui/SKILL.md
++++ b/plugins/pstack/skills/make-bot-ui/SKILL.md
+@@ -1,5 +1,5 @@
+ ---
+-name: Make Bot UI
++name: make-bot-ui
+ description: >-
+   Use when building a custom UI (page, dashboard, buttons) that should wake a
+   Grok Bot over a webhook, when the user must provide a webhook sender key, or
 diff --git a/plugins/pstack/skills/make-bot-ui/agents/openai.yaml b/plugins/pstack/skills/make-bot-ui/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -427,9 +447,16 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 3cad9b7..e52dd27 100644
+index 3cad9b7..a745a8a 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
+@@ -1,5 +1,5 @@
+ ---
+-name: Poteto Mode
++name: poteto-mode
+ description: poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.
+ disable-model-invocation: true
+ mode: true
 @@ -27,11 +27,11 @@ Remaining triggers:
  - Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`/technical-writing`).
  - Before commit → the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`).
