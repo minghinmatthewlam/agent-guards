@@ -238,7 +238,7 @@ twenty-four short skills, one principle each. `poteto-mode` indexes them inline 
 a few things `poteto-mode` references but doesn't bundle:
 
 - `/deslop` and the `deslop` skill ship in the `cursor-team-kit` plugin.
-- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too.
+- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too, or the repo's `verify-*` skill / driver.
 - `/create-skill` is a cursor built-in. cursor also ships a built-in `/babysit`; inside `poteto-mode`, the [babysit playbook](./skills/poteto-mode/playbooks/babysit.md) supersedes it for pr-status requests.
 
 install `cursor-team-kit` alongside pstack if you want the full set.
