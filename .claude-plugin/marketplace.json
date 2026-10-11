@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "agent-guards",
+  "description": "Matthew Lam's agent-guards plugins",
+  "owner": {
+    "name": "Matthew Lam"
+  },
+  "plugins": [
+    {
+      "name": "pstack",
+      "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence.",
+      "author": {
+        "name": "Lauren Tan"
+      },
+      "category": "development",
+      "source": "./plugins/pstack",
+      "homepage": "https://github.com/cursor/plugins/tree/main/pstack"
+    }
+  ]
+}
