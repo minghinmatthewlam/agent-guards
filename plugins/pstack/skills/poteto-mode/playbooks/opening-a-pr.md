@@ -31,4 +31,18 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
 
 **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
 
+<!-- matthew: start -->
+**Understanding gate.** Before any merge an agent performs, the human has seen a key-points brief: what changed for the user, how it works at a high level, the evidence, and the risks. Write it in the **teach** skill's style. The human must say they understand. Only a trivial change, such as a docs-only edit, skips this gate.
+
+**Merge rule.** An agent merges only when all of these hold:
+
+- The human approved the intent.
+- The human passed the understanding gate.
+- The change is low risk and high confidence.
+- The repo's required reviewers or bots approved, and every comment is addressed.
+- CI is green.
+
+Otherwise it stops at merge-ready. Never enable auto-merge.
+<!-- matthew: end -->
+
 A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.
