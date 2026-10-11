@@ -1,0 +1,1027 @@
+From 4591aecb214546f0be118edd169d3a92e07b22e6 Mon Sep 17 00:00:00 2001
+From: Matthew Lam <matthew.lam@openrouter.ai>
+Date: Sun, 11 Oct 2026 17:21:26 -0400
+Subject: [PATCH] Make pstack tool-neutral
+
+Five fixes only: point every model-roles read and write at
+plugins/pstack/models.md (with Matthew's roles), run a role whose model the
+tool can't select natively with codex exec -m <slug>, name Claude Code and
+Codex transcript paths next to the Cursor ones, offer the repo's verify-*
+skill / driver next to control-cli and control-ui, and name the repo's
+review bots (e.g. Bugbot, Devin, perry) where pstack triages Bugbot. All
+other pstack wording stays verbatim.
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+---
+ plugins/pstack/README.md                      |  2 +-
+ plugins/pstack/docs/guide/01-setup.md         |  2 +-
+ plugins/pstack/models.md                      | 24 +++++++++++++++++++
+ plugins/pstack/skills/architect/SKILL.md      |  2 +-
+ .../skills/architect/agents/openai.yaml       |  2 ++
+ plugins/pstack/skills/arena/SKILL.md          |  4 ++--
+ .../pstack/skills/arena/agents/openai.yaml    |  2 ++
+ plugins/pstack/skills/automate-me/SKILL.md    |  2 +-
+ .../skills/automate-me/agents/openai.yaml     |  2 ++
+ .../benchmark-checklist/agents/openai.yaml    |  2 ++
+ .../skills/blast-radius/agents/openai.yaml    |  2 ++
+ plugins/pstack/skills/bro/agents/openai.yaml  |  2 ++
+ .../pstack/skills/correct/agents/openai.yaml  |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../skills/figure-it-out/agents/openai.yaml   |  2 ++
+ plugins/pstack/skills/how/SKILL.md            |  2 +-
+ plugins/pstack/skills/how/agents/openai.yaml  |  2 ++
+ plugins/pstack/skills/interrogate/SKILL.md    |  2 +-
+ .../skills/interrogate/agents/openai.yaml     |  2 ++
+ .../pstack/skills/ketchup/agents/openai.yaml  |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../skills/make-bot-ui/agents/openai.yaml     |  2 ++
+ .../skills/no-comments/agents/openai.yaml     |  2 ++
+ plugins/pstack/skills/poteto-help/SKILL.md    |  4 ++--
+ .../skills/poteto-help/agents/openai.yaml     |  2 ++
+ plugins/pstack/skills/poteto-mode/SKILL.md    |  8 ++++---
+ .../skills/poteto-mode/agents/openai.yaml     |  2 ++
+ .../poteto-mode/playbooks/autopilot-full.md   |  4 ++--
+ .../poteto-mode/playbooks/autopilot-stack.md  |  2 +-
+ .../skills/poteto-mode/playbooks/babysit.md   |  2 +-
+ .../skills/poteto-mode/playbooks/eval.md      |  2 +-
+ .../poteto-mode/playbooks/multi-phase-plan.md |  8 +++----
+ .../poteto-mode/playbooks/orchestrate.md      |  2 +-
+ .../poteto-mode/playbooks/session-pickup.md   |  2 +-
+ .../skills/poteto-mode/playbooks/shipping.md  |  2 +-
+ .../poteto-mode/references/bugbot-triage.md   |  2 +-
+ .../poteto-mode/scripts/worktree-audit.sh     |  8 +++++--
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ plugins/pstack/skills/recall/SKILL.md         |  2 +-
+ .../pstack/skills/recall/agents/openai.yaml   |  2 ++
+ plugins/pstack/skills/reflect/SKILL.md        |  4 ++--
+ .../pstack/skills/reflect/agents/openai.yaml  |  2 ++
+ plugins/pstack/skills/setup-pstack/SKILL.md   |  6 ++---
+ .../skills/setup-pstack/agents/openai.yaml    |  2 ++
+ .../pstack/skills/show-me-your-work/SKILL.md  |  2 +-
+ .../show-me-your-work/agents/openai.yaml      |  2 ++
+ plugins/pstack/skills/swarm/SKILL.md          |  2 +-
+ .../pstack/skills/swarm/agents/openai.yaml    |  2 ++
+ plugins/pstack/skills/tdd/agents/openai.yaml  |  2 ++
+ .../pstack/skills/teach/agents/openai.yaml    |  2 ++
+ .../technical-writing/agents/openai.yaml      |  2 ++
+ .../agents/openai.yaml                        |  2 ++
+ .../pstack/skills/unslop/agents/openai.yaml   |  2 ++
+ plugins/pstack/skills/why/SKILL.md            |  2 +-
+ plugins/pstack/skills/why/agents/openai.yaml  |  2 ++
+ 78 files changed, 171 insertions(+), 37 deletions(-)
+ create mode 100644 plugins/pstack/models.md
+ create mode 100644 plugins/pstack/skills/architect/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/arena/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/automate-me/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/benchmark-checklist/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/blast-radius/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/bro/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/correct/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/create-verification-skill/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/figure-it-out/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/how/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/interrogate/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/ketchup/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/make-bot-ui/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/no-comments/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/poteto-help/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/poteto-mode/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-attack-the-premise/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-boundary-discipline/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-build-the-lever/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-encode-lessons-in-structure/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-exhaust-the-design-space/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-experience-first/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-explain-the-number/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-fix-root-causes/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-foundational-thinking/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-guard-the-context-window/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-laziness-protocol/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-make-operations-idempotent/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-minimize-reader-load/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-model-the-domain/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-never-block-on-the-human/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-outcome-oriented-execution/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-prove-it-works/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-redesign-from-first-principles/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-separate-before-serializing-shared-state/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-sequence-verifiable-units/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-subtract-before-you-add/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-test-behavior-not-implementation/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/principle-type-system-discipline/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/recall/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/reflect/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/setup-pstack/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/show-me-your-work/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/swarm/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/tdd/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/teach/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/technical-writing/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/typescript-best-practices/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/unslop/agents/openai.yaml
+ create mode 100644 plugins/pstack/skills/why/agents/openai.yaml
+
+diff --git a/plugins/pstack/README.md b/plugins/pstack/README.md
+index f335b43..5acc28f 100644
+--- a/plugins/pstack/README.md
++++ b/plugins/pstack/README.md
+@@ -238,7 +238,7 @@ twenty-four short skills, one principle each. `poteto-mode` indexes them inline
+ a few things `poteto-mode` references but doesn't bundle:
+ 
+ - `/deslop` and the `deslop` skill ship in the `cursor-team-kit` plugin.
+-- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too.
++- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too, or the repo's `verify-*` skill / driver.
+ - `/create-skill` is a cursor built-in. cursor also ships a built-in `/babysit`; inside `poteto-mode`, the [babysit playbook](./skills/poteto-mode/playbooks/babysit.md) supersedes it for pr-status requests.
+ 
+ install `cursor-team-kit` alongside pstack if you want the full set.
+diff --git a/plugins/pstack/docs/guide/01-setup.md b/plugins/pstack/docs/guide/01-setup.md
+index 62420df..a2e5bee 100644
+--- a/plugins/pstack/docs/guide/01-setup.md
++++ b/plugins/pstack/docs/guide/01-setup.md
+@@ -20,7 +20,7 @@ Run:
+ /setup-pstack
+ ```
+ 
+-[`/setup-pstack`](../../skills/setup-pstack/SKILL.md) detects the models you have access to, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `~/.cursor/rules/pstack-models.mdc`, a small rule every pstack skill reads.
++[`/setup-pstack`](../../skills/setup-pstack/SKILL.md) detects the models you have access to, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `~/.config/pstack/models.md`, a small rule every pstack skill reads.
+ 
+ The defaults run at `xhigh` reasoning, the same as the `large` budget. `unlimited` lifts each model to its highest tier, up to `max`. Opus goes to `max`. Grok tops out at `xhigh`, so it stays there. `medium` and `small` lower the reasoning and spend fewer tokens.
+ 
+diff --git a/plugins/pstack/models.md b/plugins/pstack/models.md
+new file mode 100644
+index 0000000..6ab4e3a
+--- /dev/null
++++ b/plugins/pstack/models.md
+@@ -0,0 +1,24 @@
++---
++description: pstack per-role model choices (overrides skill defaults)
++alwaysApply: true
++---
++# pstack model configuration. One line per role. Delete a line to fall back to the skill default.
++# `inherit-parent` or `auto` as a value: the role runs on the parent chat model (omit Task `model`). Alias entries in a panel list still count toward its fan-out.
++# budget: large (xhigh)
++feature, refactoring: anthropic/claude-opus-5.5
++bug-fix: anthropic/claude-opus-5.5
++perf-issue: anthropic/claude-opus-5.5
++hillclimb: anthropic/claude-opus-5.5
++judgment and prose: anthropic/claude-opus-5.5
++hardest tasks: anthropic/claude-opus-5.5
++how explorer: anthropic/claude-opus-5.5
++how explainer: anthropic/claude-opus-5.5
++why investigators: anthropic/claude-opus-5.5
++why synthesizer: anthropic/claude-opus-5.5
++reflect tooling: anthropic/claude-opus-5.5
++reflect judgment, divergent, synthesizer: anthropic/claude-opus-5.5
++arena runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
++arena cross-judge pool: openai/gpt-6-astra, google/gemini-3.8-flash
++swarm workers: anthropic/claude-opus-5.5
++architect runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
++interrogate reviewers: anthropic/claude-opus-5.5, openai/gpt-6-astra, google/gemini-3.8-flash
+diff --git a/plugins/pstack/skills/architect/SKILL.md b/plugins/pstack/skills/architect/SKILL.md
+index 88e23ca..de7e2ee 100644
+--- a/plugins/pstack/skills/architect/SKILL.md
++++ b/plugins/pstack/skills/architect/SKILL.md
+@@ -28,7 +28,7 @@ Skip Phase A only when the work is genuinely greenfield with no surrounding syst
+ 
+ Run the **arena** skill with the design-sketch task and the Phase A grounding artifacts. Pass `references/runner-prompt.md` as each runner's prompt.
+ 
+-Take the runners from the `architect runners` line in the `pstack-models.mdc` rule, in place of the `arena runners` line. If the rule or that line is missing, use `claude-opus-5-5-xhigh` and `grok-4.7-xhigh-fast`. Alias and rejected entries follow the runner rules in the **arena** skill's Phase A.
++Take the runners from the `architect runners` line in the `~/.config/pstack/models.md` rule, in place of the `arena runners` line. If the rule or that line is missing, use `claude-opus-5-5-xhigh` and `grok-4.7-xhigh-fast`. Alias and rejected entries follow the runner rules in the **arena** skill's Phase A.
+ 
+ Design it twice. Require at least two structurally distinct candidates before synthesis, even when the first looks sufficient. This is the **exhaust-the-design-space** principle skill made concrete. Whole-shape alternatives, not point fixes inside one shape.
+ 
+diff --git a/plugins/pstack/skills/architect/agents/openai.yaml b/plugins/pstack/skills/architect/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/architect/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/arena/SKILL.md b/plugins/pstack/skills/arena/SKILL.md
+index 58ae9d9..602dc20 100644
+--- a/plugins/pstack/skills/arena/SKILL.md
++++ b/plugins/pstack/skills/arena/SKILL.md
+@@ -14,7 +14,7 @@ Every candidate gets the same prompt, so the prompt is the contract.
+ 
+ 1. State the artifact each candidate is producing.
+ 2. Derive the rubric, 3-6 concrete gradeable criteria for what success looks like on *this* task. It is the picker's tool in Phase D. Candidates only see the task.
+-3. Pick the runners. Use the `arena runners` line in `~/.cursor/rules/pstack-models.mdc`. If the rule or that line is missing, default to one each on `claude-opus-5-5-xhigh` and `grok-4.7-xhigh-fast`. An `auto` or `inherit-parent` entry in this line or the cross-judge line means the parent model, so omit `model` for it. If the Task tool rejects a configured entry, run that seat on its family's default and say so. Families go by prefix: `claude-*` and `grok-*`. With no family match, use `claude-opus-5-5-xhigh`. If it rejects a default, use the closest valid slug of the same family from its error message. Spawn more runners when the arena covers multiple design directions. Use the same model N times when the work is generation-bound rather than judgment-sensitive.
++3. Pick the runners. Use the `arena runners` line in `~/.config/pstack/models.md`. If the rule or that line is missing, default to one each on `claude-opus-5-5-xhigh` and `grok-4.7-xhigh-fast`. An `auto` or `inherit-parent` entry in this line or the cross-judge line means the parent model, so omit `model` for it. If the Task tool rejects a configured entry, run that seat on its family's default and say so. Families go by prefix: `claude-*` and `grok-*`. With no family match, use `claude-opus-5-5-xhigh`. If it rejects a default, use the closest valid slug of the same family from its error message. Spawn more runners when the arena covers multiple design directions. Use the same model N times when the work is generation-bound rather than judgment-sensitive.
+ 4. Give each candidate its own output location (a git worktree where possible, otherwise `/tmp/arena-<slug>/candidate-<n>/`), per the **separate-before-serializing-shared-state** principle skill.
+ 
+ ## Phase B: Fan out
+@@ -25,7 +25,7 @@ If a candidate produces no output, proceed with N-1 and note the dropout.
+ 
+ ## Phase C: Cross-judge
+ 
+-After all Phase B candidates complete, choose one model from the `arena cross-judge pool` line in `~/.cursor/rules/pstack-models.mdc`. If the rule or that line is missing, choose from `claude-opus-5-5-xhigh` and `grok-4.7-xhigh-fast`. Prefer a different model family from the parent's. Spawn one readonly judge subagent on that model. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your reading in Phase D. Don't spawn it while candidates are still writing.
++After all Phase B candidates complete, choose one model from the `arena cross-judge pool` line in `~/.config/pstack/models.md`. If the rule or that line is missing, choose from `claude-opus-5-5-xhigh` and `grok-4.7-xhigh-fast`. Prefer a different model family from the parent's. Spawn one readonly judge subagent on that model. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your reading in Phase D. Don't spawn it while candidates are still writing.
+ 
+ ## Phase D: Pick a base
+ 
+diff --git a/plugins/pstack/skills/arena/agents/openai.yaml b/plugins/pstack/skills/arena/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/arena/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/automate-me/SKILL.md b/plugins/pstack/skills/automate-me/SKILL.md
+index cd3636e..e0e3dab 100644
+--- a/plugins/pstack/skills/automate-me/SKILL.md
++++ b/plugins/pstack/skills/automate-me/SKILL.md
+@@ -26,7 +26,7 @@ Update mode changes the rest of the flow:
+ 
+ ### 1. Mine their history
+ 
+-Locate the active workspace's transcripts before fanning out. The system prompt names the workspace's `agent-transcripts/` directory. Use only that path. Don't glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
++Locate the active workspace's transcripts before fanning out. The system prompt names the workspace's `agent-transcripts/` directory (or `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/`). Use only that path. Don't glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
+ 
+ Survey recent agent conversations within that scope for recurring patterns. Run multiple parallel subagents across slices of history (e.g. last 2-4 weeks, split into 3 slices so each has enough material). Each slice mining subagent reads transcripts from the workspace-scoped path the parent provides, looks for the signals below, and returns a short structured list of patterns it saw with evidence pointers. Default signals worth hunting:
+ 
+diff --git a/plugins/pstack/skills/automate-me/agents/openai.yaml b/plugins/pstack/skills/automate-me/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/automate-me/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/benchmark-checklist/agents/openai.yaml b/plugins/pstack/skills/benchmark-checklist/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/benchmark-checklist/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/blast-radius/agents/openai.yaml b/plugins/pstack/skills/blast-radius/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/blast-radius/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/bro/agents/openai.yaml b/plugins/pstack/skills/bro/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/bro/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/correct/agents/openai.yaml b/plugins/pstack/skills/correct/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/correct/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/create-verification-skill/agents/openai.yaml b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/figure-it-out/agents/openai.yaml b/plugins/pstack/skills/figure-it-out/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/figure-it-out/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/how/SKILL.md b/plugins/pstack/skills/how/SKILL.md
+index 775d292..707380b 100644
+--- a/plugins/pstack/skills/how/SKILL.md
++++ b/plugins/pstack/skills/how/SKILL.md
+@@ -8,7 +8,7 @@ disable-model-invocation: true
+ 
+ Explore the codebase to answer "how does X work?" questions. Produce architectural explanations at the level of a senior engineer onboarding onto a subsystem, enough to build a working mental model, not so much that it reads like annotated source code.
+ 
+-Every spawn is a Task subagent with `subagent_type: generalPurpose` and `readonly: true`. Explorers use the `how explorer` line in the `pstack-models.mdc` rule (default `grok-4.7-xhigh-fast`), and every explainer uses the `how explainer` line (default `claude-opus-5-5-xhigh`). Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
++Every spawn is a Task subagent with `subagent_type: generalPurpose` and `readonly: true`. Explorers use the `how explorer` line in the `~/.config/pstack/models.md` rule (default `grok-4.7-xhigh-fast`), and every explainer uses the `how explainer` line (default `claude-opus-5-5-xhigh`). Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
+ 
+ ## 1. Assess complexity
+ 
+diff --git a/plugins/pstack/skills/how/agents/openai.yaml b/plugins/pstack/skills/how/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/how/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/interrogate/SKILL.md b/plugins/pstack/skills/interrogate/SKILL.md
+index 9e3b99a..6720645 100644
+--- a/plugins/pstack/skills/interrogate/SKILL.md
++++ b/plugins/pstack/skills/interrogate/SKILL.md
+@@ -24,7 +24,7 @@ Before spawning reviewers, state the intent in one clear paragraph from the user
+ 
+ ## Step 3, Spawn Reviewers
+ 
+-Launch all reviewers in a single message with the Task tool, one per entry on the `interrogate reviewers` line in `~/.cursor/rules/pstack-models.mdc`, labeled Reviewer A, B, and so on to match the entry count. If the rule or that line is missing, use the table defaults.
++Launch all reviewers in a single message with the Task tool, one per entry on the `interrogate reviewers` line in `~/.config/pstack/models.md`, labeled Reviewer A, B, and so on to match the entry count. If the rule or that line is missing, use the table defaults.
+ 
+ | Subagent | Default model |
+ |----------|---------------|
+diff --git a/plugins/pstack/skills/interrogate/agents/openai.yaml b/plugins/pstack/skills/interrogate/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/interrogate/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/ketchup/agents/openai.yaml b/plugins/pstack/skills/ketchup/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/ketchup/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/make-bot-ui/agents/openai.yaml b/plugins/pstack/skills/make-bot-ui/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/make-bot-ui/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/no-comments/agents/openai.yaml b/plugins/pstack/skills/no-comments/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/no-comments/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/poteto-help/SKILL.md b/plugins/pstack/skills/poteto-help/SKILL.md
+index 575d80f..fd6abd6 100644
+--- a/plugins/pstack/skills/poteto-help/SKILL.md
++++ b/plugins/pstack/skills/poteto-help/SKILL.md
+@@ -24,7 +24,7 @@ Infer the need from the message and the conversation. A named situation, such as
+ 
+ Check the state that changes the answer, and mention it only when it does:
+ 
+-- No `~/.cursor/rules/pstack-models.mdc` means `/setup-pstack` hasn't run for this user, so every role uses its default model.
++- No `~/.config/pstack/models.md` means `/setup-pstack` hasn't run for this user, so every role uses its default model.
+ - No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention `/create-verification-skill` when the question is about proving a change works.
+ 
+ When the model rule is missing and it matters, ask whether the user wants to pick a model for each role and a reasoning budget now. It matters when the user is new, the question is about setup or cost, or the answer depends on which models run. Ask at most once per chat. If the need is also unclear, ask both questions together. Offer two choices:
+@@ -104,7 +104,7 @@ Close calls:
+ 
+ Not in pstack:
+ 
+-- `/deslop`, `control-cli`, and `control-ui` ship in the `cursor-team-kit` plugin.
++- `/deslop`, `control-cli`, and `control-ui` ship in the `cursor-team-kit` plugin. For `control-cli` and `control-ui`, use the repo's `verify-*` skill / driver.
+ - `/loop` and `/create-skill` are Cursor built-ins.
+ - pstack has no `/orchestrate` skill. Orchestrate is a `/poteto-mode` playbook. If the slash menu shows `/orchestrate`, another plugin provides it.
+ 
+diff --git a/plugins/pstack/skills/poteto-help/agents/openai.yaml b/plugins/pstack/skills/poteto-help/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/poteto-help/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
+index 3cad9b7..e52dd27 100644
+--- a/plugins/pstack/skills/poteto-mode/SKILL.md
++++ b/plugins/pstack/skills/poteto-mode/SKILL.md
+@@ -27,11 +27,11 @@ Remaining triggers:
+ - Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`/technical-writing`).
+ - Before commit → the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`).
+ - Before review → the **no-comments** skill (`/no-comments`).
+-- Shipping UI / IDE / CLI → the matching control skill. `cursor-team-kit` publishes `control-cli` (CLIs and TUIs) and `control-ui` (browser / Electron / web UIs). For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
++- Shipping UI / IDE / CLI → the matching control skill. `cursor-team-kit` publishes `control-cli` (CLIs and TUIs) and `control-ui` (browser / Electron / web UIs), or the repo's `verify-*` skill / driver. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
+ - Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **benchmark-checklist** skill before you report or act on the number.
+ - Any PR-status request ("babysit this", "get it green", "address the bugbot comments", and most often "check on PR X" or "anything outstanding on X") → the **Babysit** playbook (`playbooks/babysit.md`), not Cursor's built-in babysit skill, whose description matches the same words. Never triggered by merely opening a PR. Declare its mode before polling. The playbook's step 1 owns the request-to-mode mapping. Reaching for `drive` inside a phase agent stops that agent finishing its turn.
+ - Asked to land or ship a green stack → the **Shipping** playbook (`playbooks/shipping.md`). Green is not safe. Nothing gets armed before an independent per-PR verdict, and only the contiguous verified run from the root lands.
+-- Bugbot or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`.
++- The repo's review bots (e.g. Bugbot, Devin, perry) or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`.
+ - Broken skill mid-task → fix it in its own PR. Don't block. Don't silently work around it.
+ - Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "/loop until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
+ 
+@@ -90,9 +90,11 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
+ 
+ ## Subagents
+ 
++<!-- tool-neutral: start -->`Task`, `subagent_type`, and `readonly` mean your tool's own subagent tool and its options (Claude Code's Agent tool, Codex's spawn_agent).<!-- tool-neutral: end -->
++
+ **Use `subagent_type: "poteto-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). `/poteto-mode` and `poteto-agent` route through the same wrapper. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`.
+ 
+-**Defaults for every `Task` call.** `run_in_background: true`, agent mode (readonly strips MCP), file pointers not inlined context, explicit model per role (configurable via `/setup-pstack`. Defaults `grok-4.7-xhigh-fast` for code, `claude-opus-5-5-xhigh` for prose and judgment). Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to your strongest judgment model (`claude-opus-5-5-xhigh`), whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your fast code model. Per-role lines in the `/setup-pstack` rule override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`). A role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model (omit Task `model`). Each code playbook's configured model comes from its line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`), and the hardest changes read `hardest tasks`. Prose and judgment read `judgment and prose`.
++**Defaults for every `Task` call.** `run_in_background: true`, agent mode (readonly strips MCP), file pointers not inlined context, explicit model per role (configurable via `/setup-pstack`. Defaults `grok-4.7-xhigh-fast` for code, `claude-opus-5-5-xhigh` for prose and judgment). Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to your strongest judgment model (`claude-opus-5-5-xhigh`), whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your fast code model. Per-role lines in the `/setup-pstack` rule (`~/.config/pstack/models.md`) override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`). A role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model (omit Task `model`). Each code playbook's configured model comes from its line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`), and the hardest changes read `hardest tasks`. Prose and judgment read `judgment and prose`. A role whose model the current tool can't select natively runs with `codex exec -m <slug>`.
+ 
+ You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. A second opinion is the same prompt against a different model. Agreement is high-signal.
+ 
+diff --git a/plugins/pstack/skills/poteto-mode/agents/openai.yaml b/plugins/pstack/skills/poteto-mode/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/poteto-mode/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
+index d5a68c3..dd9fe49 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
+@@ -3,9 +3,9 @@
+ **You own the verdicts, never the PRs. One owner runs each PR from build to merge, and nothing merges without your clean swarm verdict.** For "autopilot this queue", "full autopilot", and one-owner-per-PR programs. Orchestrate runs a standing program whose coordinator lands verified work itself and whose workers never merge. Here each PR's owner carries the whole lifecycle through the merge, and the root keeps only verification, countersigns, and audits.
+ 
+ 1. **Mark the operator's items and honor state-then-wait.** Items the operator names stay with the operator. The operator reviews and clicks, and no owner merges one. When the operator asks for the protocol or the plan to be stated, deliver the statement and stop. Execution starts only on the operator's explicit go.
+-2. **Spawn one owner per PR with the full lifecycle and an early trail.** Resolve the forge once for the program. GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR create, edit, view, watch, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One Cursor cloud agent per PR owns build, the first push, a ready PR, self-proof on the real artifact (the **prove-it-works** principle skill), skeptical Bugbot triage per `../references/bugbot-triage.md`, a slop-strip (the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`)), `/no-comments` (the **no-comments** skill), a rebase onto current trunk, the babysit loop to green (`playbooks/babysit.md`), and the merge itself. Within about 15 minutes, every owner starts a `decisions.tsv` trail per the **show-me-your-work** skill, pushes its first branch snapshot, and opens the PR ready, never draft. After that, the owner pushes its branch again after every verifiable unit (hooks on, a WIP commit is fine). Open the PR before self-proof so the URL, decisions, and checks form a durable trail. Keep `decisions.tsv` uncommitted and return it with the reports. As soon as a subagent starts, the owner adds its ID, expected runtime (at least the longest past run of that kind), and state to a `children.tsv` kept the same way. The owner does the first rebase before the code-ready report and babysit, whether or not trunk has drifted. In fix rounds, the owner keeps that merge base. The owner rebases again only at merge prep (step 5), on a `git merge-tree` conflict with trunk, or on a CI failure that comes from a change on trunk. When the shipped code is final, after the slop-strip and `/no-comments`, it reports the code-ready head SHA. It also reports the SHA of each later push that changes the patch. Self-proof, CI, and babysit then run in parallel with the swarm. The owner reports merge-ready with the head SHA when self-proof, CI, and babysit finish. Before a push that starts a round, run the pre-review checks that the repo's AGENTS.md files and rules name for the touched paths. Run them on the committed head. A hook pass is not proof. To publish each rebase, push the owner's own branch with `git push --force-with-lease` after an `ls-remote` check. Never force-push a shared branch. The merge is the one step an owner may not take alone. Step 4 gates it.
++2. **Spawn one owner per PR with the full lifecycle and an early trail.** Resolve the forge once for the program. GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR create, edit, view, watch, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One Cursor cloud agent per PR owns build, the first push, a ready PR, self-proof on the real artifact (the **prove-it-works** principle skill), skeptical review-bot (e.g. Bugbot, Devin, perry) triage per `../references/bugbot-triage.md`, a slop-strip (the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`)), `/no-comments` (the **no-comments** skill), a rebase onto current trunk, the babysit loop to green (`playbooks/babysit.md`), and the merge itself. Within about 15 minutes, every owner starts a `decisions.tsv` trail per the **show-me-your-work** skill, pushes its first branch snapshot, and opens the PR ready, never draft. After that, the owner pushes its branch again after every verifiable unit (hooks on, a WIP commit is fine). Open the PR before self-proof so the URL, decisions, and checks form a durable trail. Keep `decisions.tsv` uncommitted and return it with the reports. As soon as a subagent starts, the owner adds its ID, expected runtime (at least the longest past run of that kind), and state to a `children.tsv` kept the same way. The owner does the first rebase before the code-ready report and babysit, whether or not trunk has drifted. In fix rounds, the owner keeps that merge base. The owner rebases again only at merge prep (step 5), on a `git merge-tree` conflict with trunk, or on a CI failure that comes from a change on trunk. When the shipped code is final, after the slop-strip and `/no-comments`, it reports the code-ready head SHA. It also reports the SHA of each later push that changes the patch. Self-proof, CI, and babysit then run in parallel with the swarm. The owner reports merge-ready with the head SHA when self-proof, CI, and babysit finish. Before a push that starts a round, run the pre-review checks that the repo's AGENTS.md files and rules name for the touched paths. Run them on the committed head. A hook pass is not proof. To publish each rebase, push the owner's own branch with `git push --force-with-lease` after an `ls-remote` check. Never force-push a shared branch. The merge is the one step an owner may not take alone. Step 4 gates it.
+ 3. **Run owners in true parallel and never stack.** Many owners at once when PRs are self-contained: one writer per branch, disjoint files, cross-PR drift absorbed by rebase. Only genuinely overlapping work serializes. Self-contained PRs branch straight off main, and sequenced work is merge-then-branch. One exception: an owner that must split a genuinely dependent change may hold a short private base-branch stack.
+-4. **Swarm-verify every round before its merge.** A round starts at the owner's code-ready head SHA and at each later push that changes the PR's patch. At that SHA, fan out parallel independent verifiers per the **swarm** skill and aggregate to one verdict. The merge needs a clean verdict from the round whose patch matches the merge-ready head. Audit the receipts in the merge-ready report before the verdict. The lanes: re-run the gates at that SHA. Prove the load-bearing behavior live on the real surface the change touches (with the matching control skill, such as `control-cli` or `control-ui` from `cursor-team-kit`, or a named driver where none exists). Audit the diff, distrusting the PR body. Run the audit as two or more review lanes with the full brief. Give each lane one main focus, such as consumer parity with trunk, lifetimes and races, or data and config safety. **Regression lane against trunk.** Run the same load-bearing scenario on current trunk. If trunk does not have the feature, record that fact and gate the behavior the diff adds plus the end state the user waits for instead of pretending trunk can produce it. The live lane is the floor, and a verdict without it is not clean. No merge without the root's clean verdict. When the lanes return, send every proven finding against the PR to the owner in one fix-forward. A defect that a lane filed as a note is a finding. For each behavior finding, ask for a red test that covers every site with the same defect. Where no test can show the defect, ask for a repro receipt instead. Add that defect to the next round's review brief. The new head gets a fresh swarm and a fresh verdict, except for lane results that stay valid under the patch-id rule in `playbooks/shipping.md`.
++4. **Swarm-verify every round before its merge.** A round starts at the owner's code-ready head SHA and at each later push that changes the PR's patch. At that SHA, fan out parallel independent verifiers per the **swarm** skill and aggregate to one verdict. The merge needs a clean verdict from the round whose patch matches the merge-ready head. Audit the receipts in the merge-ready report before the verdict. The lanes: re-run the gates at that SHA. Prove the load-bearing behavior live on the real surface the change touches (with the matching control skill, such as `control-cli` or `control-ui` from `cursor-team-kit`, or the repo's `verify-*` skill / driver, or a named driver where none exists). Audit the diff, distrusting the PR body. Run the audit as two or more review lanes with the full brief. Give each lane one main focus, such as consumer parity with trunk, lifetimes and races, or data and config safety. **Regression lane against trunk.** Run the same load-bearing scenario on current trunk. If trunk does not have the feature, record that fact and gate the behavior the diff adds plus the end state the user waits for instead of pretending trunk can produce it. The live lane is the floor, and a verdict without it is not clean. No merge without the root's clean verdict. When the lanes return, send every proven finding against the PR to the owner in one fix-forward. A defect that a lane filed as a note is a finding. For each behavior finding, ask for a red test that covers every site with the same defect. Where no test can show the defect, ask for a repro receipt instead. Add that defect to the next round's review brief. The new head gets a fresh swarm and a fresh verdict, except for lane results that stay valid under the patch-id rule in `playbooks/shipping.md`.
+ 5. **On a clean verdict the owner merges, and a fresh owner takes the next item.** The owner merges only from a head freshly rebased onto trunk. Merge prep never comes before a round's lanes start, and it ends with a rebase onto current trunk right before the merge. After the merge-prep rebase, the owner reports the new head SHA. CI must pass on that head before the merge, and the patch-id rule decides whether the round's verdict still holds. Once that head is green and its patch-id matches the verdict's under the patch-id rule in `playbooks/shipping.md`, a later trunk move does not force another rebase. Right before the merge, fetch trunk and check that `git merge-tree` of the head against current trunk is clean. Also check that no path in `git diff --name-only $(git merge-base HEAD origin/main) origin/main` is a path the PR changes or a path that decides which CI runs for it, such as the repo's CI config paths. If either check fails, rebase again, report the new head SHA, wait for CI to pass on it, and repeat these checks. A new head voids the verdict unless the patch-id is unchanged. The owner squash-merges its own PR through the resolved forge and returns. A fresh owner picks up the next self-contained item from the queue, per poteto-mode's Subagents section. The operator's full-autonomy grant plus the root's clean verdict is the merge authorization that babysitting alone never has. Operator-named items stop at merge-ready and wait for the operator's click.
+ 6. **Run the root layer.** A genuinely new raise of a pinned gate or budget value (a limit CI only lets tighten) needs your fresh countersign, granted only after verifier proof. If the operator's grant or standing orders cover approvals, that countersign is the approval. The owner records it in the form that the tool's approval contract allows, with a pointer to the root's countersign. A lane checks the record against that countersign. The root never gives or bypasses an approval that the forge enforces. Absorbing values that already landed on main is drift, not a raise. Run an audit tick over all owners every hour. On the operator's go, arm `/loop 1h` with a prompt that runs this tick. `/loop` works in local and cloud roots. Never leave the cadence to memory or lossy completion notifications. At each tick, re-read this playbook from trunk with `git show origin/main:pstack/skills/poteto-mode/playbooks/autopilot-full.md` and audit the operation against it. Fix drift during that tick. Probe each owner with a generic liveness or status check, and collect the decision trails. Count only side effects as progress: commits, pushes, PR or check deltas, and store reports. Treat a lane that errors, or that passes its expected runtime without a side effect, as stuck. Stand it down and dispatch a replacement at once. Do not wait for a polite return. The tick judges an owner by the pushed branch and the decision trail that step 2 requires, and it replaces an owner whose agent cannot start a turn. Each tick also runs the lane stuck test over the program's agent list, where the platform has one, and over every owner's `children.tsv`. Whether or not a stop works, the root has the owner record each stuck subagent as stuck and, if its work is still needed, replace it. Each replacement that stalls gets the same steps. The root takes both steps when the owner cannot. A stall never proves or drops the work. When merges batch, run a retro pass and a post-merge bot-comment sweep. End the tick only when no delegated work is left, even after the last merge.
+ 7. **Stand down instantly on the operator's stop.** The operator's hold or stand-down reaches every owner as a zero-writes order immediately. Owners hold their briefs until the operator releases them.
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-stack.md b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-stack.md
+index 750a754..99f889e 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-stack.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-stack.md
+@@ -2,7 +2,7 @@
+ 
+ **You own the stack, never the landing. Build and verify the queue with full autonomy, then hand the operator one linear base-branch stack to review and land.** The sibling of **Autopilot-full**.
+ 
+-1. **Run the owner loop unchanged.** Resolve the forge once for the program. GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR create, edit, view, watch, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One Cursor cloud agent per PR owns its change end to end: build, first push, a ready PR opened before self-proof, self-proof (gates, CI, receipts), skeptical Bugbot triage per `../references/bugbot-triage.md`, a slop-strip (the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`)), `/no-comments` (the **no-comments** skill), and babysit to green per `playbooks/babysit.md`. Owners parallelize when the work is self-contained. Within about 15 minutes, every owner starts a `decisions.tsv` trail per the **show-me-your-work** skill, pushes its first branch snapshot, and opens the PR ready, never draft. After that, the owner pushes its branch again after every verifiable unit (hooks on, a WIP commit is fine). Keep the trail uncommitted and return it in the report. Owners also keep the `children.tsv` of Autopilot-full step 2.
++1. **Run the owner loop unchanged.** Resolve the forge once for the program. GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR create, edit, view, watch, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One Cursor cloud agent per PR owns its change end to end: build, first push, a ready PR opened before self-proof, self-proof (gates, CI, receipts), skeptical review-bot (e.g. Bugbot, Devin, perry) triage per `../references/bugbot-triage.md`, a slop-strip (the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`)), `/no-comments` (the **no-comments** skill), and babysit to green per `playbooks/babysit.md`. Owners parallelize when the work is self-contained. Within about 15 minutes, every owner starts a `decisions.tsv` trail per the **show-me-your-work** skill, pushes its first branch snapshot, and opens the PR ready, never draft. After that, the owner pushes its branch again after every verifiable unit (hooks on, a WIP commit is fine). Keep the trail uncommitted and return it in the report. Owners also keep the `children.tsv` of Autopilot-full step 2.
+ 2. **Audit on a real loop.** The root runs an audit tick every hour. On the operator's go, the root arms `/loop 1h` with a prompt that runs this tick, per Autopilot-full step 6. Never leave the cadence to memory or lossy completion notifications. At each tick, re-read this playbook from trunk with `git show origin/main:pstack/skills/poteto-mode/playbooks/autopilot-stack.md` and audit the operation against it. Fix drift during that tick. Probe each owner with a generic liveness or status check. Count only side effects as progress: commits, pushes, PR or check deltas, and store reports. Treat a lane that passes its expected runtime without a side effect as stuck. Stand it down and dispatch a replacement at once. Do not wait for a polite return. Probe all subagents and end the tick per Autopilot-full step 6.
+ 3. **Hold the operator gates.** State-then-wait, so a request to state the plan is not a go. On the operator's stop, every owner takes an immediate zero-writes hold.
+ 4. **Verify each round.** The owner reports its code-ready head SHA once the shipped code is final, and STACK-READY with the exact head SHA when its loop is green. The root verifies each round per Autopilot-full step 4, with STACK-READY in place of merge-ready. Nothing enters the stack unverified.
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/babysit.md b/plugins/pstack/skills/poteto-mode/playbooks/babysit.md
+index 683cf0b..798d75b 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/babysit.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/babysit.md
+@@ -19,7 +19,7 @@ Babysitting starts when the user asks for it, which is normally once a phase or
+ 
+    Answer a user question mid-loop and continue. Only an explicit stop ends the loop before the active forge's stop condition. On GitHub, that is `READY` in single or stack mode, or a `WAITING`/`merge-queue` report or `COMPLETE` in queued mode. On Origin, that is the merge-ready state defined above. For a GitHub queued stack, capture the PR list bottom-to-top once and pass the same frozen list to every rearm. Revise the list only for the sanctioned follow-up PR from step 4. Append it at the end, drop the merged owner, and rearm with the corrected snapshot.
+ 7. **Classify CI before any retrigger.** Flake or infrastructure earns one fresh build, never a job retry. One retry only. An identical second failure means it was never flake, so reclassify and read the child logs instead of retrying blind. A failure in code the diff never touches means a stale base, so check with `git merge-base --is-ancestor` before assuming flake. Report a stale base as needing a rebase instead of burning retries. Only a failure in the diff's own code gets a commit.
+-8. **Bugbot is triaged skeptically, always.** Verify each claim against the code per `../references/bugbot-triage.md`. Fix real findings with a red-first proof in the lowest PR that owns the code, never at the tip unless the owning PR has merged. In that case, use step 4's sanctioned follow-up PR. Per step 2, upstack fixes wait for step 5's next frontier-driven push wave. Push that wave before replying so the reply cites the commit. On Origin, reply with `origin pr thread reply <thread-id> <pr> --body-file <reply-file>`. On GitHub, call `gh api --method POST "repos/<owner>/<repo>/pulls/<pr>/comments/<comment-id>/replies" --input <payload.json>` and put the reply body in the JSON file as data. Never interpolate comment text or a reply into a shell command. Dismiss noise with the concrete disproof on the thread. On GitHub, use the watcher's Bugbot pass count. On Origin, derive the pass count from `origin pr thread list` and the review history. From the third pass on, lean toward dismissing documented patterns, still escalating anything touching security, auth, billing, data, or migrations rather than dismissing it yourself. Never churn code to quiet a bot.
++8. **The repo's review bots (e.g. Bugbot, Devin, perry) are triaged skeptically, always.** Verify each claim against the code per `../references/bugbot-triage.md`. Fix real findings with a red-first proof in the lowest PR that owns the code, never at the tip unless the owning PR has merged. In that case, use step 4's sanctioned follow-up PR. Per step 2, upstack fixes wait for step 5's next frontier-driven push wave. Push that wave before replying so the reply cites the commit. On Origin, reply with `origin pr thread reply <thread-id> <pr> --body-file <reply-file>`. On GitHub, call `gh api --method POST "repos/<owner>/<repo>/pulls/<pr>/comments/<comment-id>/replies" --input <payload.json>` and put the reply body in the JSON file as data. Never interpolate comment text or a reply into a shell command. Dismiss noise with the concrete disproof on the thread. On GitHub, use the watcher's Bugbot pass count. On Origin, derive the pass count from `origin pr thread list` and the review history. From the third pass on, lean toward dismissing documented patterns, still escalating anything touching security, auth, billing, data, or migrations rather than dismissing it yourself. Never churn code to quiet a bot.
+ 9. **Stop at the human's line.** Owner approval is a wait, not a blocker to fix. Babysitting never authorizes merging. Only an explicit request to merge, land, ship, or merge when ready does. Route that request to Shipping. Surface the escalation and keep working the rest. After GitHub reports `READY`, a queued `WAITING`/`merge-queue` stop, or `COMPLETE`, or after Origin reports the frontier merge-ready, sweep the run's triage decisions once. Offer any team-useful dismissal pattern as a candidate entry in the shared rubric (`../references/bugbot-triage.md`) and its own PR. Never keep it only in private memory.
+ 
+ `drive` ends at merge-ready. Landing the stack is `playbooks/shipping.md`.
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/eval.md b/plugins/pstack/skills/poteto-mode/playbooks/eval.md
+index 3dae34e..64dcd34 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/eval.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/eval.md
+@@ -19,7 +19,7 @@
+ 3. **Author one organic prompt.** What a user would type. No leakage of what's being measured.
+ 4. **Spawn N parallel candidates** on different models per the **arena** skill's Phase B. Each works in its own sanitized dir. Same prompt to each.
+ 5. **Spawn one blinded judge** on a different model family per the **arena** skill's Phase C. Judge sees outputs by sanitized label and the rubric, never a model name.
+-6. **Verify the chain from transcripts, not self-report.** Read each candidate's local transcript under the active workspace's `agent-transcripts/` directory (the system prompt names this path). Do not glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects. Look at which files each candidate actually opened. Grade chain-following from the files it really read plus the shape of the code, never from the candidate's own claims.
++6. **Verify the chain from transcripts, not self-report.** Read each candidate's local transcript under the active workspace's `agent-transcripts/` directory (the system prompt names this path), or `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/`. Do not glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects. Look at which files each candidate actually opened. Grade chain-following from the files it really read plus the shape of the code, never from the candidate's own claims.
+ 7. **Read every candidate output yourself** end to end. Compare to the judge's verdict. Disagreement means a model is biased or the rubric is ambiguous. Synthesize.
+ 
+ **Reply:** variant under test, rubric, per-candidate notes, judge's verdict, your synthesis, and a recommendation for whether to promote the variant.
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md b/plugins/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md
+index f8ed78a..949abc1 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md
+@@ -12,7 +12,7 @@
+ 
+ **Verification.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked (the **prove-it-works** principle skill). That sentence is the verification rule. Every verification block opens with it. The live block is mandatory. Ten lanes at the PR head drive the real surface through its control skill, per the **swarm** skill, on the `swarm workers` model (default `grok-4.7-xhigh-fast`). Each lane is one box with a concrete scenario, the screenshot it saves, and its pass predicate. One lane is the **Regression lane against trunk.** It runs the same load-bearing scenario on trunk and head. If trunk does not have the feature, the lane records that fact and gates the behavior the diff adds plus the end state the user waits for instead of inventing a trunk result. The perf gate is dual-sided. Trunk and head must both produce the named metric. If trunk lacks the feature, also isolate the work the diff adds and set an absolute budget for that work plus the end-to-end state the user waits for. Do not claim a ratio between unlike scenarios. The perf block names the metric, the interleaved probe, the trunk baseline measured first, and the rule with the number that fails. A PR that changes an interaction is review-gated. The operator reviews it in chat with screenshots and a video before merge. A PR that changes no interaction writes `**Review gate.** None. <PR id> is not review-gated.` and no boxes under it.
+ 
+-**Control skill.** Pick it by surface. Browser, Electron, and web UIs use `control-ui` from `cursor-team-kit`. CLIs and TUIs use `control-cli` from `cursor-team-kit`. Native mobile uses whatever simulator-driving skill the repo has. A PR that touches two surfaces gets lanes on both. A surface with no control skill is a risk in Appendix C, and its live block still names how each lane drives it.
++**Control skill.** Pick it by surface. Browser, Electron, and web UIs use `control-ui` from `cursor-team-kit`, or the repo's `verify-*` skill / driver. CLIs and TUIs use `control-cli` from `cursor-team-kit`, or the repo's `verify-*` skill / driver. Native mobile uses whatever simulator-driving skill the repo has. A PR that touches two surfaces gets lanes on both. A surface with no control skill is a risk in Appendix C, and its live block still names how each lane drives it.
+ 
+ ````markdown
+ # <Program> plan
+@@ -57,7 +57,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
+ - [ ] Open the PR ready, never draft, per **Opening a PR**. Use the run's built-in PR tool when it has one, else `origin pr create --status open --base <base-branch>` or `gh pr create --base <base-branch>` according to the resolved forge. A stack child targets its parent branch.
+ - [ ] Run the repo's lint and typecheck once before the PR-facing push. Push with hooks on.
+ - [ ] Run `/deslop` before each commit and `/no-comments` before review.
+-- [ ] Triage every Bugbot and security-reviewer comment per `../references/bugbot-triage.md`.
++- [ ] Triage every review-bot (e.g. Bugbot, Devin, perry) and security-reviewer comment per `../references/bugbot-triage.md`.
+ - [ ] Rebase onto current trunk before the code-ready report and babysit. Keep that merge base in fix rounds. Rebase again only at merge prep, on a `git merge-tree` conflict with trunk, or on a CI failure that comes from a change on trunk.
+ 
+ ### Verdict and merge, for every PR
+@@ -68,7 +68,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
+ 
+ ### Boot recipe, for every live lane
+ 
+-Each live lane runs on its own cloud VM at the PR head. Drive through `control-ui` or `control-cli` from `cursor-team-kit`.
++Each live lane runs on its own cloud VM at the PR head. Drive through `control-ui` or `control-cli` from `cursor-team-kit`, or the repo's `verify-*` skill / driver.
+ 
+ - [ ] `git fetch origin <head-branch> && git checkout <head SHA>`.
+ - [ ] <Start the backend and the surface. Wait for ready.>
+@@ -126,7 +126,7 @@ Each live lane runs on its own cloud VM at the PR head. Drive through `control-u
+ **Merge.**
+ 
+ - [ ] Root's clean verdict at the exact head SHA.
+-- [ ] Bugbot triage done.
++- [ ] Review-bot (e.g. Bugbot, Devin, perry) triage done.
+ - [ ] Rebased onto current trunk after the verdict, patch-id unchanged.
+ - [ ] <The owner squash-merges its own PR, or the root appends it to the base-branch stack and the operator lands it bottom-up.>
+ 
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md b/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
+index d5b6d00..fb86c4a 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
+@@ -14,7 +14,7 @@ Three rules carry the rest.
+ 
+ - **Coordinator (this chat).** Local. Frames, authors briefs, drains the inbox, owns the human report, makes judgment calls. It never authors or edits code. Conflicted merges, restacks, and code changes are always tasks. Mechanically landing a verified unit (fast-forward or clean cherry-pick of a worker's commit, then push) is bookkeeping the coordinator may do itself on repos where local git is cheap. Queueing finished work behind an idle stacker is how a deadline harvests nothing. The loop is agentic end to end. Agents are spawned, resumed, and drained only through the Task tool. State reads and writes go through `scripts/orch/orch.ts` at drain points, one command in and one line out. The CLI never spawns, waits, or wakes anything.
+ - **Sub-coordinator.** Always local, durable, one per track, and only when the program exceeds what one coordinator's drains can manage. A track the coordinator can drain itself needs no middle layer. Each nested layer re-pays a full orientation preamble, and a blocking sub-coordinator hides its children while the parent idles. Owns its track's units and boards, authors its workers' briefs, spawns its own workers and verifiers (nesting works to depth 3, and a nested spawn has the full Task schema including `environment`). Rolls up aggregates at wave boundaries. Never forwards raw child reports. Cap in-flight children at what one drain can process, roughly ten, as a rolling window. Never as blocking batches, which cost the slowest child of every batch.
+-- **Worker / verifier.** Always `environment: "cloud"` unless the task needs this machine: `control-ui` or `control-cli` runtime verification (from `cursor-team-kit`). Reading local transcripts under `agent-transcripts/`. Simulators and local IDE state. Auth that exists only here. Cloud agents cannot read the local store, so their briefs inline what they need or point at repo paths. Prefer fewer, broader workers. One writer per worktree or branch (principle-separate-before-serializing-shared-state). Run a unit's verifier on a different model family from its worker.
++- **Worker / verifier.** Always `environment: "cloud"` unless the task needs this machine: `control-ui` or `control-cli` runtime verification (from `cursor-team-kit`), or the repo's `verify-*` skill / driver. Reading local transcripts under `agent-transcripts/` (or `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/`). Simulators and local IDE state. Auth that exists only here. Cloud agents cannot read the local store, so their briefs inline what they need or point at repo paths. Prefer fewer, broader workers. One writer per worktree or branch (principle-separate-before-serializing-shared-state). Run a unit's verifier on a different model family from its worker.
+ 
+ Depth stays at coordinator, track, worker. Author the track decomposition per project (build, landing, and verification are common cuts, not a required shape). Hard-coded swarm trees were tried and parked as too rigid.
+ 
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/session-pickup.md b/plugins/pstack/skills/poteto-mode/playbooks/session-pickup.md
+index 9b2ed06..83f4b2c 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/session-pickup.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/session-pickup.md
+@@ -2,7 +2,7 @@
+ 
+ **You own the resume point. Read the prior trail, don't redo it.**
+ 
+-1. Locate the prior trail. A local transcript under the active workspace's `agent-transcripts/` directory (the system prompt names the path. Do not glob across `~/.cursor/projects/*/`, that crosses workspace boundaries and reads private chats from unrelated projects), a cloud-agent URL, or a pushed branch. Read the metadata overview and last messages first, then scan back for the decision points. Parse a long transcript in a subagent and keep the reduced timeline in the main thread (the **principle-guard-the-context-window** skill).
++1. Locate the prior trail. A local transcript under the active workspace's `agent-transcripts/` directory or `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/` (the system prompt names the path. Do not glob across `~/.cursor/projects/*/`, that crosses workspace boundaries and reads private chats from unrelated projects), a cloud-agent URL, or a pushed branch. Read the metadata overview and last messages first, then scan back for the decision points. Parse a long transcript in a subagent and keep the reduced timeline in the main thread (the **principle-guard-the-context-window** skill).
+ 2. Reconstruct operational state. The branch and worktree, what already landed (`git log`, `git diff` against the base), the open todos, the decisions made. The prior trail is authoritative input. Resist the bias to re-derive it.
+ 3. Diff done vs pending. Compare what shipped against what was planned, name the resume point, do not re-run the prior repro or redo completed work. A "let me verify from scratch" pass means you're treating the trail as untrustworthy when it's authoritative.
+ 4. Route the remaining work to the matching playbook and pick the verdict: continue the execution, ship a finished recommendation, ratify or override a prior conclusion, or postmortem a failed run. The pickup playbook ends here. The routed playbook owns the rest.
+diff --git a/plugins/pstack/skills/poteto-mode/playbooks/shipping.md b/plugins/pstack/skills/poteto-mode/playbooks/shipping.md
+index 0f1d41f..5807e47 100644
+--- a/plugins/pstack/skills/poteto-mode/playbooks/shipping.md
++++ b/plugins/pstack/skills/poteto-mode/playbooks/shipping.md
+@@ -4,7 +4,7 @@
+ 
+ This is the half after `playbooks/babysit.md`.
+ 
+-1. **Resolve the forge, then verify every PR independently.** GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR view, watch, edit, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One subagent per PR, not batched, each a Cursor cloud agent, each exercising the real surface with the matching control skill (such as `control-ui` or `control-cli` from `cursor-team-kit`) against parent versus head. Each returns `PASS`, `PASS+NOTES` or `FAIL` and posts that verdict on its own PR. Safe means a verdict from an agent that did not write the code. CI green is not a verdict, and an approving bot review is not a verdict.
++1. **Resolve the forge, then verify every PR independently.** GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR view, watch, edit, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One subagent per PR, not batched, each a Cursor cloud agent, each exercising the real surface with the matching control skill (such as `control-ui` or `control-cli` from `cursor-team-kit`, or the repo's `verify-*` skill / driver) against parent versus head. Each returns `PASS`, `PASS+NOTES` or `FAIL` and posts that verdict on its own PR. Safe means a verdict from an agent that did not write the code. CI green is not a verdict, and an approving bot review is not a verdict.
+ 2. **Land only the contiguous verified run rooted at the bottom.** Walk up from the lowest unmerged PR and stop at the first one without a passing verdict, where both `PASS` and `PASS+NOTES` pass. A verified PR sitting above an unverified one is not landable. Report the ceiling as a PR number and say what breaks the chain.
+ 3. **Re-check that each verdict still describes the patch.** Record the verdict head SHA, base SHA, and stable `git patch-id` of that PR's base-to-head diff. A rebase or base retarget rewrites SHAs and can silently invalidate a verdict without touching a check. Before landing a PR, compare the recorded patch-id with its current base-to-head patch-id. When the two patches differ only in tests, docs, or lint config, build what each lane ran. Build it twice at the verdict SHA and once at the current head. A difference is noise if the two builds at the verdict SHA also show it, or if it is an embedded commit SHA. Judge each difference, not each file, and report each kind of noise with its files. If only noise differs, that lane's result stays valid, and checks and a review of the change run fresh. Do not reuse a lane result from a dev server or from anything else with no build output. Rerun that lane. Re-verify anything else when the patch changed. When it did not, keep the code verdict but re-run mergeability and CI at the current head. Never use matching commit messages or a green check from an older SHA as a substitute.
+ 4. **Prepare only the bottom PR.** Fetch current trunk. Rebase the lowest verified branch onto the exact trunk tip when needed, push it, and retarget only that PR to trunk with `origin pr edit <pr> --base <trunk>` or `gh pr edit <pr> --base <trunk>`. Re-run step 3 after the push. Do not retarget, arm, or merge descendants yet.
+diff --git a/plugins/pstack/skills/poteto-mode/references/bugbot-triage.md b/plugins/pstack/skills/poteto-mode/references/bugbot-triage.md
+index b2fc7d3..5f179b9 100644
+--- a/plugins/pstack/skills/poteto-mode/references/bugbot-triage.md
++++ b/plugins/pstack/skills/poteto-mode/references/bugbot-triage.md
+@@ -1,6 +1,6 @@
+ # Bugbot triage
+ 
+-Use this reference when the Babysit playbook (`../playbooks/babysit.md`) handles Bugbot or review-automation comments. The goal is not to ignore Bugbot by default. The goal is to stop treating every comment as a required code change.
++Use this reference when the Babysit playbook (`../playbooks/babysit.md`) handles the repo's review-bot (e.g. Bugbot, Devin, perry) or review-automation comments. The goal is not to ignore the repo's review bots by default. The goal is to stop treating every comment as a required code change.
+ 
+ ## Decision rubric
+ 
+diff --git a/plugins/pstack/skills/poteto-mode/scripts/worktree-audit.sh b/plugins/pstack/skills/poteto-mode/scripts/worktree-audit.sh
+index b9af081..e504458 100755
+--- a/plugins/pstack/skills/poteto-mode/scripts/worktree-audit.sh
++++ b/plugins/pstack/skills/poteto-mode/scripts/worktree-audit.sh
+@@ -25,6 +25,9 @@ gh pr list --author "@me" --state all --limit 1000 \
+ # Transcripts dir: ~/.cursor/projects/<slugified-repo-path>/agent-transcripts.
+ slug=$(printf '%s' "$main_wt" | sed 's#^/##; s#/#-#g')
+ transcripts="$HOME/.cursor/projects/$slug/agent-transcripts"
++# Also ~/.claude/projects/*/*.jsonl and ~/.codex/sessions/.
++other_transcripts=()
++for d in "$HOME/.claude/projects" "$HOME/.codex/sessions"; do [ -d "$d" ] && other_transcripts+=("$d"); done
+ now=$(date +%s)
+ 
+ printf "SIZE\tAGE\tMERGED\tDIRTY\tREMOTE\tPR\tLAST_CHAT\tBUCKET\tWORKTREE\n"
+@@ -63,8 +66,9 @@ git worktree list --porcelain | awk '/^worktree /{print $2}' | while read -r wt;
+ 	# Most recent chat whose transcript operated in this worktree. Match path
+ 	# followed by "/" or a quote so glint-482 does not match glint-482-r37.
+ 	last="-"; last_ts=0
+-	if [ -d "$transcripts" ]; then
+-		f=$(rg -l -e "${wt}/" -e "${wt}\"" "$transcripts" 2>/dev/null \
++	search=(${other_transcripts[@]+"${other_transcripts[@]}"}); [ -d "$transcripts" ] && search=("$transcripts" ${search[@]+"${search[@]}"})
++	if [ "${#search[@]}" -gt 0 ]; then
++		f=$(rg -l -e "${wt}/" -e "${wt}\"" "${search[@]}" 2>/dev/null \
+ 			| xargs stat -f '%m %N' 2>/dev/null | sort -rn | head -1)
+ 		if [ -n "$f" ]; then last_ts=$(echo "$f" | awk '{print $1}')
+ 			last=$(date -r "$last_ts" '+%Y-%m-%d' 2>/dev/null); fi
+diff --git a/plugins/pstack/skills/principle-attack-the-premise/agents/openai.yaml b/plugins/pstack/skills/principle-attack-the-premise/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-attack-the-premise/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-boundary-discipline/agents/openai.yaml b/plugins/pstack/skills/principle-boundary-discipline/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-boundary-discipline/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-build-the-lever/agents/openai.yaml b/plugins/pstack/skills/principle-build-the-lever/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-build-the-lever/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-encode-lessons-in-structure/agents/openai.yaml b/plugins/pstack/skills/principle-encode-lessons-in-structure/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-encode-lessons-in-structure/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-exhaust-the-design-space/agents/openai.yaml b/plugins/pstack/skills/principle-exhaust-the-design-space/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-exhaust-the-design-space/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-experience-first/agents/openai.yaml b/plugins/pstack/skills/principle-experience-first/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-experience-first/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-explain-the-number/agents/openai.yaml b/plugins/pstack/skills/principle-explain-the-number/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-explain-the-number/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-fix-root-causes/agents/openai.yaml b/plugins/pstack/skills/principle-fix-root-causes/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-fix-root-causes/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-foundational-thinking/agents/openai.yaml b/plugins/pstack/skills/principle-foundational-thinking/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-foundational-thinking/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-guard-the-context-window/agents/openai.yaml b/plugins/pstack/skills/principle-guard-the-context-window/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-guard-the-context-window/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-laziness-protocol/agents/openai.yaml b/plugins/pstack/skills/principle-laziness-protocol/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-laziness-protocol/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-make-operations-idempotent/agents/openai.yaml b/plugins/pstack/skills/principle-make-operations-idempotent/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-make-operations-idempotent/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/agents/openai.yaml b/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-minimize-reader-load/agents/openai.yaml b/plugins/pstack/skills/principle-minimize-reader-load/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-minimize-reader-load/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-model-the-domain/agents/openai.yaml b/plugins/pstack/skills/principle-model-the-domain/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-model-the-domain/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-never-block-on-the-human/agents/openai.yaml b/plugins/pstack/skills/principle-never-block-on-the-human/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-never-block-on-the-human/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-outcome-oriented-execution/agents/openai.yaml b/plugins/pstack/skills/principle-outcome-oriented-execution/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-outcome-oriented-execution/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-prove-it-works/agents/openai.yaml b/plugins/pstack/skills/principle-prove-it-works/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-prove-it-works/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-redesign-from-first-principles/agents/openai.yaml b/plugins/pstack/skills/principle-redesign-from-first-principles/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-redesign-from-first-principles/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-separate-before-serializing-shared-state/agents/openai.yaml b/plugins/pstack/skills/principle-separate-before-serializing-shared-state/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-separate-before-serializing-shared-state/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-sequence-verifiable-units/agents/openai.yaml b/plugins/pstack/skills/principle-sequence-verifiable-units/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-sequence-verifiable-units/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-subtract-before-you-add/agents/openai.yaml b/plugins/pstack/skills/principle-subtract-before-you-add/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-subtract-before-you-add/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-test-behavior-not-implementation/agents/openai.yaml b/plugins/pstack/skills/principle-test-behavior-not-implementation/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-test-behavior-not-implementation/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/principle-type-system-discipline/agents/openai.yaml b/plugins/pstack/skills/principle-type-system-discipline/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/principle-type-system-discipline/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/recall/SKILL.md b/plugins/pstack/skills/recall/SKILL.md
+index a70062a..b87d752 100644
+--- a/plugins/pstack/skills/recall/SKILL.md
++++ b/plugins/pstack/skills/recall/SKILL.md
+@@ -12,7 +12,7 @@ Keep it tight and on-topic. Read only what the in-scope threads need, then stop.
+ 
+ Your context lives in two records. Your own chat history holds what you did and decided. The shared record holds everything that happened around the same code under other names: the symptoms users keep reporting, the fixes that shipped and got reverted, the errors still firing in prod. That second record is what the **why** skill searches, across source control, the issue tracker, chat and issue channels, long-form docs, and error tracking. A feature with a long bug tail keeps most of its story there, so don't reconstruct it from your transcripts alone.
+ 
+-Transcripts live at `~/.cursor/projects/<slug>/agent-transcripts/<uuid>/<uuid>.jsonl`, where `<slug>` is the workspace path with the leading slash dropped and each "/" turned into "-" (so `/Users/you/proj` becomes `Users-you-proj`). Every line is one chat message.
++Transcripts live at `~/.cursor/projects/<slug>/agent-transcripts/<uuid>/<uuid>.jsonl`, where `<slug>` is the workspace path with the leading slash dropped and each "/" turned into "-" (so `/Users/you/proj` becomes `Users-you-proj`). Claude Code and Codex transcripts live at `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/`. Every line is one chat message.
+ 
+ 1. Classify, then route. One specific prior chat to resume is the `session-pickup` playbook, not this. Turning habits into a durable skill is `automate-me`. A human-readable summary of your work is a different task. Recall loads working context across recent chats before you act. If the user already gave you a full state capsule (paths, branch, the change), use it and skip the mining.
+ 2. Lock the scope before searching. Pin the window ("recent" is a real range, default the last 7 days), the topic if named, and the workspace (default the active one. Never read another project's transcripts without being asked). State the scope back. Never quietly turn "all" into "recent N".
+diff --git a/plugins/pstack/skills/recall/agents/openai.yaml b/plugins/pstack/skills/recall/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/recall/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/reflect/SKILL.md b/plugins/pstack/skills/reflect/SKILL.md
+index b6bd41a..ffc4611 100644
+--- a/plugins/pstack/skills/reflect/SKILL.md
++++ b/plugins/pstack/skills/reflect/SKILL.md
+@@ -12,7 +12,7 @@ Invoke when the user says "reflect" or "/reflect". Skip when the conversation is
+ 
+ ## 1. Locate the active transcript
+ 
+-Before fanning out, find this conversation's transcript in the `agent-transcripts/` directory the system prompt names. Do not glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
++Before fanning out, find this conversation's transcript in the `agent-transcripts/` directory the system prompt names (or `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/`). Do not glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
+ 
+ ```bash
+ ls -t <agent-transcripts>/*.jsonl <agent-transcripts>/*/*.jsonl <agent-transcripts>/*/subagents/*.jsonl 2>/dev/null | head -10
+@@ -24,7 +24,7 @@ That covers the legacy flat (`<id>.jsonl`), current nested (`<id>/<id>.jsonl`),
+ 
+ One message, three `Task` calls, `subagent_type: generalPurpose`, agent mode (`readonly: false`). Reviewers need MCP access to look up the tickets, chat threads, and observability traces the transcript references, and readonly strips MCPs.
+ 
+-Each reviewer and the synthesizer name a role line in the `pstack-models.mdc` rule and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
++Each reviewer and the synthesizer name a role line in the `~/.config/pstack/models.md` rule and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
+ 
+ | Lens | Role line | Default `model` | Prompt template |
+ |---|---|---|---|
+diff --git a/plugins/pstack/skills/reflect/agents/openai.yaml b/plugins/pstack/skills/reflect/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/reflect/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/setup-pstack/SKILL.md b/plugins/pstack/skills/setup-pstack/SKILL.md
+index 90a9e57..7db1388 100644
+--- a/plugins/pstack/skills/setup-pstack/SKILL.md
++++ b/plugins/pstack/skills/setup-pstack/SKILL.md
+@@ -5,7 +5,7 @@ description: Configure which models pstack uses per role and at what reasoning b
+ 
+ # Setup pstack
+ 
+-Write `~/.cursor/rules/pstack-models.mdc`, an always-applied rule that sets pstack's model per role.
++Write `~/.config/pstack/models.md`, an always-applied rule that sets pstack's model per role.
+ 
+ ## Steps
+ 
+@@ -15,7 +15,7 @@ Enumerate the model slugs you can pass to a `Task` subagent in this session. Tha
+ 
+ ### 2. Load current state
+ 
+-The default role-to-model mapping is the rule shape shown in step 5 below. If `~/.cursor/rules/pstack-models.mdc` already exists, read it and treat its `# budget` line and its role values as the current choices. Otherwise start from those defaults. A line whose role is not in step 5, such as `how critics`, is from a retired role. Drop it.
++The default role-to-model mapping is the rule shape shown in step 5 below. If `~/.config/pstack/models.md` already exists, read it and treat its `# budget` line and its role values as the current choices. Otherwise start from those defaults. A line whose role is not in step 5, such as `how critics`, is from a retired role. Drop it.
+ 
+ ### 3. Budget, map, and confirm
+ 
+@@ -36,7 +36,7 @@ Every real slug written must be in the detected set. `inherit-parent` and `auto`
+ 
+ ### 5. Write the rule
+ 
+-Write `~/.cursor/rules/pstack-models.mdc` with `alwaysApply: true`, a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels poteto-mode uses. Overwrite the whole file so re-runs stay idempotent. Shape:
++Write `~/.config/pstack/models.md` with `alwaysApply: true`, a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels poteto-mode uses. Overwrite the whole file so re-runs stay idempotent. Shape:
+ 
+ ```
+ ---
+diff --git a/plugins/pstack/skills/setup-pstack/agents/openai.yaml b/plugins/pstack/skills/setup-pstack/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/setup-pstack/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/show-me-your-work/SKILL.md b/plugins/pstack/skills/show-me-your-work/SKILL.md
+index d350a15..28e8f9a 100644
+--- a/plugins/pstack/skills/show-me-your-work/SKILL.md
++++ b/plugins/pstack/skills/show-me-your-work/SKILL.md
+@@ -54,7 +54,7 @@ Commit it only when the work is ambitious enough that a reviewer needs the trail
+ 
+ ## Audit the log against the transcript
+ 
+-At the end of the run, before handing back, check the log told the truth. Read this run's transcript under the active workspace's `agent-transcripts/` directory (the system prompt names the path). Don't glob across `~/.cursor/projects/*/`. That reads unrelated private chats. Walk this run's rows against what actually happened. Each stretch of them begins at one of this run's `start` rows, or at the first row if this run created the log, and ends at the next `start` row of another run:
++At the end of the run, before handing back, check the log told the truth. Read this run's transcript under the active workspace's `agent-transcripts/` directory (the system prompt names the path), or `~/.claude/projects/*/*.jsonl` and `~/.codex/sessions/`. Don't glob across `~/.cursor/projects/*/`. That reads unrelated private chats. Walk this run's rows against what actually happened. Each stretch of them begins at one of this run's `start` rows, or at the first row if this run created the log, and ends at the next `start` row of another run:
+ 
+ - Check that every row maps to a real decision or action.
+ - Check that each row's evidence resolves and shows what the row claims.
+diff --git a/plugins/pstack/skills/show-me-your-work/agents/openai.yaml b/plugins/pstack/skills/show-me-your-work/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/show-me-your-work/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/swarm/SKILL.md b/plugins/pstack/skills/swarm/SKILL.md
+index db22b87..231e48b 100644
+--- a/plugins/pstack/skills/swarm/SKILL.md
++++ b/plugins/pstack/skills/swarm/SKILL.md
+@@ -22,7 +22,7 @@ Open a todolist with one entry per phase before launching anything.
+ 1. State the done predicate and the artifact or report the swarm must return.
+ 2. Choose the shape. Partition into slices, race N workers on identical briefs, or mix both. For a race or mixed shape, declare `first pass`, `rank all`, or `best-of` before spawning.
+ 3. Set N from the user or derive it from the shape. N is total workers, not the cloud concurrency limit.
+-4. Pick the worker model from the `swarm workers` line in `~/.cursor/rules/pstack-models.mdc`. If the rule or that line is missing, use `grok-4.7-xhigh-fast`. For `auto` or `inherit-parent`, omit `model` so the workers run on the parent model. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message. For a model race, name each arm's model up front.
++4. Pick the worker model from the `swarm workers` line in `~/.config/pstack/models.md`. If the rule or that line is missing, use `grok-4.7-xhigh-fast`. For `auto` or `inherit-parent`, omit `model` so the workers run on the parent model. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message. For a model race, name each arm's model up front.
+ 5. Give each worker its own writable output when it writes. When workers verify or measure commits, each brief names the exact SHAs. A measurement brief also names the method (sample count, what one sample is, order). The worker records both in its result.
+ 
+ ## Phase B: Fan out
+diff --git a/plugins/pstack/skills/swarm/agents/openai.yaml b/plugins/pstack/skills/swarm/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/swarm/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/tdd/agents/openai.yaml b/plugins/pstack/skills/tdd/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/tdd/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/teach/agents/openai.yaml b/plugins/pstack/skills/teach/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/teach/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/technical-writing/agents/openai.yaml b/plugins/pstack/skills/technical-writing/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/technical-writing/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/typescript-best-practices/agents/openai.yaml b/plugins/pstack/skills/typescript-best-practices/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/typescript-best-practices/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/unslop/agents/openai.yaml b/plugins/pstack/skills/unslop/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/unslop/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+diff --git a/plugins/pstack/skills/why/SKILL.md b/plugins/pstack/skills/why/SKILL.md
+index bc2a3eb..5a9905a 100644
+--- a/plugins/pstack/skills/why/SKILL.md
++++ b/plugins/pstack/skills/why/SKILL.md
+@@ -8,7 +8,7 @@ disable-model-invocation: true
+ 
+ Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
+ 
+-Each spawn below names a role line in the `pstack-models.mdc` rule and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
++Each spawn below names a role line in the `~/.config/pstack/models.md` rule and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
+ 
+ Every spawn is `generalPurpose` with `readonly: false` (agent mode). **Do not use readonly/Ask mode.** It strips MCP access, which disables the MCP-backed investigators and the synthesizer's citation spot-checks. Investigators still shouldn't write anything.
+ 
+diff --git a/plugins/pstack/skills/why/agents/openai.yaml b/plugins/pstack/skills/why/agents/openai.yaml
+new file mode 100644
+index 0000000..5b1f887
+--- /dev/null
++++ b/plugins/pstack/skills/why/agents/openai.yaml
+@@ -0,0 +1,2 @@
++policy:
++  allow_implicit_invocation: false
+-- 
+2.50.1 (Apple Git-155)
+
