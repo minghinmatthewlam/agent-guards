@@ -30,7 +30,7 @@ Research and audits stay in subagents (`spawn_agent`, read-only brief, `fork_con
 
 ## CI and review comments
 
-Step 6 of the workflow: after opening the PR, the worker calls `attach_artifact` with the PR URL, then creates a heartbeat automation on its own thread (`automation_update`) that reads CI with the Code Review plugin's `pull_requests_checks`, fixes failures and answers bot reviews, stays quiet when nothing changed, and deletes itself once the PR merges. The coordinator does not poll CI.
+After opening the PR (tell the worker this in its brief's environment line), the worker calls `attach_artifact` with the PR URL, then creates a heartbeat automation on its own thread (`automation_update`) that reads CI with the Code Review plugin's `pull_requests_checks`, fixes failures and answers bot reviews, stays quiet when nothing changed, and deletes itself once the PR merges. The coordinator does not poll CI.
 
 ## Memory
 

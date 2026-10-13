@@ -36,7 +36,7 @@ cmux delivers through the worker's hooks: an idle worker wakes up, a busy one re
 
 ## CI and review comments
 
-Step 6 of the workflow: after opening the PR, the worker runs `/loop` in its own session. Bare `/loop` handles failed CI, review comments and merge conflicts, paces itself, and expires after 7 days. The coordinator does not poll CI.
+After opening the PR (tell the worker this in its brief's environment line), the worker runs `/loop` in its own session. Bare `/loop` handles failed CI, review comments and merge conflicts, paces itself, and expires after 7 days. The coordinator does not poll CI.
 
 ## Close a worker
 

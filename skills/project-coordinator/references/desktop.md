@@ -19,7 +19,7 @@ SendMessage to its `local_…` id. Record that id on the board.
 
 ## CI and review comments
 
-Step 6 of the workflow: turn on the app's CI auto-fix monitor from the PR's own session. Never poll CI yourself. The monitor only binds a PR to a session whose checkout is that PR's repo; for a PR in another repo, say so and ask how to watch it.
+After opening the PR, turn on the app's CI auto-fix monitor from the PR's own session. Never poll CI yourself. The monitor only binds a PR to a session whose checkout is that PR's repo; for a PR in another repo, say so and ask how to watch it.
 
 ## Approvals
 

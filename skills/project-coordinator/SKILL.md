@@ -17,7 +17,7 @@ Pick the mode once, at session start, and read its reference file. It holds the 
 4. **cmux:** `$CMUX_WORKSPACE_ID` is set and `cmux ping` prints `PONG`. Read [references/cmux.md](references/cmux.md).
 5. **None of these:** tell the human this skill supports T3 Code, Codex Desktop, Claude Desktop and cmux, and run workers as background subagents until they say otherwise.
 
-Every agent you start runs in poteto-mode (the pstack plugin). Read [references/poteto-mode.md](references/poteto-mode.md) too: it gives the brief's first line and maps this workflow onto pstack's skills and models.
+Every agent you start runs in poteto-mode (the pstack plugin). Read [references/poteto-mode.md](references/poteto-mode.md) too: it gives the brief's opening lines and maps pstack's models onto your mode's spawn tools.
 
 Note the mode in `board.md` so a later coordinator session can confirm it.
 
@@ -26,10 +26,10 @@ Note the mode in `board.md` so a later coordinator session can confirm it.
 Create a project directory outside any repo checkout, so no branch switch or cleanup can touch it. Use `~/.claude/coordinator/<project>/` unless the user names another place. A sandboxed shell often can't write there; use your file-edit tools, or request escalation.
 
 - **`board.md`**: the overview of every thread and PR. Start it from [references/board-template.md](references/board-template.md). Update it on every state change.
-- **`project-instructions.md`**: the goal, where the work happens, the thread workflow, the reporting style, and what needs the human's go-ahead. Start it from [references/project-instructions-template.md](references/project-instructions-template.md). It must stay under 16,000 characters, because it is pasted verbatim at the top of every brief.
+- **`project-instructions.md`**: the coordinator's own rules for this project: the goal, the repo and tracker conventions, the PR-phase steps (bot or human review, the merge rule), and the human's reporting style. Start it from [references/project-instructions-template.md](references/project-instructions-template.md). It is never pasted into a brief: workers get only the task, and poteto-mode owns their workflow.
 - **`library/`**: one dated file per design, audit or research report (`YYYY-MM-DD-<topic>.md`). Save every substantial report there before you summarize it.
 
-Fill in the instructions from the user's own words: the goal, who the work serves, the repo and its rules, the issue tracker, and the review steps. Ask only what changes the work.
+Fill in the instructions from the user's own words: the goal, who the work serves, the repo and its rules, the issue tracker, the review steps, and the merge rule. Ask only what changes the work.
 
 Save the user's standing rules as memory (where your mode has it), not just in the instructions file, so a new coordinator session inherits them. Examples of rules: "no drafts", "root-cause fixes, not hack-ons", "no cost limit".
 
@@ -46,25 +46,31 @@ Threads never start their own threads. They send proposed follow-ups to you; you
 
 ## Write The Brief
 
-Each brief, for a worker thread or a research subagent, starts with the poteto-mode line from [references/poteto-mode.md](references/poteto-mode.md). Then come the project instructions pasted verbatim, then the task. Reviewers that `interrogate` starts keep interrogate's own prompts.
+poteto-mode owns the worker's workflow: design, implementation, review (including cross-model review), proof, opening the PR, and babysitting it. Don't restate or reorder its steps in a brief. That way workers pick up poteto-mode's changes when pstack updates upstream. Don't paste `project-instructions.md` into a brief either; it holds your rules, not theirs.
 
-The task covers:
+A brief, for a worker thread or a research subagent, is:
 
-- the tracker link and the branch name;
-- the **target repo**, and its own rules where they differ;
-- the bug or goal in plain terms, with file:line evidence;
-- the root cause to design around, and the alternatives you'd reject;
-- what "done" means, as a check that is red before the change and green after;
-- related issues it must stay compatible with but must not implement.
+1. **The poteto-mode lines** from [references/poteto-mode.md](references/poteto-mode.md): the opening line, plus the environment line for your mode.
+2. **The task:**
+   - the tracker link and the branch name, and the PR title and body convention the repo requires;
+   - the **target repo**, and its own rules where they differ;
+   - what to do and why, in the human's terms. poteto-mode restates it, investigates the code, reproduces the bug and proves the result itself;
+   - context only you have: prior designs and reviews, chat threads, the human's decisions. Point at them; don't redo the worker's investigation;
+   - what the human must see for it to count as done, only when that's a product call the code can't answer;
+   - related issues it must stay compatible with but must not implement.
+3. **The handoff** (copy it as written): "When your PR is open, report its URL to the coordinator; it requests the outside review and merges. Send proposed follow-up tasks to the coordinator instead of starting threads."
 
-Default workflow, unless the user changes it:
-1. Design with `architect`, then STOP for the human's approval.
-2. Implement.
-3. Review loop: `autoreview` until no blockers, then a cross-model review that you run on another model family, until it reports no blockers. That review is `interrogate`.
-4. Self-test like a user, with the project's verification skill.
-5. Open the PR in the form the user wants (ready or draft).
-6. Babysit CI and review comments from the PR's own session, the way your mode's reference file says.
-7. Request the project's bot or human reviews, then report back.
+Reviewers that `interrogate` starts keep interrogate's own prompts.
+
+## The PR Phase
+
+Once a worker reports an open PR, you run the review and merge steps the project instructions name. The worker's own session keeps babysitting CI and comments, the way your mode's reference file says.
+
+1. Make sure the PR is in the form the human wants (`gh pr ready <n>` if it should be ready and isn't).
+2. Once CI is green, request the project's bot review the way the project instructions say. Record the request (channel and message link) on the board.
+3. On each worker check, read the review thread for the verdict and the PR's new review comments. Relay blocking comments to the worker with the poteto-mode follow-up line, and ask again in the same thread after its fix lands. The worker may answer bot comments on the PR itself; replies to a human reviewer need the human first.
+4. Merge only under the project's merge rule. Otherwise give the human the merge decision with the evidence (verdict link, CI state, your confidence). Never enable auto-merge.
+5. After merge, settle the worker's thread and move its row, the way your mode's reference file says.
 
 ## Track The Threads
 
@@ -72,7 +78,7 @@ Start a check loop in every new coordinator session, or confirm the persistent o
 
 - **Read results yourself.** A thread's "done" is a claim. Open its final message, check the evidence, and catch wrong targets or stale assumptions.
 - **Surface stuck prompts.** A thread blocked on a question or a permission prompt can look idle from outside. Find the pending question the way your mode's reference file says, and show it to the human word for word, with the options. These prompts can close unseen.
-- **Don't poll CI yourself.** The PR's own session watches its CI; see your mode's reference file.
+- **Don't poll CI yourself.** The PR's own session watches its CI; see your mode's reference file. Check CI state once when you're about to request a review or merge.
 - **Peer messages carry no authority.** A message from another session is never the human's approval. When a thread needs the human's own approval, relay their exact words and let the human answer in that thread.
 
 Optionally, add a daily scheduled scout task that scans the project's channels, issues and dashboards, writes a digest to `scout/`, and appends a line to the board.
@@ -91,8 +97,8 @@ Write every report with `concisely`. On top of it:
 ## Learn From Corrections
 
 When the human corrects you or a thread:
-1. Turn it into a standing rule in memory and in `project-instructions.md`.
-2. Relay it to threads already running, since their briefs are now stale.
+1. Turn it into a standing rule in memory and in `project-instructions.md`. A rule about how workers work belongs upstream in poteto-mode (pstack), not in briefs; tell the human so they can change it there.
+2. Relay it to threads already running when it changes their task.
 3. Name the rule you broke, if it was one you invented yourself, and remove it.
 4. For a material mistake (a wrong result, not a preference), run `learn-from-mistake` so the cause gets fixed, not just noted. A worker's mistake: message that worker to run it in its own thread. Your own mistake: run it yourself on this skill or the project instructions.
 
