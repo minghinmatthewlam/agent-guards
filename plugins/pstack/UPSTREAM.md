@@ -8,7 +8,15 @@
 The vendor commit ("Vendor pstack upstream 11713c6") copies that directory byte for byte. Every local change lives in two later commits, saved as patches:
 
 - `patches/01-tool-neutral.patch`: the tool-neutral fixes for Codex and Claude Code, `models.md`, and the Codex `agents/openai.yaml` policies that turn off implicit invocation.
-- `patches/02-matthew.patch`: Matthew's workflow additions, each wrapped in `<!-- matthew: start -->` / `<!-- matthew: end -->`.
+- `patches/02-matthew.patch`: Matthew's workflow additions, each wrapped in `<!-- matthew: start -->` / `<!-- matthew: end -->`. The two verification skills are the exception: their edits are line-level rewrites without markers.
+
+## Invocation
+
+Upstream sets `disable-model-invocation: true` on 50 of 51 skills. In Claude Code that blocks the Skill tool and subagent preloading, so poteto-mode could not load the skills it routes to. `01-tool-neutral.patch` removes the flag everywhere and sets `user-invocable: false` on every skill except the entry and tool skills: `poteto-mode`, `poteto-help`, `setup-pstack`, `make-bot-ui`, `automate-me`, `create-verification-skill`, and `maintain-verification-skill`. Codex ignores both fields and keeps `allow_implicit_invocation: false` in each `agents/openai.yaml`. `agents/poteto-agent.md` preloads `poteto-mode` with `skills:`.
+
+## Verification skills
+
+`skills/create-verification-skill` and `skills/maintain-verification-skill` at the repo root are symlinks to this plugin's copies. `scripts/sync.sh` copies with `--copy-links`, so the global installs stay real directories that work without the plugin.
 
 ## Model roles
 

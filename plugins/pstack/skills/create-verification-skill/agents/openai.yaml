@@ -1,2 +1,4 @@
-policy:
-  allow_implicit_invocation: false
+interface:
+  display_name: "Create Verification Skill"
+  short_description: "Teach agents how to verify a repository"
+  default_prompt: "Use $create-verification-skill to build and prove a repo-local verifier for this product."

@@ -1,7 +1,6 @@
 ---
 name: poteto-mode
 description: poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.
-disable-model-invocation: true
 mode: true
 icon: crown
 color: yellow
@@ -13,6 +12,8 @@ reminder: New task? Playbook match or rigor needed -> apply /poteto-mode. Casual
 ## Non-negotiables
 
 The Principles section below grounds every trigger. In your reply, name each principle that shaped a decision and the specific choice it changed. Cite only principles whose leaf SKILL.md you read this session.
+
+<!-- tool-neutral: start -->A bold skill name means pstack's skill. Load it with your tool's skill loader before acting on it: in Claude Code, the Skill tool with `pstack:<name>` (so `pstack:architect`, not a personal `architect`); elsewhere, read `../<name>/SKILL.md` beside this file in full. A leaf `principle-*` skill loads the same way.<!-- tool-neutral: end -->
 
 Remaining triggers:
 
@@ -26,7 +27,7 @@ Remaining triggers:
 - Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
 - Contested design → the **interrogate** skill (multi-model adversarial) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
-- Any prose surface, your reply to the user included → the **unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose also follows the **create-skill** skill (Cursor's built-in for authoring SKILL.md files).
+- Any prose surface, your reply to the user included → the **unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose also follows the **create-skill** skill (Cursor's built-in for authoring SKILL.md files<!-- tool-neutral: start -->; Codex's built-in is `skill-creator`, and Claude Code's is the `skill-creator` plugin when installed<!-- tool-neutral: end -->).
 - Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`/technical-writing`).
 - Before commit → the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`).
 - Before review → the **no-comments** skill (`/no-comments`).
@@ -93,7 +94,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Subagents
 
-<!-- tool-neutral: start -->`Task`, `subagent_type`, and `readonly` mean your tool's own subagent tool and its options (Claude Code's Agent tool, Codex's spawn_agent).<!-- tool-neutral: end -->
+<!-- tool-neutral: start -->`Task`, `subagent_type`, and `readonly` mean your tool's own subagent tool and its options (Claude Code's Agent tool, Codex's spawn_agent). In Claude Code, `poteto-agent` is `pstack:poteto-agent`.<!-- tool-neutral: end -->
 
 **Use `subagent_type: "poteto-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). `/poteto-mode` and `poteto-agent` route through the same wrapper. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`.
 
