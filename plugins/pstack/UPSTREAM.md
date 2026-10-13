@@ -27,7 +27,8 @@ Skills read `~/.config/pstack/models.md`. Run `plugins/pstack/scripts/install.sh
 Both tools run a cached copy of the plugin, not this directory.
 
 - Codex: edit in `~/dev/agent-guards`, commit, then run `codex plugin add pstack@agent-guards`. That re-copies the plugin into `~/.codex/plugins/cache/agent-guards/pstack/<version>/`. Start a new Codex session. The marketplace is `[marketplaces.agent-guards]` in `~/.codex/config.toml`, a local source at `/Users/matthewlam/dev/agent-guards`.
-- Claude Code: install once with `claude plugin marketplace add /Users/matthewlam/dev/agent-guards`, then `claude plugin install pstack@agent-guards`. After a change, run `claude plugin marketplace update agent-guards`, then `claude plugin update pstack@agent-guards`, and start a new session.
+- Claude Code: install once with `claude plugin marketplace add /Users/matthewlam/dev/agent-guards`, then `claude plugin install pstack@agent-guards`. After a change, run `claude plugin marketplace update agent-guards`, then `claude plugin update pstack@agent-guards`, and start a new session. `update` skips the change while `version` in `.claude-plugin/plugin.json` is unchanged; bump it, or run `claude plugin uninstall pstack@agent-guards` then `claude plugin install pstack@agent-guards`.
+- Cursor: copy the plugin with `rsync -a --delete plugins/pstack/ ~/.cursor/plugins/local/pstack/`.
 - A `models.md` change needs no refresh, because skills read it through the `~/.config/pstack` symlink.
 
 ## Re-sync
