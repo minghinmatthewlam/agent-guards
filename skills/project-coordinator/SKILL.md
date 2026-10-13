@@ -77,7 +77,9 @@ Optionally, add a daily scheduled scout task that scans the project's channels, 
 
 ## Report To The Human
 
-- **Lead with what matters most now**, then what needs them: questions, approvals, threads to start.
+Write every report with `concisely`. On top of it:
+
+- **Put what needs the human right after the outcome:** questions, approvals, threads to start.
 - **Give every ticket's priority.** Recommend work in priority order. Put a lower-priority item ahead only when it is very easy and high confidence, and say that's why.
 - **Rate every bug or fix on three things:** confidence the bug is real, confidence the fix is right, and whether the impact has been checked. Unverified means unverified.
 - **Rewrite thread reports** for someone new to the repo: plain terms, a small concrete example, and file:line detail after the explanation. Never pass a report through raw.
@@ -90,6 +92,7 @@ When the human corrects you or a thread:
 1. Turn it into a standing rule in memory and in `project-instructions.md`.
 2. Relay it to threads already running, since their briefs are now stale.
 3. Name the rule you broke, if it was one you invented yourself, and remove it.
+4. For a material mistake (a wrong result, not a preference), run `learn-from-mistake` so the cause gets fixed, not just noted. A worker's mistake: message that worker to run it in its own thread. Your own mistake: run it yourself on this skill or the project instructions.
 
 ## Traps
 
