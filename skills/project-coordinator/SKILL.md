@@ -11,10 +11,13 @@ You are the human's one point of contact for a project, and their partner in it.
 
 Pick the mode once, at session start, and read its reference file. It holds the exact commands for spawning, messaging, tracking and CI.
 
-1. **Codex Desktop:** the `create_thread` and `wait_threads` tools are available. Read [references/codex.md](references/codex.md).
-2. **Claude Desktop:** the `spawn_task` tool is available. Read [references/desktop.md](references/desktop.md).
-3. **cmux:** `$CMUX_WORKSPACE_ID` is set and `cmux ping` prints `PONG`. Read [references/cmux.md](references/cmux.md).
-4. **None of these:** tell the human this skill supports Codex Desktop, Claude Desktop and cmux, and run workers as background subagents until they say otherwise.
+1. **T3 Code:** the `t3-code` MCP tools `t3_thread_launch` and `delegate_task` are available. Read [references/t3code.md](references/t3code.md). Check this first: T3 hosts Claude and Codex sessions, so their own tools may also be present.
+2. **Codex Desktop:** the `create_thread` and `wait_threads` tools are available. Read [references/codex.md](references/codex.md).
+3. **Claude Desktop:** the `spawn_task` tool is available. Read [references/desktop.md](references/desktop.md).
+4. **cmux:** `$CMUX_WORKSPACE_ID` is set and `cmux ping` prints `PONG`. Read [references/cmux.md](references/cmux.md).
+5. **None of these:** tell the human this skill supports T3 Code, Codex Desktop, Claude Desktop and cmux, and run workers as background subagents until they say otherwise.
+
+When the human wants workers in poteto-mode, also read [references/poteto-mode.md](references/poteto-mode.md). It maps this workflow onto pstack's skills and models.
 
 Note the mode in `board.md` so a later coordinator session can confirm it.
 
@@ -55,7 +58,7 @@ Each brief is the project instructions pasted verbatim, then the task:
 Default workflow, unless the user changes it:
 1. Design with `architect`, then STOP for the human's approval.
 2. Implement.
-3. Review loop: `autoreview` until no blockers, then a cross-model review that you run on another model family, until it reports no blockers.
+3. Review loop: `autoreview` until no blockers, then a cross-model review that you run on another model family, until it reports no blockers. Under poteto-mode that review is `interrogate`.
 4. Self-test like a user, with the project's verification skill.
 5. Open the PR in the form the user wants (ready or draft).
 6. Babysit CI and review comments from the PR's own session, the way your mode's reference file says.
@@ -63,7 +66,7 @@ Default workflow, unless the user changes it:
 
 ## Track The Threads
 
-Start a check loop in every new coordinator session, the way your mode's reference file says. Use the prompt for your mode in [references/worker-check-prompt.md](references/worker-check-prompt.md) at an off-minute schedule such as `7,27,47 * * * *`, and re-create it whenever a coordinator session starts.
+Start a check loop in every new coordinator session, or confirm the persistent one still runs, the way your mode's reference file says. Use the prompt for your mode in [references/worker-check-prompt.md](references/worker-check-prompt.md) at an off-minute schedule such as `7,27,47 * * * *`, and re-create it whenever a coordinator session starts.
 
 - **Read results yourself.** A thread's "done" is a claim. Open its final message, check the evidence, and catch wrong targets or stale assumptions.
 - **Surface stuck prompts.** A thread blocked on a question or a permission prompt can look idle from outside. Find the pending question the way your mode's reference file says, and show it to the human word for word, with the options. These prompts can close unseen.

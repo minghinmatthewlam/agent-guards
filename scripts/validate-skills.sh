@@ -69,7 +69,7 @@ end
 
 Dir.glob(File.join(skills_dir, "**/*.md")).sort.each do |md|
   File.read(md, encoding: "UTF-8").scan(/\]\(([^)\s]+)\)/).flatten.each do |target|
-    next if target.match?(%r{\A[a-z]+:|\A#})
+    next if target.match?(%r{\A[a-z][a-z0-9+.-]*:|\A#})
     resolved = File.expand_path(target.sub(/#.*/, ""), File.dirname(md))
     errors << "#{md}: broken link `#{target}`" unless File.exist?(resolved)
   end

@@ -1,6 +1,6 @@
 # <Project>: instructions every thread starts from
 
-The coordinator pastes this file verbatim at the top of every thread brief: subagents, Codex threads, task cards, cmux workers, and any other worker. Keep it under 16,000 characters. Change it only when the human asks, or after they correct a thread.
+The coordinator pastes this file verbatim at the top of every thread brief: subagents, T3 threads, Codex threads, task cards, cmux workers, and any other worker. Keep it under 16,000 characters. Change it only when the human asks, or after they correct a thread.
 
 ## What the project is for
 <Who owns it, what it is, and the goal in the human's words. Name who the work serves.>
@@ -17,7 +17,7 @@ The coordinator pastes this file verbatim at the top of every thread brief: suba
 3. **Review loop:** run `autoreview` until a pass has no blockers, then tell the coordinator. The coordinator runs a cross-model review and relays its findings. Repeat until it reports no blockers.
 4. **Self-test like a user** with <the verification skill>. Paste the exact commands and their output.
 5. **Open the PR** <ready for review | as a draft>, following the PR template.
-6. **Babysit the PR** from your session right after opening it: <Codex: attach the PR and add a CI heartbeat on your own thread | Claude Desktop: turn on CI auto-fix | cmux: run `/loop`>. Never poll CI by hand.
+6. **Babysit the PR** from your session right after opening it: <T3 Code: `link_pull_request`, then `watch_pull_request` on your own thread | Codex: attach the PR and add a CI heartbeat on your own thread | Claude Desktop: turn on CI auto-fix | cmux: run `/loop`>. Never poll CI by hand.
 7. **Reviews:** <how to request bot or human review>. You may reply to bot reviewers yourself. Ask the human before replying to a human reviewer.
 
 ## Follow-up tasks

@@ -3,8 +3,9 @@
 Goal: <one line, in the user's words>
 Human: <name>, <role>. Coordinator session: <session title>.
 Instructions: <path to project-instructions.md>. Library: <path to library/>.
-Mode: <Codex Desktop | Claude Desktop | cmux>.
-Models verified for threads: <e.g. default; openai/gpt-6-astra>
+Mode: <T3 Code | Codex Desktop | Claude Desktop | cmux>. Workers in poteto-mode: <yes | no>.
+Models verified for threads: <e.g. default; codex openai/gpt-6.1-sol>
+T3 projectId: <id, T3 Code only>
 
 ## Threads
 
@@ -20,7 +21,7 @@ Models verified for threads: <e.g. default; openai/gpt-6-astra>
 ### Working
 | # | Thread | Kind | Started | Brief |
 |---|---|---|---|---|
-| 1 | <ticket>: <what it is doing now> | threadId (Codex), local_<id> (card), workspace:N (cmux) or subagent | <date> | <key context> |
+| 1 | <ticket>: <what it is doing now> | threadId + read cursor (T3), threadId (Codex), local_<id> (card), workspace:N (cmux), taskId or subagent | <date> | <key context> |
 
 ### Landing
 (approved PRs that are queued or merging)
@@ -37,7 +38,7 @@ Models verified for threads: <e.g. default; openai/gpt-6-astra>
 - <ticket>: <PR URL> (<state>, tip <sha>). Reviews: <who and what they said>. Next: <step>.
 
 ## Routines
-- Worker check: <Codex: heartbeat automation id | Claude Desktop/cmux: session-only cron, re-created each session>.
+- Worker check: <T3: scheduled task id | Codex: heartbeat automation id | Claude Desktop/cmux: session-only cron, re-created each session>.
 - <daily scout task, if any>
 
 ## Scout log

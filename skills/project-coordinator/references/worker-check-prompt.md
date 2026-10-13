@@ -3,7 +3,19 @@
 Replace `<board>` with the board's path, then schedule the prompt for your mode:
 
 - **Claude Desktop and cmux:** CronCreate, recurring, at an off-minute (for example `7,27,47 * * * *`). It is session-only: it dies with the session and expires after 7 days, so re-create it in every coordinator session.
+- **T3 Code:** `schedule_task` with an interval of 20 minutes (`everyMs: 1200000`), bound to the coordinator thread. It persists across app restarts; call `list_scheduled_tasks` first and update the existing check rather than adding a duplicate.
 - **Codex Desktop:** a heartbeat automation on the coordinator thread (`automation_update`), every 20 minutes. It persists across app restarts; check `$CODEX_HOME/automations/` and update the existing one rather than adding a duplicate.
+
+## T3 Code
+
+```
+Coordinator worker check (automated, not from the human). Read <board>, sections "### Working" and "### Waiting on you".
+- Delegated tasks (taskId on the board) and native subagents: skip them; their completion notification arrives on its own.
+- T3 worker threads (threadId on the board): call t3_thread_list with the board's projectId, following its cursor until every board thread is found. For a thread whose turn ended (completed, failed or interrupted), read all its new output with t3_thread_read (view messages, afterPosition = its stored cursor, then each nextPosition; recover truncated items with itemId and textOffset) and store the new cursor. A "Waiting on you" thread that is running again goes back to "Working". An ended turn is not a finished worker: place it by its last report. A design or question waiting on the human goes to "Waiting on you". A PR it is still watching stays in "Working". Only an explicit merge-ready handoff goes to "Ready for review". For a thread that is waiting, get the exact question with t3_pending_request_list and t3_pending_request_read, or, if that list is empty, the pending approval from t3_thread_read with view activity, and show it to the human here word for word, with the options; don't answer it.
+Don't poll CI here; each PR's own thread watches it with watch_pull_request. For PR state on the board, use list_thread_pull_requests with the worker's threadId.
+Finished: move the row to "Idle" (or to "Ready for review" if it opened a PR, which also goes under "## Pull requests") with a 1–2 line outcome. Blocked (asks a question or needs approval): move it to "Waiting on you". Edit the board with your file-edit tool (Edit on Claude, apply_patch on Codex), not a shell write.
+If nothing changed, update nothing and reply with one short line ("no worker changes"). Otherwise give a 3–5 line summary leading with what the human should act on, with each ticket's priority, linking each thread as [title](t3-thread://v1/<threadId>). Read-only toward workers: never message or approve on a worker's behalf.
+```
 
 ## Codex Desktop
 
