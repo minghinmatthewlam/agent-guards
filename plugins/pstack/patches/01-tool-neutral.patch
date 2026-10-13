@@ -183,7 +183,7 @@ index 62420df..a2e5bee 100644
  
 diff --git a/plugins/pstack/models.md b/plugins/pstack/models.md
 new file mode 100644
-index 0000000..6ab4e3a
+index 0000000..3a0b7ae
 --- /dev/null
 +++ b/plugins/pstack/models.md
 @@ -0,0 +1,24 @@
@@ -207,10 +207,10 @@ index 0000000..6ab4e3a
 +reflect tooling: anthropic/claude-opus-5.5
 +reflect judgment, divergent, synthesizer: anthropic/claude-opus-5.5
 +arena runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
-+arena cross-judge pool: openai/gpt-6-astra, google/gemini-3.8-flash
++arena cross-judge pool: openai/gpt-6.1-sol
 +swarm workers: anthropic/claude-opus-5.5
 +architect runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
-+interrogate reviewers: anthropic/claude-opus-5.5, openai/gpt-6-astra, google/gemini-3.8-flash
++interrogate reviewers: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
 diff --git a/plugins/pstack/skills/architect/SKILL.md b/plugins/pstack/skills/architect/SKILL.md
 index 88e23ca..de7e2ee 100644
 --- a/plugins/pstack/skills/architect/SKILL.md

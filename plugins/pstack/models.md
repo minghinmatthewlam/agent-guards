@@ -18,7 +18,7 @@ why synthesizer: anthropic/claude-opus-5.5
 reflect tooling: anthropic/claude-opus-5.5
 reflect judgment, divergent, synthesizer: anthropic/claude-opus-5.5
 arena runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
-arena cross-judge pool: openai/gpt-6-astra, google/gemini-3.8-flash
+arena cross-judge pool: openai/gpt-6.1-sol
 swarm workers: anthropic/claude-opus-5.5
 architect runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
-interrogate reviewers: anthropic/claude-opus-5.5, openai/gpt-6-astra, google/gemini-3.8-flash
+interrogate reviewers: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
