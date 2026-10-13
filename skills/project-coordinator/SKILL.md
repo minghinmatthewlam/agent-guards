@@ -74,7 +74,7 @@ Once a worker reports an open PR, you run the review and merge steps the project
 
 ## Track The Threads
 
-Start a check loop in every new coordinator session, or confirm the persistent one still runs, the way your mode's reference file says. Use the prompt for your mode in [references/worker-check-prompt.md](references/worker-check-prompt.md) at an off-minute schedule such as `7,27,47 * * * *`, and re-create it whenever a coordinator session starts.
+Start a check loop in every new coordinator session, or confirm the persistent one still runs, the way your mode's reference file says. Use the prompt for your mode in [references/worker-check-prompt.md](references/worker-check-prompt.md) at an off-minute schedule such as `7,37 * * * *` (every 30 minutes), and re-create it whenever a coordinator session starts.
 
 - **Read results yourself.** A thread's "done" is a claim. Open its final message, check the evidence, and catch wrong targets or stale assumptions.
 - **Surface stuck prompts.** A thread blocked on a question or a permission prompt can look idle from outside. Find the pending question the way your mode's reference file says, and show it to the human word for word, with the options. These prompts can close unseen.

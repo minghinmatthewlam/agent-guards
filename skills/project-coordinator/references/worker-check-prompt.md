@@ -2,9 +2,9 @@
 
 Replace `<board>` with the board's path, then schedule the prompt for your mode:
 
-- **Claude Desktop and cmux:** CronCreate, recurring, at an off-minute (for example `7,27,47 * * * *`). It is session-only: it dies with the session and expires after 7 days, so re-create it in every coordinator session.
-- **T3 Code:** `schedule_task` with an interval of 20 minutes (`everyMs: 1200000`), bound to the coordinator thread. It persists across app restarts; call `list_scheduled_tasks` first and update the existing check rather than adding a duplicate.
-- **Codex Desktop:** a heartbeat automation on the coordinator thread (`automation_update`), every 20 minutes. It persists across app restarts; check `$CODEX_HOME/automations/` and update the existing one rather than adding a duplicate.
+- **Claude Desktop and cmux:** CronCreate, recurring, every 30 minutes at an off-minute (for example `7,37 * * * *`). It is session-only: it dies with the session and expires after 7 days, so re-create it in every coordinator session.
+- **T3 Code:** `schedule_task` with an interval of 30 minutes (`everyMs: 1800000`), bound to the coordinator thread. It persists across app restarts; call `list_scheduled_tasks` first and update the existing check rather than adding a duplicate.
+- **Codex Desktop:** a heartbeat automation on the coordinator thread (`automation_update`), every 30 minutes. It persists across app restarts; check `$CODEX_HOME/automations/` and update the existing one rather than adding a duplicate.
 
 ## T3 Code
 
