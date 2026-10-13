@@ -12,7 +12,12 @@ The vendor commit ("Vendor pstack upstream 11713c6") copies that directory byte 
 
 ## Invocation
 
-Upstream sets `disable-model-invocation: true` on 50 of 51 skills. In Claude Code that blocks the Skill tool and subagent preloading, so poteto-mode could not load the skills it routes to. `01-tool-neutral.patch` removes the flag everywhere and sets `user-invocable: false` on every skill except the entry and tool skills: `poteto-mode`, `poteto-help`, `setup-pstack`, `make-bot-ui`, `automate-me`, `create-verification-skill`, and `maintain-verification-skill`. Codex ignores both fields and keeps `allow_implicit_invocation: false` in each `agents/openai.yaml`. `agents/poteto-agent.md` preloads `poteto-mode` with `skills:`.
+Upstream sets `disable-model-invocation: true` on 50 of 51 skills. In Claude Code that blocks the Skill tool and subagent preloading, so poteto-mode could not load the skills it routes to. `scripts/normalize-invocation.sh` owns the replacement rule, not a patch, so it also covers skills upstream adds later:
+
+- No skill sets `disable-model-invocation`.
+- Every skill except `poteto-mode`, `poteto-help`, `setup-pstack`, `make-bot-ui`, `automate-me`, `create-verification-skill`, and `maintain-verification-skill` sets `user-invocable: false` and has `allow_implicit_invocation: false` in `agents/openai.yaml`.
+
+`sync-upstream.sh` runs it after the patches and commits the result as "Normalize pstack skill invocation". CI runs it with `--check`. To change the entry list, edit `ENTRY_SKILLS` in the script and run it. `agents/poteto-agent.md` preloads `poteto-mode` with `skills:` (patch 01).
 
 ## Verification skills
 
@@ -35,4 +40,4 @@ Both tools run a cached copy of the plugin, not this directory.
 
 1. Update a clone of `cursor/plugins` to the new upstream commit.
 2. Run `plugins/pstack/scripts/sync-upstream.sh <path-to-cursor-plugins-clone>`. It creates a temp branch, re-copies `pstack/` into `plugins/pstack/`, commits it, re-applies both patches with `git am -3`, and keeps a locally edited `models.md`.
-3. Resolve any conflicts, update the commit above, and regenerate the patches.
+3. Resolve any conflicts, update the commit above, and regenerate the patches from the two patch commits, not the normalize commit.

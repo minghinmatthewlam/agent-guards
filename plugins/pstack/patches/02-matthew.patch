@@ -1,4 +1,4 @@
-From fbe696f6cb2f3309195909241f52269abac7f4ad Mon Sep 17 00:00:00 2001
+From 0f130414b936fe82538c645dee6eb93e5d9345e9 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Sun, 11 Oct 2026 17:21:50 -0400
 Subject: [PATCH] Matthew's workflow additions
@@ -23,14 +23,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>
  11 files changed, 67 insertions(+), 19 deletions(-)
 
 diff --git a/plugins/pstack/skills/create-verification-skill/SKILL.md b/plugins/pstack/skills/create-verification-skill/SKILL.md
-index db63d6b..0064f36 100644
+index f869e26..ca5bd7e 100644
 --- a/plugins/pstack/skills/create-verification-skill/SKILL.md
 +++ b/plugins/pstack/skills/create-verification-skill/SKILL.md
-@@ -1,11 +1,11 @@
+@@ -1,12 +1,12 @@
  ---
  name: create-verification-skill
 -description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
 +description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for $create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
+ disable-model-invocation: true
  ---
  
  # Create a verification skill
@@ -40,7 +41,7 @@ index db63d6b..0064f36 100644
  
  ## 1. Interview the repo, not the user
  
-@@ -21,7 +21,7 @@ If the checkout doesn't build or start as-is, fix that first (or report it preci
+@@ -22,7 +22,7 @@ If the checkout doesn't build or start as-is, fix that first (or report it preci
  
  ## 2. Generate the skill
  
@@ -49,7 +50,7 @@ index db63d6b..0064f36 100644
  
  - **Launch:** the exact command that starts the app for verification, and how to tell it's ready (a log line, a port answering, a prompt). Include teardown. For a short-lived CLI or TUI there is no server to keep alive: launch means build the binary (or install deps) once, then start each drive in its own isolated PTY or tmux session.
  - **Doctor:** one read-only check that answers "is this instance worth driving?" — process up, right version/build, port owned by us, auth valid. An agent runs this first whenever anything looks off.
-@@ -30,14 +30,16 @@ Write `.cursor/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verif
+@@ -31,14 +31,16 @@ Write `.cursor/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verif
  - **Cleanup:** how to tear down instances the run created. Never kill by process name; kill what you started. Cleanup removes instances and scratch state, never the evidence: proof artifacts survive the teardown, in a location the skill names.
  - **Helpers:** any script the skill ships is executable and its invocation is shown in the skill body. A helper the reader has to reverse-engineer is not a helper.
  
@@ -81,14 +82,15 @@ index 5b1f887..4a1d724 100644
 +  short_description: "Teach agents how to verify a repository"
 +  default_prompt: "Use $create-verification-skill to build and prove a repo-local verifier for this product."
 diff --git a/plugins/pstack/skills/maintain-verification-skill/SKILL.md b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-index ef4bc08..1a058c6 100644
+index a2680b9..82a58fe 100644
 --- a/plugins/pstack/skills/maintain-verification-skill/SKILL.md
 +++ b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-@@ -1,18 +1,18 @@
+@@ -1,19 +1,19 @@
  ---
  name: maintain-verification-skill
 -description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\"."
 +description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for $maintain-verification-skill or \"audit the verify skill\"."
+ disable-model-invocation: true
  ---
  
  # Maintain a verification skill
@@ -106,7 +108,7 @@ index ef4bc08..1a058c6 100644
  - **blocked** — coverage could not finish or a proven fix could not ship safely. Say exactly what blocked it.
  
  ## Edit scope
-@@ -21,18 +21,32 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
+@@ -22,18 +22,32 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
  
  ## Pass
  
@@ -155,10 +157,10 @@ index 5b1f887..790b548 100644
 +  short_description: "Keep a repository verifier accurate"
 +  default_prompt: "Use $maintain-verification-skill to compare this repository's verifier with current code and live behavior, then repair proven drift."
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 34e5f2f..805af3a 100644
+index 952dd0e..c4e3a0a 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
-@@ -17,6 +17,9 @@ The Principles section below grounds every trigger. In your reply, name each pri
+@@ -18,6 +18,9 @@ The Principles section below grounds every trigger. In your reply, name each pri
  
  Remaining triggers:
  

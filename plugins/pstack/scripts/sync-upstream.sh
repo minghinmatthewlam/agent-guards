@@ -5,8 +5,9 @@
 #
 # Creates branch pstack-sync-<upstream-sha> from base-ref (default HEAD), replaces
 # plugins/pstack with the clone's pstack/ directory, keeps the files this repo owns,
-# commits that as the vendor commit, runs git am -3 on patches/01-* and 02-*, and
-# restores a locally edited models.md.
+# commits that as the vendor commit, runs git am -3 on patches/01-* and 02-*, applies
+# normalize-invocation.sh to every skill (new upstream skills included), and restores a
+# locally edited models.md.
 # Nothing is pushed. On a conflict, resolve it, run git am --continue, then
 # regenerate both patches with git format-patch.
 
@@ -16,7 +17,7 @@ upstream="${1:?usage: sync-upstream.sh <cursor-plugins-clone> [base-ref]}"
 base="${2:-HEAD}"
 repo="$(git rev-parse --show-toplevel)"
 plugin="$repo/plugins/pstack"
-owned=(.codex-plugin .claude-plugin UPSTREAM.md patches scripts/sync-upstream.sh scripts/install.sh)
+owned=(.codex-plugin .claude-plugin UPSTREAM.md patches scripts/sync-upstream.sh scripts/install.sh scripts/normalize-invocation.sh)
 
 [ -d "$upstream/pstack/.cursor-plugin" ] || { echo "no pstack/ plugin under $upstream" >&2; exit 1; }
 [ -z "$(git -C "$repo" status --porcelain)" ] || { echo "working tree is not clean" >&2; exit 1; }
@@ -45,6 +46,11 @@ done
 git -C "$repo" add plugins/pstack
 git -C "$repo" commit -q -m "Vendor pstack upstream $sha"
 git -C "$repo" am -3 "$keep/patches/01-tool-neutral.patch" "$keep/patches/02-matthew.patch"
+"$plugin/scripts/normalize-invocation.sh"
+if [ -n "$(git -C "$repo" status --porcelain plugins/pstack/skills)" ]; then
+	git -C "$repo" add plugins/pstack/skills
+	git -C "$repo" commit -q -m "Normalize pstack skill invocation"
+fi
 if [ -f "$keep/models.md" ] && ! cmp -s "$keep/models.md" "$plugin/models.md"; then
 	cp -a "$keep/models.md" "$plugin/models.md"
 	git -C "$repo" add plugins/pstack/models.md
@@ -52,4 +58,4 @@ if [ -f "$keep/models.md" ] && ! cmp -s "$keep/models.md" "$plugin/models.md"; t
 fi
 
 echo "Synced pstack to upstream $sha on branch $branch."
-echo "Update the commit in plugins/pstack/UPSTREAM.md and regenerate patches/ from the two new commits."
+echo "Update the commit in plugins/pstack/UPSTREAM.md and regenerate patches/ from the two patch commits (not the normalize commit)."

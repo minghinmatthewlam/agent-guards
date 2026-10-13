@@ -8,6 +8,7 @@ on:
       - "commands/**"
       - "skills/**"
       - "scripts/**"
+      - "plugins/pstack/**"
       - ".github/workflows/validate-skills.yml"
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - "commands/**"
       - "skills/**"
       - "scripts/**"
+      - "plugins/pstack/**"
       - ".github/workflows/validate-skills.yml"
 
 jobs:
@@ -32,6 +34,9 @@ jobs:
 
       - name: Validate skills
         run: ./scripts/validate-skills.sh
+
+      - name: Check pstack invocation rule
+        run: ./plugins/pstack/scripts/normalize-invocation.sh --check
 
       - name: Sync smoke test
         run: ./scripts/test-sync.sh

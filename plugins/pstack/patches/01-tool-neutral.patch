@@ -1,4 +1,4 @@
-From d37adb4dfad91823378f7a796be781169c622694 Mon Sep 17 00:00:00 2001
+From fc80e69aff0b7bd3853e2a15efe657c09d478575 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Sun, 11 Oct 2026 18:13:25 -0400
 Subject: [PATCH] Make pstack tool-neutral
@@ -25,39 +25,30 @@ Co-Authored-By: Claude <noreply@anthropic.com>
  plugins/pstack/agents/poteto-agent.md         |  2 ++
  plugins/pstack/docs/guide/01-setup.md         |  2 +-
  plugins/pstack/models.md                      | 24 +++++++++++++++++++
- plugins/pstack/skills/architect/SKILL.md      |  4 ++--
+ plugins/pstack/skills/architect/SKILL.md      |  2 +-
  .../skills/architect/agents/openai.yaml       |  2 ++
- plugins/pstack/skills/arena/SKILL.md          |  6 ++---
+ plugins/pstack/skills/arena/SKILL.md          |  4 ++--
  .../pstack/skills/arena/agents/openai.yaml    |  2 ++
- plugins/pstack/skills/automate-me/SKILL.md    |  3 +--
+ plugins/pstack/skills/automate-me/SKILL.md    |  2 +-
  .../skills/automate-me/agents/openai.yaml     |  2 ++
- .../skills/benchmark-checklist/SKILL.md       |  2 +-
  .../benchmark-checklist/agents/openai.yaml    |  2 ++
- plugins/pstack/skills/blast-radius/SKILL.md   |  2 +-
  .../skills/blast-radius/agents/openai.yaml    |  2 ++
- plugins/pstack/skills/bro/SKILL.md            |  2 +-
  plugins/pstack/skills/bro/agents/openai.yaml  |  2 ++
- plugins/pstack/skills/correct/SKILL.md        |  2 +-
  .../pstack/skills/correct/agents/openai.yaml  |  2 ++
- .../skills/create-verification-skill/SKILL.md |  1 -
  .../agents/openai.yaml                        |  2 ++
- plugins/pstack/skills/figure-it-out/SKILL.md  |  2 +-
  .../skills/figure-it-out/agents/openai.yaml   |  2 ++
- plugins/pstack/skills/how/SKILL.md            |  4 ++--
+ plugins/pstack/skills/how/SKILL.md            |  2 +-
  plugins/pstack/skills/how/agents/openai.yaml  |  2 ++
- plugins/pstack/skills/interrogate/SKILL.md    |  4 ++--
+ plugins/pstack/skills/interrogate/SKILL.md    |  2 +-
  .../skills/interrogate/agents/openai.yaml     |  2 ++
- plugins/pstack/skills/ketchup/SKILL.md        |  2 +-
  .../pstack/skills/ketchup/agents/openai.yaml  |  2 ++
- .../maintain-verification-skill/SKILL.md      |  1 -
  .../agents/openai.yaml                        |  2 ++
- plugins/pstack/skills/make-bot-ui/SKILL.md    |  3 +--
+ plugins/pstack/skills/make-bot-ui/SKILL.md    |  2 +-
  .../skills/make-bot-ui/agents/openai.yaml     |  2 ++
- plugins/pstack/skills/no-comments/SKILL.md    |  2 +-
  .../skills/no-comments/agents/openai.yaml     |  2 ++
- plugins/pstack/skills/poteto-help/SKILL.md    |  5 ++--
+ plugins/pstack/skills/poteto-help/SKILL.md    |  4 ++--
  .../skills/poteto-help/agents/openai.yaml     |  2 ++
- plugins/pstack/skills/poteto-mode/SKILL.md    | 15 +++++++-----
+ plugins/pstack/skills/poteto-mode/SKILL.md    | 14 +++++++----
  .../skills/poteto-mode/agents/openai.yaml     |  2 ++
  .../poteto-mode/playbooks/autopilot-full.md   |  4 ++--
  .../poteto-mode/playbooks/autopilot-stack.md  |  2 +-
@@ -69,77 +60,48 @@ Co-Authored-By: Claude <noreply@anthropic.com>
  .../skills/poteto-mode/playbooks/shipping.md  |  2 +-
  .../poteto-mode/references/bugbot-triage.md   |  2 +-
  .../poteto-mode/scripts/worktree-audit.sh     |  8 +++++--
- .../principle-attack-the-premise/SKILL.md     |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-boundary-discipline/SKILL.md    |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../skills/principle-build-the-lever/SKILL.md |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-experience-first/SKILL.md       |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-explain-the-number/SKILL.md     |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../skills/principle-fix-root-causes/SKILL.md |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-foundational-thinking/SKILL.md  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-laziness-protocol/SKILL.md      |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-minimize-reader-load/SKILL.md   |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-model-the-domain/SKILL.md       |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../skills/principle-prove-it-works/SKILL.md  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../SKILL.md                                  |  2 +-
  .../agents/openai.yaml                        |  2 ++
- .../principle-type-system-discipline/SKILL.md |  2 +-
  .../agents/openai.yaml                        |  2 ++
- plugins/pstack/skills/recall/SKILL.md         |  4 ++--
+ plugins/pstack/skills/recall/SKILL.md         |  2 +-
  .../pstack/skills/recall/agents/openai.yaml   |  2 ++
- plugins/pstack/skills/reflect/SKILL.md        |  6 ++---
+ plugins/pstack/skills/reflect/SKILL.md        |  4 ++--
  .../pstack/skills/reflect/agents/openai.yaml  |  2 ++
  plugins/pstack/skills/setup-pstack/SKILL.md   |  6 ++---
  .../skills/setup-pstack/agents/openai.yaml    |  2 ++
- .../pstack/skills/show-me-your-work/SKILL.md  |  4 ++--
+ .../pstack/skills/show-me-your-work/SKILL.md  |  2 +-
  .../show-me-your-work/agents/openai.yaml      |  2 ++
- plugins/pstack/skills/swarm/SKILL.md          |  4 ++--
+ plugins/pstack/skills/swarm/SKILL.md          |  2 +-
  .../pstack/skills/swarm/agents/openai.yaml    |  2 ++
- plugins/pstack/skills/tdd/SKILL.md            |  2 +-
  plugins/pstack/skills/tdd/agents/openai.yaml  |  2 ++
- plugins/pstack/skills/teach/SKILL.md          |  2 +-
  .../pstack/skills/teach/agents/openai.yaml    |  2 ++
- .../pstack/skills/technical-writing/SKILL.md  |  2 +-
  .../technical-writing/agents/openai.yaml      |  2 ++
- .../skills/typescript-best-practices/SKILL.md |  2 +-
  .../agents/openai.yaml                        |  2 ++
- plugins/pstack/skills/unslop/SKILL.md         |  2 +-
  .../pstack/skills/unslop/agents/openai.yaml   |  2 ++
- plugins/pstack/skills/why/SKILL.md            |  4 ++--
+ plugins/pstack/skills/why/SKILL.md            |  2 +-
  plugins/pstack/skills/why/agents/openai.yaml  |  2 ++
- 118 files changed, 223 insertions(+), 91 deletions(-)
+ 80 files changed, 178 insertions(+), 40 deletions(-)
  create mode 100644 plugins/pstack/models.md
  create mode 100644 plugins/pstack/skills/architect/agents/openai.yaml
  create mode 100644 plugins/pstack/skills/arena/agents/openai.yaml
@@ -264,18 +226,9 @@ index 0000000..3a0b7ae
 +architect runners: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
 +interrogate reviewers: anthropic/claude-opus-5.5, openai/gpt-6.1-sol
 diff --git a/plugins/pstack/skills/architect/SKILL.md b/plugins/pstack/skills/architect/SKILL.md
-index 88e23ca..1e7594a 100644
+index 88e23ca..de7e2ee 100644
 --- a/plugins/pstack/skills/architect/SKILL.md
 +++ b/plugins/pstack/skills/architect/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: architect
- description: "Sketch types, signatures, and module structure before code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', or non-trivial work where jumping to code would lock in the wrong shape."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Architect
 @@ -28,7 +28,7 @@ Skip Phase A only when the work is genuinely greenfield with no surrounding syst
  
  Run the **arena** skill with the design-sketch task and the Phase A grounding artifacts. Pass `references/runner-prompt.md` as each runner's prompt.
@@ -294,18 +247,9 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/arena/SKILL.md b/plugins/pstack/skills/arena/SKILL.md
-index 58ae9d9..722a912 100644
+index 58ae9d9..602dc20 100644
 --- a/plugins/pstack/skills/arena/SKILL.md
 +++ b/plugins/pstack/skills/arena/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: arena
- description: "Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for /arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Arena
 @@ -14,7 +14,7 @@ Every candidate gets the same prompt, so the prompt is the contract.
  
  1. State the artifact each candidate is producing.
@@ -333,18 +277,10 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/automate-me/SKILL.md b/plugins/pstack/skills/automate-me/SKILL.md
-index cd3636e..9a1f598 100644
+index cd3636e..e0e3dab 100644
 --- a/plugins/pstack/skills/automate-me/SKILL.md
 +++ b/plugins/pstack/skills/automate-me/SKILL.md
-@@ -1,7 +1,6 @@
- ---
- name: automate-me
- description: "Use for \"automate me\", \"create/update/refresh my -mode skill\", \"turn/capture my preferences or working style into a skill\", or wanting agents to follow how the user works. Drafts or revises a personal -mode skill via create-skill + unslop, optionally pulling fresh evidence from recent transcripts."
--disable-model-invocation: true
- ---
- 
- # Automate me
-@@ -26,7 +25,7 @@ Update mode changes the rest of the flow:
+@@ -26,7 +26,7 @@ Update mode changes the rest of the flow:
  
  ### 1. Mine their history
  
@@ -361,19 +297,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/benchmark-checklist/SKILL.md b/plugins/pstack/skills/benchmark-checklist/SKILL.md
-index e901d1f..1e6b8a3 100644
---- a/plugins/pstack/skills/benchmark-checklist/SKILL.md
-+++ b/plugins/pstack/skills/benchmark-checklist/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: benchmark-checklist
- description: "Vet a perf measurement (limiter, tuning, limits, errors, repeatability, relevance, and whether the work happened) before you report or act on it. Use when you run a benchmark or report a speedup or regression you measured."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Benchmark checklist
 diff --git a/plugins/pstack/skills/benchmark-checklist/agents/openai.yaml b/plugins/pstack/skills/benchmark-checklist/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -382,19 +305,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/blast-radius/SKILL.md b/plugins/pstack/skills/blast-radius/SKILL.md
-index b296cce..9e3317d 100644
---- a/plugins/pstack/skills/blast-radius/SKILL.md
-+++ b/plugins/pstack/skills/blast-radius/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: blast-radius
- description: "Find what a change could break somewhere else before it ships, beyond the diff, and prove the one fact it's safe because of by running real code instead of writing it up. Use for 'blast radius of X', 'what could this break', or reviewing a small diff you don't trust."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Blast radius
 diff --git a/plugins/pstack/skills/blast-radius/agents/openai.yaml b/plugins/pstack/skills/blast-radius/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -403,19 +313,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/bro/SKILL.md b/plugins/pstack/skills/bro/SKILL.md
-index b1701b7..1cf2f7d 100644
---- a/plugins/pstack/skills/bro/SKILL.md
-+++ b/plugins/pstack/skills/bro/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: bro
- description: Restate the last message in plain human language, with no jargon.
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- Restate your last message. Stop using jargon and speak coherently. State it more simply and concisely, like one human talking to another.
 diff --git a/plugins/pstack/skills/bro/agents/openai.yaml b/plugins/pstack/skills/bro/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -424,19 +321,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/correct/SKILL.md b/plugins/pstack/skills/correct/SKILL.md
-index c09f486..07bd70e 100644
---- a/plugins/pstack/skills/correct/SKILL.md
-+++ b/plugins/pstack/skills/correct/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: correct
- description: "Find the mistakes agents keep repeating in this repo and make each one impossible. Try architecture first, then types, then a lint whose error names the fix, then a test, and write docs last. Prove each check fails on a real past mistake. Repeat this each time the operator corrects you. Use for /correct."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Correct
 diff --git a/plugins/pstack/skills/correct/agents/openai.yaml b/plugins/pstack/skills/correct/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -445,18 +329,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/create-verification-skill/SKILL.md b/plugins/pstack/skills/create-verification-skill/SKILL.md
-index f869e26..db63d6b 100644
---- a/plugins/pstack/skills/create-verification-skill/SKILL.md
-+++ b/plugins/pstack/skills/create-verification-skill/SKILL.md
-@@ -1,7 +1,6 @@
- ---
- name: create-verification-skill
- description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
--disable-model-invocation: true
- ---
- 
- # Create a verification skill
 diff --git a/plugins/pstack/skills/create-verification-skill/agents/openai.yaml b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -465,19 +337,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/figure-it-out/SKILL.md b/plugins/pstack/skills/figure-it-out/SKILL.md
-index 195f50b..0628e28 100644
---- a/plugins/pstack/skills/figure-it-out/SKILL.md
-+++ b/plugins/pstack/skills/figure-it-out/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: figure-it-out
- description: "Design an auditable playbook when no narrower one fits: a large migration, an ambitious multi-part change, or work a human reviews after stepping away. Scales rigor to the task, runs a hypothesis loop, and logs decisions. Use for /figure-it-out or 'figure it out'."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Figure it out
 diff --git a/plugins/pstack/skills/figure-it-out/agents/openai.yaml b/plugins/pstack/skills/figure-it-out/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -487,18 +346,10 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/how/SKILL.md b/plugins/pstack/skills/how/SKILL.md
-index 775d292..cf8796c 100644
+index 775d292..707380b 100644
 --- a/plugins/pstack/skills/how/SKILL.md
 +++ b/plugins/pstack/skills/how/SKILL.md
-@@ -1,14 +1,14 @@
- ---
- name: how
- description: "Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Use why for motivation."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # How
+@@ -8,7 +8,7 @@ disable-model-invocation: true
  
  Explore the codebase to answer "how does X work?" questions. Produce architectural explanations at the level of a senior engineer onboarding onto a subsystem, enough to build a working mental model, not so much that it reads like annotated source code.
  
@@ -516,18 +367,9 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/interrogate/SKILL.md b/plugins/pstack/skills/interrogate/SKILL.md
-index 9e3b99a..9217d3d 100644
+index 9e3b99a..6720645 100644
 --- a/plugins/pstack/skills/interrogate/SKILL.md
 +++ b/plugins/pstack/skills/interrogate/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: interrogate
- description: "Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Multiple LLM reviewers challenge changes from independent angles."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Interrogate
 @@ -24,7 +24,7 @@ Before spawning reviewers, state the intent in one clear paragraph from the user
  
  ## Step 3, Spawn Reviewers
@@ -545,19 +387,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/ketchup/SKILL.md b/plugins/pstack/skills/ketchup/SKILL.md
-index f00fccb..9ef7bc6 100644
---- a/plugins/pstack/skills/ketchup/SKILL.md
-+++ b/plugins/pstack/skills/ketchup/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: ketchup
- description: "Catch the user up on everything in this chat since their last message, in plain words. Give each action item an executive summary with enough context to make the call. Use for /ketchup."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Ketchup
 diff --git a/plugins/pstack/skills/ketchup/agents/openai.yaml b/plugins/pstack/skills/ketchup/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -566,18 +395,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/maintain-verification-skill/SKILL.md b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-index a2680b9..ef4bc08 100644
---- a/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-+++ b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-@@ -1,7 +1,6 @@
- ---
- name: maintain-verification-skill
- description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\"."
--disable-model-invocation: true
- ---
- 
- # Maintain a verification skill
 diff --git a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -587,21 +404,16 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/make-bot-ui/SKILL.md b/plugins/pstack/skills/make-bot-ui/SKILL.md
-index 285df75..99262ea 100644
+index 285df75..446342c 100644
 --- a/plugins/pstack/skills/make-bot-ui/SKILL.md
 +++ b/plugins/pstack/skills/make-bot-ui/SKILL.md
-@@ -1,10 +1,9 @@
+@@ -1,5 +1,5 @@
  ---
 -name: Make Bot UI
 +name: make-bot-ui
  description: >-
    Use when building a custom UI (page, dashboard, buttons) that should wake a
    Grok Bot over a webhook, when the user must provide a webhook sender key, or
-   when exposing that UI on Tailscale.
--disable-model-invocation: true
- ---
- # How to make a bot UI
- 
 diff --git a/plugins/pstack/skills/make-bot-ui/agents/openai.yaml b/plugins/pstack/skills/make-bot-ui/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -610,19 +422,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/no-comments/SKILL.md b/plugins/pstack/skills/no-comments/SKILL.md
-index 3b3e762..0a8f3fa 100644
---- a/plugins/pstack/skills/no-comments/SKILL.md
-+++ b/plugins/pstack/skills/no-comments/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: no-comments
- description: "Spawn Comment Sicko, fix accepted findings, and offer encodings for claimed constraints."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # No comments
 diff --git a/plugins/pstack/skills/no-comments/agents/openai.yaml b/plugins/pstack/skills/no-comments/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -632,18 +431,10 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/poteto-help/SKILL.md b/plugins/pstack/skills/poteto-help/SKILL.md
-index 575d80f..d52f280 100644
+index 575d80f..fd6abd6 100644
 --- a/plugins/pstack/skills/poteto-help/SKILL.md
 +++ b/plugins/pstack/skills/poteto-help/SKILL.md
-@@ -1,7 +1,6 @@
- ---
- name: poteto-help
- description: Guides users through pstack setup, /poteto-mode, and picking the skill, playbook, or principle for a task. Type /poteto-help with a question.
--disable-model-invocation: true
- ---
- 
- # Poteto help
-@@ -24,7 +23,7 @@ Infer the need from the message and the conversation. A named situation, such as
+@@ -24,7 +24,7 @@ Infer the need from the message and the conversation. A named situation, such as
  
  Check the state that changes the answer, and mention it only when it does:
  
@@ -652,7 +443,7 @@ index 575d80f..d52f280 100644
  - No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention `/create-verification-skill` when the question is about proving a change works.
  
  When the model rule is missing and it matters, ask whether the user wants to pick a model for each role and a reasoning budget now. It matters when the user is new, the question is about setup or cost, or the answer depends on which models run. Ask at most once per chat. If the need is also unclear, ask both questions together. Offer two choices:
-@@ -104,7 +103,7 @@ Close calls:
+@@ -104,7 +104,7 @@ Close calls:
  
  Not in pstack:
  
@@ -670,19 +461,17 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 3cad9b7..34e5f2f 100644
+index 3cad9b7..952dd0e 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
-@@ -1,7 +1,6 @@
+@@ -1,5 +1,5 @@
  ---
 -name: Poteto Mode
 +name: poteto-mode
  description: poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.
--disable-model-invocation: true
+ disable-model-invocation: true
  mode: true
- icon: crown
- color: yellow
-@@ -14,6 +13,8 @@ reminder: New task? Playbook match or rigor needed -> apply /poteto-mode. Casual
+@@ -14,6 +14,8 @@ reminder: New task? Playbook match or rigor needed -> apply /poteto-mode. Casual
  
  The Principles section below grounds every trigger. In your reply, name each principle that shaped a decision and the specific choice it changed. Cite only principles whose leaf SKILL.md you read this session.
  
@@ -691,7 +480,7 @@ index 3cad9b7..34e5f2f 100644
  Remaining triggers:
  
  - Nontrivial change, architecture decision, or "are we sure?" → the **how** skill.
-@@ -23,15 +24,15 @@ Remaining triggers:
+@@ -23,15 +25,15 @@ Remaining triggers:
  - Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
  - Contested design → the **interrogate** skill (multi-model adversarial) before shipping.
  - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
@@ -710,7 +499,7 @@ index 3cad9b7..34e5f2f 100644
  - Broken skill mid-task → fix it in its own PR. Don't block. Don't silently work around it.
  - Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "/loop until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
  
-@@ -90,9 +91,11 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
+@@ -90,9 +92,11 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
  
  ## Subagents
  
@@ -903,19 +692,6 @@ index b9af081..e504458 100755
  			| xargs stat -f '%m %N' 2>/dev/null | sort -rn | head -1)
  		if [ -n "$f" ]; then last_ts=$(echo "$f" | awk '{print $1}')
  			last=$(date -r "$last_ts" '+%Y-%m-%d' 2>/dev/null); fi
-diff --git a/plugins/pstack/skills/principle-attack-the-premise/SKILL.md b/plugins/pstack/skills/principle-attack-the-premise/SKILL.md
-index f9785ff..9cdebc8 100644
---- a/plugins/pstack/skills/principle-attack-the-premise/SKILL.md
-+++ b/plugins/pstack/skills/principle-attack-the-premise/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-attack-the-premise
- description: "Apply when two or more fixes that share one premise have failed the same gate. Take a census of which actors hold the imbalance before the next fix, then question the premise instead of writing another fix that assumes it."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Attack the Premise
 diff --git a/plugins/pstack/skills/principle-attack-the-premise/agents/openai.yaml b/plugins/pstack/skills/principle-attack-the-premise/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -924,19 +700,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-boundary-discipline/SKILL.md b/plugins/pstack/skills/principle-boundary-discipline/SKILL.md
-index dfe9a6f..de0c0f4 100644
---- a/plugins/pstack/skills/principle-boundary-discipline/SKILL.md
-+++ b/plugins/pstack/skills/principle-boundary-discipline/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-boundary-discipline
- description: "Apply when wiring validation, error handling, or framework adapters. Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Boundary Discipline
 diff --git a/plugins/pstack/skills/principle-boundary-discipline/agents/openai.yaml b/plugins/pstack/skills/principle-boundary-discipline/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -945,19 +708,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-build-the-lever/SKILL.md b/plugins/pstack/skills/principle-build-the-lever/SKILL.md
-index cbf0038..122e306 100644
---- a/plugins/pstack/skills/principle-build-the-lever/SKILL.md
-+++ b/plugins/pstack/skills/principle-build-the-lever/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-build-the-lever
- description: "Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun."
--disable-model-invocation: true
-+user-invocable: false
- ---
- # Build the Lever
- 
 diff --git a/plugins/pstack/skills/principle-build-the-lever/agents/openai.yaml b/plugins/pstack/skills/principle-build-the-lever/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -966,19 +716,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-encode-lessons-in-structure/SKILL.md b/plugins/pstack/skills/principle-encode-lessons-in-structure/SKILL.md
-index 8bf625b..813d3bc 100644
---- a/plugins/pstack/skills/principle-encode-lessons-in-structure/SKILL.md
-+++ b/plugins/pstack/skills/principle-encode-lessons-in-structure/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-encode-lessons-in-structure
- description: "Apply when you catch yourself writing the same instruction a second time, or notice a recurring correction. Encode the rule as a lint, metadata flag, runtime check, or script instead of more text."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Encode Lessons in Structure
 diff --git a/plugins/pstack/skills/principle-encode-lessons-in-structure/agents/openai.yaml b/plugins/pstack/skills/principle-encode-lessons-in-structure/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -987,19 +724,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-exhaust-the-design-space/SKILL.md b/plugins/pstack/skills/principle-exhaust-the-design-space/SKILL.md
-index 85dd16f..5e581cd 100644
---- a/plugins/pstack/skills/principle-exhaust-the-design-space/SKILL.md
-+++ b/plugins/pstack/skills/principle-exhaust-the-design-space/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-exhaust-the-design-space
- description: "Apply when facing a novel UI interaction or architectural decision with no precedent in the codebase. Build 2-3 competing prototypes and compare side by side before committing."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Exhaust the Design Space
 diff --git a/plugins/pstack/skills/principle-exhaust-the-design-space/agents/openai.yaml b/plugins/pstack/skills/principle-exhaust-the-design-space/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1008,19 +732,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-experience-first/SKILL.md b/plugins/pstack/skills/principle-experience-first/SKILL.md
-index 5ea5174..ff4bf14 100644
---- a/plugins/pstack/skills/principle-experience-first/SKILL.md
-+++ b/plugins/pstack/skills/principle-experience-first/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-experience-first
- description: "Apply when product, UX, or feature-scope tradeoffs come up. Choose user delight over implementation convenience; ship fewer polished features over more rough ones."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Experience First
 diff --git a/plugins/pstack/skills/principle-experience-first/agents/openai.yaml b/plugins/pstack/skills/principle-experience-first/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1029,19 +740,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-explain-the-number/SKILL.md b/plugins/pstack/skills/principle-explain-the-number/SKILL.md
-index 1e180c1..b921ba8 100644
---- a/plugins/pstack/skills/principle-explain-the-number/SKILL.md
-+++ b/plugins/pstack/skills/principle-explain-the-number/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-explain-the-number
- description: "Apply before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Explain the Number
 diff --git a/plugins/pstack/skills/principle-explain-the-number/agents/openai.yaml b/plugins/pstack/skills/principle-explain-the-number/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1050,19 +748,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-fix-root-causes/SKILL.md b/plugins/pstack/skills/principle-fix-root-causes/SKILL.md
-index 7e5a419..0597b15 100644
---- a/plugins/pstack/skills/principle-fix-root-causes/SKILL.md
-+++ b/plugins/pstack/skills/principle-fix-root-causes/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-fix-root-causes
- description: "Apply when debugging. Trace each symptom to its root cause and fix it there; reproduce first, ask why until you reach it, resist nil-check guards that silence crashes."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Fix Root Causes
 diff --git a/plugins/pstack/skills/principle-fix-root-causes/agents/openai.yaml b/plugins/pstack/skills/principle-fix-root-causes/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1071,19 +756,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-foundational-thinking/SKILL.md b/plugins/pstack/skills/principle-foundational-thinking/SKILL.md
-index 19cc6c0..a6829c7 100644
---- a/plugins/pstack/skills/principle-foundational-thinking/SKILL.md
-+++ b/plugins/pstack/skills/principle-foundational-thinking/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-foundational-thinking
- description: "Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Foundational Thinking
 diff --git a/plugins/pstack/skills/principle-foundational-thinking/agents/openai.yaml b/plugins/pstack/skills/principle-foundational-thinking/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1092,19 +764,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-guard-the-context-window/SKILL.md b/plugins/pstack/skills/principle-guard-the-context-window/SKILL.md
-index c4db544..ab9e950 100644
---- a/plugins/pstack/skills/principle-guard-the-context-window/SKILL.md
-+++ b/plugins/pstack/skills/principle-guard-the-context-window/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-guard-the-context-window
- description: "Apply when context is filling up: large outputs, long files, repeated reads, fan-out planning. Route bulk to subagents; keep summaries in the main thread, not raw payloads."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Guard the Context Window
 diff --git a/plugins/pstack/skills/principle-guard-the-context-window/agents/openai.yaml b/plugins/pstack/skills/principle-guard-the-context-window/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1113,19 +772,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-laziness-protocol/SKILL.md b/plugins/pstack/skills/principle-laziness-protocol/SKILL.md
-index e5bc77e..c9c65ff 100644
---- a/plugins/pstack/skills/principle-laziness-protocol/SKILL.md
-+++ b/plugins/pstack/skills/principle-laziness-protocol/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-laziness-protocol
- description: "Apply when refactoring, evaluating diff size, or tempted to add abstractions, layers, or signal threading. Bias toward deletion and the smallest change that solves the problem."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Laziness Protocol
 diff --git a/plugins/pstack/skills/principle-laziness-protocol/agents/openai.yaml b/plugins/pstack/skills/principle-laziness-protocol/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1134,19 +780,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-make-operations-idempotent/SKILL.md b/plugins/pstack/skills/principle-make-operations-idempotent/SKILL.md
-index a083424..3caa918 100644
---- a/plugins/pstack/skills/principle-make-operations-idempotent/SKILL.md
-+++ b/plugins/pstack/skills/principle-make-operations-idempotent/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-make-operations-idempotent
- description: "Apply when designing commands, lifecycle steps, or processing loops that run amid crashes, restarts, and retries. Converge to the same end state regardless of partial prior runs."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Make Operations Idempotent
 diff --git a/plugins/pstack/skills/principle-make-operations-idempotent/agents/openai.yaml b/plugins/pstack/skills/principle-make-operations-idempotent/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1155,19 +788,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md b/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md
-index 06c7cfd..ca19666 100644
---- a/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md
-+++ b/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-migrate-callers-then-delete-legacy-apis
- description: "Apply when introducing a new internal API while old callers still exist. Migrate callers and delete the old API in the same wave instead of preserving compatibility layers."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Migrate Callers Then Delete Legacy APIs
 diff --git a/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/agents/openai.yaml b/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1176,19 +796,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-minimize-reader-load/SKILL.md b/plugins/pstack/skills/principle-minimize-reader-load/SKILL.md
-index 6289990..2f100ea 100644
---- a/plugins/pstack/skills/principle-minimize-reader-load/SKILL.md
-+++ b/plugins/pstack/skills/principle-minimize-reader-load/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-minimize-reader-load
- description: "Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Minimize Reader Load
 diff --git a/plugins/pstack/skills/principle-minimize-reader-load/agents/openai.yaml b/plugins/pstack/skills/principle-minimize-reader-load/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1197,19 +804,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-model-the-domain/SKILL.md b/plugins/pstack/skills/principle-model-the-domain/SKILL.md
-index 09b7c73..d88c0e8 100644
---- a/plugins/pstack/skills/principle-model-the-domain/SKILL.md
-+++ b/plugins/pstack/skills/principle-model-the-domain/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-model-the-domain
- description: "Apply when writing stateful logic, or when code branches a lot or repeats a shape assumption across files."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Model the Domain
 diff --git a/plugins/pstack/skills/principle-model-the-domain/agents/openai.yaml b/plugins/pstack/skills/principle-model-the-domain/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1218,19 +812,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-never-block-on-the-human/SKILL.md b/plugins/pstack/skills/principle-never-block-on-the-human/SKILL.md
-index 4f59bdc..f4d3fad 100644
---- a/plugins/pstack/skills/principle-never-block-on-the-human/SKILL.md
-+++ b/plugins/pstack/skills/principle-never-block-on-the-human/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-never-block-on-the-human
- description: "Apply when tempted to ask 'should I do X?' on reversible work."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Never Block on the Human
 diff --git a/plugins/pstack/skills/principle-never-block-on-the-human/agents/openai.yaml b/plugins/pstack/skills/principle-never-block-on-the-human/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1239,19 +820,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-outcome-oriented-execution/SKILL.md b/plugins/pstack/skills/principle-outcome-oriented-execution/SKILL.md
-index c49be0b..935bc52 100644
---- a/plugins/pstack/skills/principle-outcome-oriented-execution/SKILL.md
-+++ b/plugins/pstack/skills/principle-outcome-oriented-execution/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-outcome-oriented-execution
- description: "Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Outcome-Oriented Execution
 diff --git a/plugins/pstack/skills/principle-outcome-oriented-execution/agents/openai.yaml b/plugins/pstack/skills/principle-outcome-oriented-execution/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1260,19 +828,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-prove-it-works/SKILL.md b/plugins/pstack/skills/principle-prove-it-works/SKILL.md
-index 5dc14a3..593889b 100644
---- a/plugins/pstack/skills/principle-prove-it-works/SKILL.md
-+++ b/plugins/pstack/skills/principle-prove-it-works/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-prove-it-works
- description: "Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'"
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Prove It Works
 diff --git a/plugins/pstack/skills/principle-prove-it-works/agents/openai.yaml b/plugins/pstack/skills/principle-prove-it-works/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1281,19 +836,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-redesign-from-first-principles/SKILL.md b/plugins/pstack/skills/principle-redesign-from-first-principles/SKILL.md
-index 5ca5246..f016dda 100644
---- a/plugins/pstack/skills/principle-redesign-from-first-principles/SKILL.md
-+++ b/plugins/pstack/skills/principle-redesign-from-first-principles/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-redesign-from-first-principles
- description: "Apply when integrating a new requirement into an existing design."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Redesign From First Principles
 diff --git a/plugins/pstack/skills/principle-redesign-from-first-principles/agents/openai.yaml b/plugins/pstack/skills/principle-redesign-from-first-principles/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1302,19 +844,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-separate-before-serializing-shared-state/SKILL.md b/plugins/pstack/skills/principle-separate-before-serializing-shared-state/SKILL.md
-index ff93b4a..dd88c08 100644
---- a/plugins/pstack/skills/principle-separate-before-serializing-shared-state/SKILL.md
-+++ b/plugins/pstack/skills/principle-separate-before-serializing-shared-state/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-separate-before-serializing-shared-state
- description: "Apply when concurrent actors might write to the same file, branch, key, or state object. Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Separate Before Serializing Shared State
 diff --git a/plugins/pstack/skills/principle-separate-before-serializing-shared-state/agents/openai.yaml b/plugins/pstack/skills/principle-separate-before-serializing-shared-state/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1323,19 +852,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-sequence-verifiable-units/SKILL.md b/plugins/pstack/skills/principle-sequence-verifiable-units/SKILL.md
-index 9863712..583be96 100644
---- a/plugins/pstack/skills/principle-sequence-verifiable-units/SKILL.md
-+++ b/plugins/pstack/skills/principle-sequence-verifiable-units/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-sequence-verifiable-units
- description: "Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Sequence work into verifiable units
 diff --git a/plugins/pstack/skills/principle-sequence-verifiable-units/agents/openai.yaml b/plugins/pstack/skills/principle-sequence-verifiable-units/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1344,19 +860,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-subtract-before-you-add/SKILL.md b/plugins/pstack/skills/principle-subtract-before-you-add/SKILL.md
-index b8740ba..b528a0c 100644
---- a/plugins/pstack/skills/principle-subtract-before-you-add/SKILL.md
-+++ b/plugins/pstack/skills/principle-subtract-before-you-add/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-subtract-before-you-add
- description: "Apply when sequencing an addition, refactor, or rewrite. Remove dead code, redundant validators, and stub references first, then build on the simpler base."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Subtract Before You Add
 diff --git a/plugins/pstack/skills/principle-subtract-before-you-add/agents/openai.yaml b/plugins/pstack/skills/principle-subtract-before-you-add/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1365,19 +868,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-test-behavior-not-implementation/SKILL.md b/plugins/pstack/skills/principle-test-behavior-not-implementation/SKILL.md
-index f5a603e..e8812bd 100644
---- a/plugins/pstack/skills/principle-test-behavior-not-implementation/SKILL.md
-+++ b/plugins/pstack/skills/principle-test-behavior-not-implementation/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-test-behavior-not-implementation
- description: "Apply when you write, change, or keep a test. Call the code as its users do and assert the exact result they see. Rewrite or delete a test that would pass if every imported function returned undefined."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Test Behavior, Not Implementation
 diff --git a/plugins/pstack/skills/principle-test-behavior-not-implementation/agents/openai.yaml b/plugins/pstack/skills/principle-test-behavior-not-implementation/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1386,19 +876,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/principle-type-system-discipline/SKILL.md b/plugins/pstack/skills/principle-type-system-discipline/SKILL.md
-index 4321b83..e4f77e6 100644
---- a/plugins/pstack/skills/principle-type-system-discipline/SKILL.md
-+++ b/plugins/pstack/skills/principle-type-system-discipline/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: principle-type-system-discipline
- description: "Apply when designing types, reviewing a function signature, or writing code in any statically-typed language. Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, refuse to lie to the compiler, exhaust variants, derive from authoritative schemas."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Type System Discipline
 diff --git a/plugins/pstack/skills/principle-type-system-discipline/agents/openai.yaml b/plugins/pstack/skills/principle-type-system-discipline/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1408,18 +885,9 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/recall/SKILL.md b/plugins/pstack/skills/recall/SKILL.md
-index a70062a..5b0fb7f 100644
+index a70062a..b87d752 100644
 --- a/plugins/pstack/skills/recall/SKILL.md
 +++ b/plugins/pstack/skills/recall/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: recall
- description: "Reconstruct your recent working context from your own chat history, live state, and the shared record (user reports, prior fixes, incidents), then hand back a tight current-state brief. Use for 'recall my work on X', 'catch me up', 'what have I been working on', 'where did I leave off', before starting or resuming work."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Recall
 @@ -12,7 +12,7 @@ Keep it tight and on-topic. Read only what the in-scope threads need, then stop.
  
  Your context lives in two records. Your own chat history holds what you did and decided. The shared record holds everything that happened around the same code under other names: the symptoms users keep reporting, the fixes that shipped and got reverted, the errors still firing in prod. That second record is what the **why** skill searches, across source control, the issue tracker, chat and issue channels, long-form docs, and error tracking. A feature with a long bug tail keeps most of its story there, so don't reconstruct it from your transcripts alone.
@@ -1438,18 +906,9 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/reflect/SKILL.md b/plugins/pstack/skills/reflect/SKILL.md
-index b6bd41a..a959721 100644
+index b6bd41a..ffc4611 100644
 --- a/plugins/pstack/skills/reflect/SKILL.md
 +++ b/plugins/pstack/skills/reflect/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: reflect
- description: Spawn three parallel review subagents over the active transcript, surface learnings, and route each to a concrete edit on an existing skill. Use when the user says reflect.
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Reflect
 @@ -12,7 +12,7 @@ Invoke when the user says "reflect" or "/reflect". Skip when the conversation is
  
  ## 1. Locate the active transcript
@@ -1516,18 +975,9 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/show-me-your-work/SKILL.md b/plugins/pstack/skills/show-me-your-work/SKILL.md
-index d350a15..1a3e9e6 100644
+index d350a15..28e8f9a 100644
 --- a/plugins/pstack/skills/show-me-your-work/SKILL.md
 +++ b/plugins/pstack/skills/show-me-your-work/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: show-me-your-work
- description: "Keep a reviewable decision trail for long-running or unattended work: a TSV log with one row per decision (what, why, evidence, result). Local by default; commit it when a reviewer needs the trail to trust the result. Use for /show-me-your-work, autonomous or multi-phase runs, or work a human reviews after stepping away."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Show me your work
 @@ -54,7 +54,7 @@ Commit it only when the work is ambitious enough that a reviewer needs the trail
  
  ## Audit the log against the transcript
@@ -1546,18 +996,9 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/swarm/SKILL.md b/plugins/pstack/skills/swarm/SKILL.md
-index db22b87..714c0ea 100644
+index db22b87..231e48b 100644
 --- a/plugins/pstack/skills/swarm/SKILL.md
 +++ b/plugins/pstack/skills/swarm/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: swarm
- description: "Fan out N parallel workers, drain them, and return one report. Use for /swarm, 'swarm this', or parallel coverage, races, gauntlets, and exploration."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Swarm
 @@ -22,7 +22,7 @@ Open a todolist with one entry per phase before launching anything.
  1. State the done predicate and the artifact or report the swarm must return.
  2. Choose the shape. Partition into slices, race N workers on identical briefs, or mix both. For a race or mixed shape, declare `first pass`, `rank all`, or `best-of` before spawning.
@@ -1575,19 +1016,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/tdd/SKILL.md b/plugins/pstack/skills/tdd/SKILL.md
-index ca6f24c..3505be5 100644
---- a/plugins/pstack/skills/tdd/SKILL.md
-+++ b/plugins/pstack/skills/tdd/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: tdd
- description: "Use only when the user explicitly asks for TDD, a failing test, or a regression test, OR when the bug has an obvious cheap local test target. Skip when the test path is unclear, expensive, integration-heavy, or not requested."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # TDD Bug Fix
 diff --git a/plugins/pstack/skills/tdd/agents/openai.yaml b/plugins/pstack/skills/tdd/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1596,19 +1024,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/teach/SKILL.md b/plugins/pstack/skills/teach/SKILL.md
-index 25369f3..b3cf4f2 100644
---- a/plugins/pstack/skills/teach/SKILL.md
-+++ b/plugins/pstack/skills/teach/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: teach
- description: "Explain a body of work plainly so a person actually understands it. Runs the `how` and `why` skills and weaves what they find into one clear explanation. Use for 'teach me this', 'help me really understand X', 'explain this change or subsystem to me'."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Teach
 diff --git a/plugins/pstack/skills/teach/agents/openai.yaml b/plugins/pstack/skills/teach/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1617,19 +1032,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/technical-writing/SKILL.md b/plugins/pstack/skills/technical-writing/SKILL.md
-index 3e6d261..109ad8d 100644
---- a/plugins/pstack/skills/technical-writing/SKILL.md
-+++ b/plugins/pstack/skills/technical-writing/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: technical-writing
- description: "Layered technical-writing standard: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing or when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Technical writing
 diff --git a/plugins/pstack/skills/technical-writing/agents/openai.yaml b/plugins/pstack/skills/technical-writing/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1638,19 +1040,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/typescript-best-practices/SKILL.md b/plugins/pstack/skills/typescript-best-practices/SKILL.md
-index 2c0279d..3231833 100644
---- a/plugins/pstack/skills/typescript-best-practices/SKILL.md
-+++ b/plugins/pstack/skills/typescript-best-practices/SKILL.md
-@@ -2,7 +2,7 @@
- name: typescript-best-practices
- description: TypeScript best practices. Use when reading or editing any .ts or .tsx file.
- paths: ["**/*.ts", "**/*.tsx"]
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # TypeScript best practices
 diff --git a/plugins/pstack/skills/typescript-best-practices/agents/openai.yaml b/plugins/pstack/skills/typescript-best-practices/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1659,19 +1048,6 @@ index 0000000..5b1f887
 @@ -0,0 +1,2 @@
 +policy:
 +  allow_implicit_invocation: false
-diff --git a/plugins/pstack/skills/unslop/SKILL.md b/plugins/pstack/skills/unslop/SKILL.md
-index c37b036..5b0e51c 100644
---- a/plugins/pstack/skills/unslop/SKILL.md
-+++ b/plugins/pstack/skills/unslop/SKILL.md
-@@ -1,7 +1,7 @@
- ---
- name: unslop
- description: Cut AI tells from any writing. Must always apply.
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Unslop
 diff --git a/plugins/pstack/skills/unslop/agents/openai.yaml b/plugins/pstack/skills/unslop/agents/openai.yaml
 new file mode 100644
 index 0000000..5b1f887
@@ -1681,18 +1057,10 @@ index 0000000..5b1f887
 +policy:
 +  allow_implicit_invocation: false
 diff --git a/plugins/pstack/skills/why/SKILL.md b/plugins/pstack/skills/why/SKILL.md
-index bc2a3eb..f559a43 100644
+index bc2a3eb..5a9905a 100644
 --- a/plugins/pstack/skills/why/SKILL.md
 +++ b/plugins/pstack/skills/why/SKILL.md
-@@ -1,14 +1,14 @@
- ---
- name: why
- description: "Use for 'why does X work this way', 'why we picked Y', design rationale, regressions, postmortems, or data-backed thresholds. Discovers available MCPs and queries each evidence category (source control, issue tracker, long-form docs, real-time chat, infrastructure observability, error tracking, product analytics warehouse) in parallel, then returns a cited read on decisions and tradeoffs. Use how for runtime behavior."
--disable-model-invocation: true
-+user-invocable: false
- ---
- 
- # Why
+@@ -8,7 +8,7 @@ disable-model-invocation: true
  
  Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
  
