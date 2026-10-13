@@ -38,7 +38,7 @@ Save the user's standing rules as memory (where your mode has it), not just in t
 - **Quick question:** answer it here. Read the code yourself, because code is the source of truth.
 - **Research or audit:** a background subagent. It is read-only, returns a report, and you save that report to `library/`.
 - **Implementation, or work on another model:** a worker thread, started the way your mode's reference file says.
-- **Follow-up to a running thread:** message it the way your mode's reference file says. Reuse a thread for follow-ups in its own area.
+- **Follow-up to a running thread:** message it the way your mode's reference file says, and start every message with the poteto-mode follow-up line from [references/poteto-mode.md](references/poteto-mode.md). Reuse a thread for follow-ups in its own area.
 
 Every implementation thread needs a tracker issue, with a priority, before it starts. You file it; threads don't.
 

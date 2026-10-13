@@ -13,6 +13,12 @@ A skill named at the start of a T3 message is not run as a command, so say it in
 
 This line goes first in every brief, worker thread or subagent, above the project instructions. The project instructions and the task follow, as the SKILL.md brief section says.
 
+Every later message to an agent also starts with a poteto-mode line: follow-ups, corrections, relayed review findings, approvals. A long thread compacts its context and can drop the skill.
+
+- **Codex:** `$poteto-mode`.
+- **Claude:** "Stay in poteto-mode. If its SKILL.md is no longer in your context, reload `pstack:poteto-mode` with the Skill tool first."
+- **Cursor:** "Stay in poteto-mode. If its SKILL.md is no longer in your context, re-read `~/.cursor/plugins/local/pstack/skills/poteto-mode/SKILL.md` first."
+
 ## Models
 
 Every pstack role reads `~/.config/pstack/models.md`. Map each slug to a spawn the way your mode allows:

@@ -33,7 +33,7 @@ Research, audits and cross-model reviews stay in subagents:
 
 ## Message a worker
 
-`t3_thread_send` with its `threadId` and `mode: "auto"` (starts an idle thread, steers a running one). Use `queue` for a separate follow-up turn and `steer` for a correction to the current turn. Pass a `clientRequestId` so a retry doesn't double-send.
+Start the message with the poteto-mode follow-up line ([poteto-mode.md](poteto-mode.md)). `t3_thread_send` with its `threadId` and `mode: "auto"` (starts an idle thread, steers a running one). Use `queue` for a separate follow-up turn and `steer` for a correction to the current turn. Pass a `clientRequestId` so a retry doesn't double-send.
 
 ## Track workers
 
