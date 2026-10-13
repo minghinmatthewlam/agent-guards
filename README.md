@@ -55,6 +55,7 @@ Task-specific skills:
 | `find-bugs` | Finds high-confidence correctness bugs and edge cases in existing code |
 | `new-task` | Aligns on the goal and asks only questions that could change the outcome |
 | `record-screen` | Records a UI change as a small MP4 proof: the private virtual display in Linux cloud sessions, only the app window on macOS |
+| `project-coordinator` | Runs a session as a project coordinator: a board, standard thread briefs, a check loop, and priority-first reports |
 
 ## Cross-Tool Sync Model
 
