@@ -1,6 +1,6 @@
 # Workers in poteto-mode
 
-Read this when the human wants workers to run in poteto-mode (the pstack plugin). poteto-mode brings its own playbooks and multi-model skills (`architect`, `arena`, `interrogate`, `swarm`). The coordinator stays the outer program. Workers run one single-task playbook each (Feature, Bug fix, Refactoring, and so on). Never run poteto's Orchestrate playbook alongside this skill: both own the program, and its store would duplicate the board.
+Every agent the coordinator starts runs in poteto-mode (the pstack plugin). poteto-mode brings its own playbooks and multi-model skills (`architect`, `arena`, `interrogate`, `swarm`). The coordinator stays the outer program. Workers run one single-task playbook each (Feature, Bug fix, Refactoring, and so on). Never run poteto's Orchestrate playbook alongside this skill: both own the program, and its store would duplicate the board.
 
 ## Turn it on in the brief
 
@@ -8,8 +8,10 @@ A skill named at the start of a T3 message is not run as a command, so say it in
 
 - **Codex worker:** start the brief with `$poteto-mode`. Codex loads the skill from the mention.
 - **Claude worker:** start the brief with "Before any work, load `pstack:poteto-mode` with the Skill tool and follow it."
+- **Cursor worker:** start the brief with "Before any work, read `~/.cursor/plugins/local/pstack/skills/poteto-mode/SKILL.md` in full and follow it." Cursor has no skill-loading tool.
+- **Claude native subagent:** use `subagent_type: "pstack:poteto-agent"`, which preloads poteto-mode. Keep the line anyway; it costs nothing.
 
-This line goes first, above the project instructions. The project instructions and the task follow, as the SKILL.md brief section says.
+This line goes first in every brief, worker thread or subagent, above the project instructions. The project instructions and the task follow, as the SKILL.md brief section says.
 
 ## Models
 

@@ -3,7 +3,7 @@
 Goal: <one line, in the user's words>
 Human: <name>, <role>. Coordinator session: <session title>.
 Instructions: <path to project-instructions.md>. Library: <path to library/>.
-Mode: <T3 Code | Codex Desktop | Claude Desktop | cmux>. Workers in poteto-mode: <yes | no>.
+Mode: <T3 Code | Codex Desktop | Claude Desktop | cmux>.
 Models verified for threads: <e.g. default; codex openai/gpt-6.1-sol>
 T3 projectId: <id, T3 Code only>
 

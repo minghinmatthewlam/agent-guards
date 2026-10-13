@@ -17,7 +17,7 @@ Pick the mode once, at session start, and read its reference file. It holds the 
 4. **cmux:** `$CMUX_WORKSPACE_ID` is set and `cmux ping` prints `PONG`. Read [references/cmux.md](references/cmux.md).
 5. **None of these:** tell the human this skill supports T3 Code, Codex Desktop, Claude Desktop and cmux, and run workers as background subagents until they say otherwise.
 
-When the human wants workers in poteto-mode, also read [references/poteto-mode.md](references/poteto-mode.md). It maps this workflow onto pstack's skills and models.
+Every agent you start runs in poteto-mode (the pstack plugin). Read [references/poteto-mode.md](references/poteto-mode.md) too: it gives the brief's first line and maps this workflow onto pstack's skills and models.
 
 Note the mode in `board.md` so a later coordinator session can confirm it.
 
@@ -46,7 +46,9 @@ Threads never start their own threads. They send proposed follow-ups to you; you
 
 ## Write The Brief
 
-Each brief is the project instructions pasted verbatim, then the task:
+Each brief, for a worker thread or a research subagent, starts with the poteto-mode line from [references/poteto-mode.md](references/poteto-mode.md). Then come the project instructions pasted verbatim, then the task. Reviewers that `interrogate` starts keep interrogate's own prompts.
+
+The task covers:
 
 - the tracker link and the branch name;
 - the **target repo**, and its own rules where they differ;
@@ -58,7 +60,7 @@ Each brief is the project instructions pasted verbatim, then the task:
 Default workflow, unless the user changes it:
 1. Design with `architect`, then STOP for the human's approval.
 2. Implement.
-3. Review loop: `autoreview` until no blockers, then a cross-model review that you run on another model family, until it reports no blockers. Under poteto-mode that review is `interrogate`.
+3. Review loop: `autoreview` until no blockers, then a cross-model review that you run on another model family, until it reports no blockers. That review is `interrogate`.
 4. Self-test like a user, with the project's verification skill.
 5. Open the PR in the form the user wants (ready or draft).
 6. Babysit CI and review comments from the PR's own session, the way your mode's reference file says.

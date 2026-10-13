@@ -1,6 +1,6 @@
 # <Project>: instructions every thread starts from
 
-The coordinator pastes this file verbatim at the top of every thread brief: subagents, T3 threads, Codex threads, task cards, cmux workers, and any other worker. Keep it under 16,000 characters. Change it only when the human asks, or after they correct a thread.
+The coordinator pastes this file verbatim at the top of every thread brief, right after the poteto-mode line: subagents, T3 threads, Codex threads, task cards, cmux workers, and any other worker. Keep it under 16,000 characters. Change it only when the human asks, or after they correct a thread.
 
 ## What the project is for
 <Who owns it, what it is, and the goal in the human's words. Name who the work serves.>
