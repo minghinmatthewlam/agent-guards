@@ -48,7 +48,7 @@ Step 6 of the workflow: after opening the PR, the worker calls `link_pull_reques
 
 ## Check loop
 
-Top-level worker threads don't notify the coordinator when they finish, so the check loop is required. Use `schedule_task` with `{"type": "interval", "everyMs": 1200000}`, `bindToCurrentThread: true`, and the T3 Code prompt in [worker-check-prompt.md](worker-check-prompt.md). It persists across app restarts. Call `list_scheduled_tasks` first and update the existing check with `update_scheduled_task` rather than adding a duplicate. Report its next run time. Pause it with `enabled: false` only when the board has no rows in "Working" or "Waiting on you", and re-enable it with `update_scheduled_task` on every launch.
+Top-level worker threads don't notify the coordinator when they finish, so the check loop is required. Use `schedule_task` with `{"type": "interval", "everyMs": 1200000}`, `bindToCurrentThread: true`, and the T3 Code prompt in [worker-check-prompt.md](worker-check-prompt.md). It persists across app restarts. Call `list_scheduled_tasks` first and update the existing check with `update_scheduled_task` rather than adding a duplicate. Report its next run time. `run_scheduled_task_now` needs a full-access thread; otherwise wait for the first scheduled run. Pause it with `enabled: false` only when the board has no rows in "Working" or "Waiting on you", and re-enable it with `update_scheduled_task` on every launch.
 
 A daily scout uses `schedule_task` with `{"type": "fixed_time", "timeOfDay": "08:57"}`.
 
