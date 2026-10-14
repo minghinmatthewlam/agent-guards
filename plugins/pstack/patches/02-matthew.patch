@@ -1,4 +1,4 @@
-From 0f130414b936fe82538c645dee6eb93e5d9345e9 Mon Sep 17 00:00:00 2001
+From 452a332f7d80c7c8a866f29ffca0d68ad3be42ac Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Sun, 11 Oct 2026 17:21:50 -0400
 Subject: [PATCH] Matthew's workflow additions
@@ -17,10 +17,10 @@ Co-Authored-By: Claude <noreply@anthropic.com>
  .../poteto-mode/playbooks/autopilot-full.md   |  2 +-
  .../skills/poteto-mode/playbooks/babysit.md   |  4 +++
  .../skills/poteto-mode/playbooks/feature.md   |  3 ++
- .../poteto-mode/playbooks/opening-a-pr.md     | 14 ++++++++++
+ .../poteto-mode/playbooks/opening-a-pr.md     | 18 ++++++++++++
  .../poteto-mode/playbooks/orchestrate.md      |  2 +-
  .../skills/poteto-mode/playbooks/shipping.md  |  4 +++
- 11 files changed, 67 insertions(+), 19 deletions(-)
+ 11 files changed, 71 insertions(+), 19 deletions(-)
 
 diff --git a/plugins/pstack/skills/create-verification-skill/SKILL.md b/plugins/pstack/skills/create-verification-skill/SKILL.md
 index f869e26..ca5bd7e 100644
@@ -211,10 +211,10 @@ index 79a6bbb..4464c20 100644
  2. `architect` for parallel design exploration.
  3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
-index fcd0052..a8860d6 100644
+index fcd0052..2dd5260 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
-@@ -31,4 +31,18 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
+@@ -31,4 +31,22 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
  
  **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
  
@@ -230,6 +230,10 @@ index fcd0052..a8860d6 100644
 +- CI is green.
 +
 +Otherwise it stops at merge-ready. Never enable auto-merge.
++<!-- matthew: end -->
++
++<!-- matthew: start -->
++**Review panel before every PR.** Every agent that opens a PR, not only a subagent, runs `interrogate` before it opens the PR. The panel reviews the committed diff and the proof, with reviewers from at least two model families. Fix blocking findings and run it again until none block the main goal. Small improvements don't block. Put the panel's models and verdict in the PR body.
 +<!-- matthew: end -->
 +
  A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.
