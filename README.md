@@ -27,6 +27,7 @@ If that framing resonates, start with [`AGENTS.md`](AGENTS.md) and [`docs/agent-
 - `AGENTS.md`: one global guardrail file, symlinked to both Codex and Claude
 - `skills/`: reusable workflows for verification, repository setup, recurrence prevention, review, and specialized work
 - `commands/`: shared prompt files that work in both ecosystems
+- `hooks/`: the poteto-reminder hook for Claude Code and Codex
 - `scripts/sync.sh`: syncs guardrails, commands, and skills into the right user-level locations
 - `scripts/new-repo.sh`: bootstraps a fresh git repo with optional repo-local `AGENTS.md` / `CLAUDE.md`
 - `templates/`: repo bootstrap files plus reusable loop contracts for recurring automations
@@ -66,6 +67,7 @@ One source repo fans out to Codex, Claude, and Cursor:
 | `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | — |
 | `commands/*.md` | `~/.codex/prompts/` | `~/.claude/commands/` | — |
 | `skills/*/` | `~/.agents/skills/` | `~/.claude/skills/` | `~/.cursor/skills/` |
+| `hooks/poteto-reminder.*` | `~/.codex/hooks/`, registered in `~/.codex/hooks.json` | `~/.claude/hooks/`, registered in `~/.claude/settings.json` | — |
 
 To use these skills in Cursor Cloud Agents, enable **Settings → Agents → Context and Tools → Sync Skills for Cloud Agents** in Cursor after running the script. Cursor uploads personal skills from `~/.cursor/skills/`; it does not upload `~/.agents/skills/`. The script copies the full skill folders, including supporting files, into Cursor's sync directory.
 
@@ -77,6 +79,7 @@ Cursor moves uploaded skills into its managed User Context, so the local staging
 - skips command sync when a same-name skill exists
 - prunes stale agent-guards-managed commands and skills by default
 - skips `agent-only` skills for Claude
+- merges the hook entries into `~/.claude/settings.json` and `~/.codex/hooks.json` without touching other keys or hooks, and leaves both files alone when they already match
 - compares skills uploaded to claude.ai (for cloud agents, as cached by Claude desktop) with this repo, and packages any out-of-date ones as zips in `~/.cache/agent-guards/upload/` for re-upload
 
 ## First-Time Setup
@@ -85,6 +88,7 @@ Prerequisites:
 - `bash`
 - `rsync`
 - `ruby` for `./scripts/validate-skills.sh`
+- `python3` for the hook and its config merge
 - `gh` if you want `new-repo.sh` to create a GitHub repo
 
 ```bash
@@ -99,6 +103,14 @@ Useful sync commands:
 ./scripts/sync.sh --dry-run
 ./scripts/sync.sh --no-prune
 ```
+
+## Poteto Reminder Hook
+
+`hooks/poteto-reminder.py` runs on `SessionStart` (startup, compact, clear) and `UserPromptSubmit`. When T3 Code launched the agent (`T3CODE_CLI_PATH` is set) and the session's folder is under a path in `hooks/poteto-reminder.scopes`, it adds a reminder to work in pstack's poteto-mode and to load the skill if its body is not in context. Claude is told to use the Skill tool; Codex is told to read the poteto-mode `SKILL.md` from its pstack plugin cache. Everywhere else it prints nothing.
+
+To cover another repo, add its folder to `hooks/poteto-reminder.scopes`, one path per line, then run `./scripts/sync.sh`.
+
+Codex runs a new or changed hook only after you trust it. After the first sync, and after any change to the hook entries, open `codex` and run `/hooks`, then trust both poteto-reminder hooks. Codex stores that approval in `~/.codex/config.toml`.
 
 ## Setting Up a New Repo
 
@@ -156,6 +168,7 @@ After changes:
 
 ```bash
 ./scripts/validate-skills.sh
+./scripts/test-sync.sh
 ./scripts/sync.sh --dry-run
 ./scripts/sync.sh
 git status
@@ -168,6 +181,7 @@ agent-guards/
 ├── AGENTS.md
 ├── commands/
 ├── docs/
+├── hooks/
 ├── scripts/
 ├── skills/
 └── templates/

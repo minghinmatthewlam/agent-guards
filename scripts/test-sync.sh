@@ -1,8 +1,10 @@
 #!/bin/bash
 # Run sync.sh against a throwaway HOME and a copy of this repo, then check the result.
 # Covers: validation under a non-UTF-8 locale, skill/command/AGENTS.md destinations,
-# agent-only exclusion from Claude, pruning of retired managed skills, and
-# detection of out-of-date skills uploaded to claude.ai.
+# agent-only exclusion from Claude, pruning of retired managed skills,
+# detection of out-of-date skills uploaded to claude.ai, and the poteto-reminder
+# hook: entries merged into Claude and Codex config, re-sync as a no-op, and the
+# script staying silent outside T3 or outside its scoped folders.
 
 set -euo pipefail
 
@@ -38,7 +40,34 @@ mkdir -p "$CACHE"
 cp -R "$SRC/skills/find-bugs" "$SRC/skills/teach" "$CACHE/"
 echo "old line" >> "$CACHE/teach/SKILL.md"
 
+# Fixture: Claude settings with unrelated keys, other hooks, and an old poteto-reminder entry.
+mkdir -p "$HOME/.claude"
+cat > "$HOME/.claude/settings.json" <<'EOF'
+{
+  "enabledPlugins": {"pstack@agent-guards": true},
+  "hooks": {
+    "SessionStart": [
+      {"matcher": "startup", "hooks": [{"type": "command", "command": "/other/session-hook.sh"}]},
+      {"matcher": "startup|compact|clear", "hooks": [{"type": "command", "command": "/old/place/poteto-reminder.py"}]}
+    ],
+    "PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "/other/bash-guard.sh"}]}]
+  }
+}
+EOF
+
+LC_ALL=C LANG=C "$SRC/scripts/sync.sh" --dry-run > "$WORK/dry-run.log"
+dry_run_wrote_codex_hooks=false
+[ -e "$HOME/.codex/hooks.json" ] && dry_run_wrote_codex_hooks=true
+
 LC_ALL=C LANG=C "$SRC/scripts/sync.sh" > "$WORK/sync.log"
+
+hook_snapshot() {
+  { cat "$HOME/.claude/settings.json" "$HOME/.codex/hooks.json" \
+    "$HOME/.claude/hooks"/poteto-reminder.* "$HOME/.codex/hooks"/poteto-reminder.* 2>/dev/null || true; } | shasum
+}
+first_snapshot="$(hook_snapshot)"
+LC_ALL=C LANG=C "$SRC/scripts/sync.sh" > "$WORK/resync.log"
+second_snapshot="$(hook_snapshot)"
 
 failures=0
 check() {
@@ -80,9 +109,66 @@ check "stale uploaded skill packaged" "[ -f '$HOME/.cache/agent-guards/upload/te
 check "current uploaded skill not packaged" "[ ! -e '$HOME/.cache/agent-guards/upload/find-bugs.zip' ]"
 check "stale uploaded skill reported" "grep -q -- '- teach ->' '$WORK/sync.log'"
 
+registers_hook() {
+  python3 - "$1" "$2" <<'EOF'
+import json, sys
+path, command = sys.argv[1:]
+hooks = json.load(open(path))["hooks"]
+ours = lambda event: [g for g in hooks.get(event, []) if any("poteto-reminder.py" in h["command"] for h in g["hooks"])]
+handler = [{"type": "command", "command": command}]
+assert ours("SessionStart") == [{"matcher": "startup|compact|clear", "hooks": handler}], ours("SessionStart")
+assert ours("UserPromptSubmit") == [{"hooks": handler}], ours("UserPromptSubmit")
+EOF
+}
+
+keeps_unrelated_settings() {
+  python3 - "$HOME/.claude/settings.json" <<'EOF'
+import json, sys
+d = json.load(open(sys.argv[1]))
+assert d["enabledPlugins"] == {"pstack@agent-guards": True}
+assert [g["hooks"][0]["command"] for g in d["hooks"]["PreToolUse"]] == ["/other/bash-guard.sh"]
+assert d["hooks"]["SessionStart"][0] == {"matcher": "startup", "hooks": [{"type": "command", "command": "/other/session-hook.sh"}]}
+EOF
+}
+
+run_hook() {
+  local tool="$1" cwd="$2" t3_cli="$3"
+  printf '{"cwd": "%s", "hook_event_name": "UserPromptSubmit"}' "$cwd" |
+    env -u T3CODE_CLI_PATH ${t3_cli:+T3CODE_CLI_PATH="$t3_cli"} "$HOME/.$tool/hooks/poteto-reminder.py" "$tool"
+}
+
+reminds() {
+  local tool="$1" expected="$2" unexpected="$3"
+  local context
+  context="$(run_hook "$tool" "$HOME/dev/ori/apps" /t3 | python3 -c '
+import json, sys
+out = json.load(sys.stdin)["hookSpecificOutput"]
+assert out["hookEventName"] == "UserPromptSubmit"
+print(out["additionalContext"])')" || return 1
+  grep -q "$expected" <<<"$context" && ! grep -q "$unexpected" <<<"$context"
+}
+
+mkdir -p "$HOME/dev/ori/apps" "$HOME/dev/ori-other"
+
+check "Claude settings register the synced hook once per event" \
+  "registers_hook '$HOME/.claude/settings.json' '$HOME/.claude/hooks/poteto-reminder.py claude'"
+check "Codex hooks.json registers the synced hook once per event" \
+  "registers_hook '$HOME/.codex/hooks.json' '$HOME/.codex/hooks/poteto-reminder.py codex'"
+check "Claude settings keep unrelated keys and hooks" "keeps_unrelated_settings"
+check "dry-run previews the Codex hook merge" \
+  "grep -qF '[dry-run] merge poteto-reminder hooks into $HOME/.codex/hooks.json' '$WORK/dry-run.log'"
+check "dry-run writes no Codex hooks.json" "! $dry_run_wrote_codex_hooks"
+check "second sync leaves hook files and config unchanged" "[ '$first_snapshot' = '$second_snapshot' ]"
+check "second sync reports both hook configs current" "[ \"\$(grep -c 'Hooks already current' '$WORK/resync.log')\" = 2 ]"
+check "hook reminds Claude to use its Skill tool in scope under T3" "reminds claude 'Skill tool with pstack:poteto-mode' NOMATCH"
+check "hook reminds Codex without the Claude Skill tool" "reminds codex 'pstack:poteto-mode' 'Skill tool'"
+check "hook is silent without T3CODE_CLI_PATH" "[ -z \"\$(run_hook claude '$HOME/dev/ori/apps' '')\" ]"
+check "hook is silent out of scope" "[ -z \"\$(run_hook claude '$WORK' /t3)\" ]"
+check "hook is silent in a sibling folder sharing the prefix" "[ -z \"\$(run_hook codex '$HOME/dev/ori-other' /t3)\" ]"
+
 if [ "$failures" -gt 0 ]; then
   echo "$failures check(s) failed. sync.sh output:" >&2
-  cat "$WORK/sync.log" >&2
+  cat "$WORK/sync.log" "$WORK/resync.log" >&2
   exit 1
 fi
 echo "sync smoke test passed"

@@ -20,6 +20,11 @@ CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 AGENT_SKILLS="$HOME/.agents/skills"
 CURSOR_SKILLS="$HOME/.cursor/skills"
+CLAUDE_HOOKS="$HOME/.claude/hooks"
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+CODEX_HOOKS="$HOME/.codex/hooks"
+CODEX_HOOKS_JSON="$HOME/.codex/hooks.json"
+HOOK_FILES=(poteto-reminder.py poteto-reminder.scopes)
 # Claude desktop caches skills uploaded to the claude.ai account (used by cloud agents) here.
 CLAUDE_UPLOADED_CACHE="$HOME/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin"
 UPLOAD_DIR="$HOME/.cache/agent-guards/upload"
@@ -41,11 +46,14 @@ Syncs:
   - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md
   - commands/*.md -> ~/.codex/prompts, ~/.claude/commands
   - skills/*/ -> ~/.agents/skills, ~/.claude/skills, ~/.cursor/skills
+  - hooks/poteto-reminder.* -> ~/.claude/hooks, ~/.codex/hooks, registered in
+    ~/.claude/settings.json and ~/.codex/hooks.json
 
 Behavior:
   - Validates SKILL.md frontmatter before syncing
   - Skips command sync when a same-name skill exists (skills take precedence)
   - Prunes stale entries previously managed by agent-guards (unless --no-prune)
+  - Merges hook entries in place: other keys and hooks are kept, re-runs change nothing
 EOF
 }
 
@@ -169,6 +177,34 @@ write_manifest() {
   done
 }
 
+copy_file() {
+  local src="$1"
+  local dst="$2"
+  cmp -s "$src" "$dst" && return 0
+  if $DRY_RUN; then
+    echo "  [dry-run] cp -p $src $dst"
+  else
+    cp -p "$src" "$dst"
+  fi
+}
+
+sync_hooks_to() {
+  local hooks_dir="$1"
+  local hooks_json="$2"
+  local tool="$3"
+  local file
+  mkdir_p "$hooks_dir"
+  for file in "${HOOK_FILES[@]}"; do
+    copy_file "$GUARDS_DIR/hooks/$file" "$hooks_dir/$file"
+  done
+  local command="$hooks_dir/poteto-reminder.py $tool"
+  if $DRY_RUN; then
+    python3 "$GUARDS_DIR/scripts/merge-hooks.py" --dry-run "$hooks_json" "$command"
+  else
+    python3 "$GUARDS_DIR/scripts/merge-hooks.py" "$hooks_json" "$command"
+  fi
+}
+
 sync_skills_to() {
   local target_dir="$1"
   shift
@@ -223,7 +259,7 @@ if [ -x "$GUARDS_DIR/scripts/validate-skills.sh" ]; then
 fi
 
 if git -C "$GUARDS_DIR" rev-parse --git-dir >/dev/null 2>&1; then
-  dirty=$(git -C "$GUARDS_DIR" status --porcelain -- AGENTS.md commands skills)
+  dirty=$(git -C "$GUARDS_DIR" status --porcelain -- AGENTS.md commands skills hooks)
   if [ -n "$dirty" ]; then
     echo "  Warning: syncing uncommitted changes:" >&2
     echo "$dirty" | sed 's/^/    /' >&2
@@ -294,6 +330,10 @@ write_manifest "$AGENT_SKILLS_MANIFEST" "${current_skills[@]}"
 write_manifest "$CURSOR_SKILLS_MANIFEST" "${current_skills[@]}"
 write_manifest "$CLAUDE_SKILLS_MANIFEST" "${claude_skills[@]}"
 
+log "  Syncing poteto-reminder hook to ~/.claude/hooks and ~/.codex/hooks..."
+sync_hooks_to "$CLAUDE_HOOKS" "$CLAUDE_SETTINGS" claude
+sync_hooks_to "$CODEX_HOOKS" "$CODEX_HOOKS_JSON" codex
+
 stale_uploads=()
 for cached in "$CLAUDE_UPLOADED_CACHE"/*/*/skills/*/; do
   name=$(basename "$cached")
@@ -326,6 +366,7 @@ echo "  - $command_count commands -> ~/.codex/prompts, ~/.claude/commands"
 echo "  - $skill_count skills -> ~/.agents/skills"
 echo "  - $skill_count skills -> ~/.cursor/skills (enable Sync Skills for Cloud Agents in Cursor)"
 echo "  - $claude_skill_count skills -> ~/.claude/skills ($agent_only_count agent-only skipped)"
+echo "  - poteto-reminder hook -> ~/.claude/settings.json, ~/.codex/hooks.json"
 
 if [ "${#stale_uploads[@]}" -gt 0 ]; then
   echo ""
