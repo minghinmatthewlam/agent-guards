@@ -32,21 +32,12 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
 **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
 
 <!-- matthew: start -->
-**Understanding gate.** Before any merge an agent performs, the human has seen a key-points brief: only what they most need to know or learn, because their attention is the scarce resource. Always give what changed for the user and the one or two things worth learning. Add a non-obvious risk or a decision only when it matters. Evidence is one line unless asked. Scale with the change: about 3 bullets for a small fix, 5 to 8 for a feature or design change. The human must say they understand; "ok" or "got it" counts. Only a trivial change, such as a docs-only edit, skips this gate.
+**Matthew's rules.** They replace any full-autonomy merge grant, and every playbook that merges points here.
 
-**Merge rule.** An agent merges only when all of these hold:
-
-- The human approved the intent.
-- The human passed the understanding gate.
-- The change is low risk and high confidence.
-- The repo's required reviewers or bots approved, and every comment is addressed.
-- CI is green.
-
-Otherwise it stops at merge-ready. Never enable auto-merge.
+- **Review panel before every PR.** The agent that opens a PR runs `interrogate` first, with reviewers from at least two model families, on the committed diff and the proof. Rerun until nothing blocks the main goal; small improvements don't block. Put the models and verdict in the PR body.
+- **Understanding gate.** Before an agent merges, Matthew has seen a key-points brief and said he understands ("ok" counts). Give only what he most needs to know or learn: what changed for the user, the one or two things worth learning, and a risk or decision only when it matters. Evidence is one line. About 3 bullets for a small fix, 5 to 8 for a feature or design change. A trivial change, such as a docs-only edit, skips it.
+- **Merge only when** Matthew approved the intent, the gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready. Never enable auto-merge.
 <!-- matthew: end -->
 
-<!-- matthew: start -->
-**Review panel before every PR.** Every agent that opens a PR, not only a subagent, runs `interrogate` before it opens the PR. The panel reviews the committed diff and the proof, with reviewers from at least two model families. Fix blocking findings and run it again until none block the main goal. Small improvements don't block. Put the panel's models and verdict in the PR body.
-<!-- matthew: end -->
 
 A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.

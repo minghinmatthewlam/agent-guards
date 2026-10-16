@@ -1,163 +1,27 @@
-From 452a332f7d80c7c8a866f29ffca0d68ad3be42ac Mon Sep 17 00:00:00 2001
+From 6bcda8bc9eec2fa7825474c21752e4d5d261ab17 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
-Date: Sun, 11 Oct 2026 17:21:50 -0400
-Subject: [PATCH] Matthew's workflow additions
+Date: Fri, 16 Oct 2026 11:55:29 -0400
+Subject: [PATCH 1/2] Matthew's workflow rules
 
-Add an intent restate, an understanding gate, and a merge rule that
-replaces the full-autonomy grant and never enables auto-merge. Each
-addition sits between <!-- matthew: start --> and <!-- matthew: end -->.
+One canonical block in playbooks/opening-a-pr.md (review panel, understanding
+gate, merge rule). Every other playbook that merges carries the same one-line
+pointer to it. poteto-mode and the Feature playbook add a plain-English restate
+before code. Every addition sits between <!-- matthew: start --> and
+<!-- matthew: end -->.
 
-Co-Authored-By: Claude <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- .../skills/create-verification-skill/SKILL.md | 14 ++++++----
- .../agents/openai.yaml                        |  6 ++--
- .../maintain-verification-skill/SKILL.md      | 28 ++++++++++++++-----
- .../agents/openai.yaml                        |  6 ++--
- plugins/pstack/skills/poteto-mode/SKILL.md    |  3 ++
- .../poteto-mode/playbooks/autopilot-full.md   |  2 +-
- .../skills/poteto-mode/playbooks/babysit.md   |  4 +++
- .../skills/poteto-mode/playbooks/feature.md   |  3 ++
- .../poteto-mode/playbooks/opening-a-pr.md     | 18 ++++++++++++
- .../poteto-mode/playbooks/orchestrate.md      |  2 +-
- .../skills/poteto-mode/playbooks/shipping.md  |  4 +++
- 11 files changed, 71 insertions(+), 19 deletions(-)
+ plugins/pstack/skills/poteto-mode/SKILL.md               | 3 +++
+ .../skills/poteto-mode/playbooks/autopilot-full.md       | 2 +-
+ plugins/pstack/skills/poteto-mode/playbooks/babysit.md   | 2 ++
+ plugins/pstack/skills/poteto-mode/playbooks/feature.md   | 3 +++
+ .../pstack/skills/poteto-mode/playbooks/opening-a-pr.md  | 9 +++++++++
+ .../pstack/skills/poteto-mode/playbooks/orchestrate.md   | 2 +-
+ plugins/pstack/skills/poteto-mode/playbooks/shipping.md  | 2 ++
+ 7 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/plugins/pstack/skills/create-verification-skill/SKILL.md b/plugins/pstack/skills/create-verification-skill/SKILL.md
-index f869e26..ca5bd7e 100644
---- a/plugins/pstack/skills/create-verification-skill/SKILL.md
-+++ b/plugins/pstack/skills/create-verification-skill/SKILL.md
-@@ -1,12 +1,12 @@
- ---
- name: create-verification-skill
--description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
-+description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for $create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
- disable-model-invocation: true
- ---
- 
- # Create a verification skill
- 
--Every serious project needs a scripted way to drive the real app and prove behavior: launch it, exercise a feature the way a user would, and capture evidence. This skill generates that as a project-local skill (`.cursor/skills/verify-<app>/`) tailored to the repo. You write the generator's output for the next agent, not for a human: it will be read cold, mid-task, by an agent that has never seen the app.
-+Every serious project needs a scripted way to drive the real app and prove behavior: launch it, exercise a feature the way a user would, and capture evidence. This skill generates that as a project-local skill (`.agents/skills/verify-<app>/`) tailored to the repo. You write the generator's output for the next agent, not for a human: it will be read cold, mid-task, by an agent that has never seen the app.
- 
- ## 1. Interview the repo, not the user
- 
-@@ -22,7 +22,7 @@ If the checkout doesn't build or start as-is, fix that first (or report it preci
- 
- ## 2. Generate the skill
- 
--Write `.cursor/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verify-<app>` and a `description` that names the app, the surface, and when to reach for it — without frontmatter the skill never registers) and these sections, each grounded in what the interview actually found (no placeholders left):
-+Write `.agents/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verify-<app>` and a `description` that names the app, the surface, and when to reach for it — without frontmatter the skill never registers) and these sections, each grounded in what the interview actually found (no placeholders left):
- 
- - **Launch:** the exact command that starts the app for verification, and how to tell it's ready (a log line, a port answering, a prompt). Include teardown. For a short-lived CLI or TUI there is no server to keep alive: launch means build the binary (or install deps) once, then start each drive in its own isolated PTY or tmux session.
- - **Doctor:** one read-only check that answers "is this instance worth driving?" — process up, right version/build, port owned by us, auth valid. An agent runs this first whenever anything looks off.
-@@ -31,14 +31,16 @@ Write `.cursor/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verif
- - **Cleanup:** how to tear down instances the run created. Never kill by process name; kill what you started. Cleanup removes instances and scratch state, never the evidence: proof artifacts survive the teardown, in a location the skill names.
- - **Helpers:** any script the skill ships is executable and its invocation is shown in the skill body. A helper the reader has to reverse-engineer is not a helper.
- 
-+Codex reads `.agents/skills/`; Claude Code reads `.claude/skills/`. Keep `.agents/skills/verify-<app>/` as the only copy and register it for Claude with a relative symlink: `.claude/skills/verify-<app> -> ../../.agents/skills/verify-<app>`. Commit both.
-+
- ## 3. Seed the feature map
- 
--Create `.cursor/skills/verify-<app>/features/README.md` plus one file per user-facing feature you can identify (aim for the top 3-5 to start, from routes, commands, menus, or docs). Follow the shape in [`references/feature-map-example/`](references/feature-map-example/), with a README index and one file per feature. Each file answers, from the user's point of view: what the feature is, how to reach it, how to drive it with the harness, and what observable end state proves it works. The four H2s are `Sub-features`, `How to get to it (user POV)`, `Driving it with <harness>`, and `Gotchas`. The map is the repo's maintained verification source; a proof that drives one convenient entry point is incomplete when the map lists others.
-+Create `.agents/skills/verify-<app>/features/README.md` plus feature recipes covering the core user experiences identified from the repository. Prioritize complete user journeys that fulfill the app's main purpose over peripheral screens; distinguish core coverage from secondary features without trying to enumerate every edge case. Follow the shape in [`references/feature-map-example/`](references/feature-map-example/), with a README index and one file per feature. Each file answers, from the user's point of view: what the feature is, how to reach it, how to drive it with the harness, and what observable end state proves it works. The four H2s are `Sub-features`, `How to get to it (user POV)`, `Driving it with <harness>`, and `Gotchas`. The map is the repo's maintained verification source; a proof that drives one convenient entry point is incomplete when the map lists others.
- 
- ## 4. Prove the generated skill before handing it over
- 
--Run its own instructions end to end once: launch, doctor, drive ONE mapped feature (one is enough; the map exists so later runs can cover the rest), capture evidence, clean up. After cleanup, confirm the evidence still exists at the named location — a cleanup that eats the proof fails this step. Fix what fails, and run the generated cleanup after every failed iteration too, so broken attempts don't strand processes and ports. A generated skill that was never executed is a draft, not a deliverable.
-+Confirm `.claude/skills/verify-<app>/SKILL.md` resolves through the symlink. Run its own instructions end to end: launch, doctor, exercise the mapped core user experiences, capture evidence, and clean up. Report each blocked or untested core experience explicitly; do not call setup complete based only on a secondary smoke test. This is core-journey coverage, not an exhaustive edge-case suite. After cleanup, confirm the evidence still exists at the named location — a cleanup that eats the proof fails this step. Fix verification-infrastructure failures within scope; report product defects rather than expanding the task to repair them. Run the generated cleanup after every failed iteration too, so broken attempts don't strand processes and ports. A generated skill that was never executed is a draft, not a deliverable; incomplete core proof remains partial or blocked.
- 
- ## 5. Offer the maintenance loop
- 
--Point the user at `/maintain-verification-skill` for keeping the map honest as the app changes. Suggest a cadence only if they ask.
-+Point the user at `$maintain-verification-skill` for keeping the map honest as the app changes. Suggest a cadence only if they ask.
-diff --git a/plugins/pstack/skills/create-verification-skill/agents/openai.yaml b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
-index 5b1f887..4a1d724 100644
---- a/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
-+++ b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
-@@ -1,2 +1,4 @@
--policy:
--  allow_implicit_invocation: false
-+interface:
-+  display_name: "Create Verification Skill"
-+  short_description: "Teach agents how to verify a repository"
-+  default_prompt: "Use $create-verification-skill to build and prove a repo-local verifier for this product."
-diff --git a/plugins/pstack/skills/maintain-verification-skill/SKILL.md b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-index a2680b9..82a58fe 100644
---- a/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-+++ b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-@@ -1,19 +1,19 @@
- ---
- name: maintain-verification-skill
--description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\"."
-+description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for $maintain-verification-skill or \"audit the verify skill\"."
- disable-model-invocation: true
- ---
- 
- # Maintain a verification skill
- 
--A feature map rots the moment the app changes. This skill is the upkeep loop for a skill generated by `/create-verification-skill` (or any project-local verification skill with a feature map). The unit of rigor is the feature, not every sentence: cover every feature file from source and exercise every feature live, without terminalising every bullet.
-+A feature map rots the moment the app changes. This skill is the upkeep loop for a skill generated by `$create-verification-skill` (or any project-local verification skill with a feature map). The unit of rigor is the feature, not every sentence: cover every feature file from source and exercise every feature live, without terminalising every bullet.
- 
- ## Outcomes
- 
- Pick one, and say which:
- 
- - **clean** — every feature got source and live coverage; nothing worth shipping. No branch, no PR.
--- **changed** — one PR ships proven doc, harness, or map corrections.
-+- **changed** — one PR ships proven doc, harness, or map corrections; an independent `$autoreview` confirms that PR.
- - **blocked** — coverage could not finish or a proven fix could not ship safely. Say exactly what blocked it.
- 
- ## Edit scope
-@@ -22,18 +22,32 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
- 
- ## Pass
- 
--0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.cursor/skills/verify-*/`). Several candidates → ask which one; none → stop and point at `/create-verification-skill` instead of inventing a target.
-+0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.agents/skills/verify-*/`; a `.claude/skills/verify-*` symlink to it is the same skill, not a second candidate). Several candidates → ask which one; none → stop and point at `$create-verification-skill` instead of inventing a target.
- 
--1. **Index hygiene.** Read the feature map README and glob its sibling files. Fix missing, extra, duplicate, or dead entries. Lightweight; no generated inventory.
-+1. **Index hygiene.** Read the feature map README and glob its sibling files. Fix missing, extra, duplicate, or dead entries. Confirm `.claude/skills/verify-<app>` exists as a relative symlink to the `.agents/skills` copy; add it if missing. Lightweight; no generated inventory.
- 
- 2. **Source wave.** One read-only subagent per feature file, launched concurrently. Each explains "how does this user-facing feature work?" from source, flags likely doc drift with citations, and returns one concise live-verification recipe. Children never drive the app and never edit files. Return shape: feature summary / source entry points / likely drift or none / one recipe.
- 
- 3. **Reconcile.** Every feature file has a returned summary. Merge overlapping recipes into as few app states as practical. Spot-check cited drift; don't re-prove clean claims. Sweep recent churn for user-facing surfaces missing from the map — require a concrete source path before calling one missing.
- 
--4. **Live pass.** Required even when source looks clean. The coordinator owns all driving; follow the verification skill's own launch model — one long-lived instance driven serially for servers and UIs, or a fresh isolated session per drive for short-lived CLIs (the skill's Launch section decides, not this one). Exercise every feature at least once, and hold three invariants the whole pass, whatever the failure: (1) never drive an instance you haven't health-checked since it last did something surprising — doctor before first drive, doctor on each fresh session where sessions are the unit, doctor again after any failed drive, and where doctor can't see the failure (a wedged UI state on a healthy process), reset to a known state or relaunch rather than hoping; (2) evidence captured so far survives every cleanup, checked at its named location, not assumed; (3) nothing a drive started outlives that drive's usefulness — failed-iteration residue is cleaned whether the session is stuck, exited, or shared (for a shared instance, clean the residue, not the instance). A doctor failure caused by skill drift is drift: fix it under edit scope and retry once — restart whatever the fix invalidated, nothing more — before calling the pass `blocked`. A feature that can't be reached is `verified-unreachable` only with the concrete prerequisite (auth, entitlement, OS, external state) and the route attempted; if the map omits that prerequisite, that's drift. Any harness fix from triage gets re-driven live before it ships. Final teardown happens after the last drive of the run — including those re-proofs — so nothing outlives the run (evidence stays, per the skill).
-+4. **Live pass.** Required even when source looks clean. The coordinator owns all driving. Follow the verification skill's own launch model: one long-lived instance driven serially for servers and UIs, or a fresh isolated session per drive for short-lived CLIs. The skill's Launch section decides, not this one. Exercise every feature at least once.
-+
-+   Hold three invariants for the whole pass, whatever the failure:
-+
-+   - **Health before driving.** Never drive an instance you haven't health-checked since it last did something surprising. Run doctor before the first drive, on each fresh session where sessions are the unit, and again after any failed drive. Where doctor can't see the failure (a wedged UI state on a healthy process), reset to a known state or relaunch rather than hoping.
-+   - **Evidence survives.** Evidence captured so far survives every cleanup, checked at its named location, not assumed.
-+   - **No leftovers.** Nothing a drive started outlives that drive's usefulness. Clean failed-iteration residue whether the session is stuck, exited, or shared; for a shared instance, clean the residue, not the instance.
-+
-+   Handling failures:
-+
-+   - A doctor failure caused by skill drift is drift: fix it under edit scope and retry once, restarting only what the fix invalidated, before calling the pass `blocked`.
-+   - A feature that can't be reached is `verified-unreachable` only with the concrete prerequisite (auth, entitlement, OS, external state) and the route attempted. If the map omits that prerequisite, that's drift.
-+   - Any harness fix from triage gets re-driven live before it ships.
-+
-+   Final teardown happens after the last drive of the run, including those re-proofs, so nothing outlives the run. Evidence stays, per the skill.
- 
- 5. **Triage.** Wrong or missing user-POV description → doc drift, fix it. Working behavior the harness can't drive → harness gap, fix it; a harness fix follows the same helpers rule as generation (scripts executable, invocation documented in the skill body). App behavior that's actually broken → product gap; record it for the user, keep it out of this PR.
- 
--6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first. For clean or blocked: no PR, report the outcome and the coverage honestly.
-+6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first, then run `$autoreview` on that PR/diff. Spawn one independent reviewer; stay on this pass. Do not treat the coordinator re-read as review. Apply only in-scope accepted blockers (verify skill directory only) and re-drive any harness fix live before it ships. For clean or blocked: no PR, no review agents, report the outcome and the coverage honestly.
- 
- Keep concise run notes (features covered, unreachable prerequisites, confirmed drift, outcome) in a scratch location; don't commit them.
-diff --git a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
-index 5b1f887..790b548 100644
---- a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
-+++ b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
-@@ -1,2 +1,4 @@
--policy:
--  allow_implicit_invocation: false
-+interface:
-+  display_name: "Maintain Verification Skill"
-+  short_description: "Keep a repository verifier accurate"
-+  default_prompt: "Use $maintain-verification-skill to compare this repository's verifier with current code and live behavior, then repair proven drift."
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 952dd0e..c4e3a0a 100644
+index 952dd0e..e93bfd6 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
 @@ -18,6 +18,9 @@ The Principles section below grounds every trigger. In your reply, name each pri
@@ -165,13 +29,13 @@ index 952dd0e..c4e3a0a 100644
  Remaining triggers:
  
 +<!-- matthew: start -->
-+- A Feature, or a noisy report → restate the underlying issue in your own words, in plain English, before changing code. A misreading shows up before any code exists. Then proceed. Wait for the human only when the task is a new product feature or the intent is unclear. A clear, small "do X" proceeds.
++- A Feature, or a noisy report → restate the underlying issue in plain English before changing code, so a misreading shows up early. Wait for the human only on a new product feature or unclear intent; a clear, small "do X" proceeds.
 +<!-- matthew: end -->
  - Nontrivial change, architecture decision, or "are we sure?" → the **how** skill.
  - About to `AskQuestion` on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Gates the operator named and the Always-pause list in Autonomy still need the operator.
  - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
-index dd9fe49..4ea49cd 100644
+index dd9fe49..f09d2ff 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
 @@ -6,7 +6,7 @@
@@ -179,25 +43,23 @@ index dd9fe49..4ea49cd 100644
  3. **Run owners in true parallel and never stack.** Many owners at once when PRs are self-contained: one writer per branch, disjoint files, cross-PR drift absorbed by rebase. Only genuinely overlapping work serializes. Self-contained PRs branch straight off main, and sequenced work is merge-then-branch. One exception: an owner that must split a genuinely dependent change may hold a short private base-branch stack.
  4. **Swarm-verify every round before its merge.** A round starts at the owner's code-ready head SHA and at each later push that changes the PR's patch. At that SHA, fan out parallel independent verifiers per the **swarm** skill and aggregate to one verdict. The merge needs a clean verdict from the round whose patch matches the merge-ready head. Audit the receipts in the merge-ready report before the verdict. The lanes: re-run the gates at that SHA. Prove the load-bearing behavior live on the real surface the change touches (with the matching control skill, such as `control-cli` or `control-ui` from `cursor-team-kit`, or the repo's `verify-*` skill / driver, or a named driver where none exists). Audit the diff, distrusting the PR body. Run the audit as two or more review lanes with the full brief. Give each lane one main focus, such as consumer parity with trunk, lifetimes and races, or data and config safety. **Regression lane against trunk.** Run the same load-bearing scenario on current trunk. If trunk does not have the feature, record that fact and gate the behavior the diff adds plus the end state the user waits for instead of pretending trunk can produce it. The live lane is the floor, and a verdict without it is not clean. No merge without the root's clean verdict. When the lanes return, send every proven finding against the PR to the owner in one fix-forward. A defect that a lane filed as a note is a finding. For each behavior finding, ask for a red test that covers every site with the same defect. Where no test can show the defect, ask for a repro receipt instead. Add that defect to the next round's review brief. The new head gets a fresh swarm and a fresh verdict, except for lane results that stay valid under the patch-id rule in `playbooks/shipping.md`.
 -5. **On a clean verdict the owner merges, and a fresh owner takes the next item.** The owner merges only from a head freshly rebased onto trunk. Merge prep never comes before a round's lanes start, and it ends with a rebase onto current trunk right before the merge. After the merge-prep rebase, the owner reports the new head SHA. CI must pass on that head before the merge, and the patch-id rule decides whether the round's verdict still holds. Once that head is green and its patch-id matches the verdict's under the patch-id rule in `playbooks/shipping.md`, a later trunk move does not force another rebase. Right before the merge, fetch trunk and check that `git merge-tree` of the head against current trunk is clean. Also check that no path in `git diff --name-only $(git merge-base HEAD origin/main) origin/main` is a path the PR changes or a path that decides which CI runs for it, such as the repo's CI config paths. If either check fails, rebase again, report the new head SHA, wait for CI to pass on it, and repeat these checks. A new head voids the verdict unless the patch-id is unchanged. The owner squash-merges its own PR through the resolved forge and returns. A fresh owner picks up the next self-contained item from the queue, per poteto-mode's Subagents section. The operator's full-autonomy grant plus the root's clean verdict is the merge authorization that babysitting alone never has. Operator-named items stop at merge-ready and wait for the operator's click.
-+5. **On a clean verdict the owner merges, and a fresh owner takes the next item.** The owner merges only from a head freshly rebased onto trunk. Merge prep never comes before a round's lanes start, and it ends with a rebase onto current trunk right before the merge. After the merge-prep rebase, the owner reports the new head SHA. CI must pass on that head before the merge, and the patch-id rule decides whether the round's verdict still holds. Once that head is green and its patch-id matches the verdict's under the patch-id rule in `playbooks/shipping.md`, a later trunk move does not force another rebase. Right before the merge, fetch trunk and check that `git merge-tree` of the head against current trunk is clean. Also check that no path in `git diff --name-only $(git merge-base HEAD origin/main) origin/main` is a path the PR changes or a path that decides which CI runs for it, such as the repo's CI config paths. If either check fails, rebase again, report the new head SHA, wait for CI to pass on it, and repeat these checks. A new head voids the verdict unless the patch-id is unchanged. The owner squash-merges its own PR through the resolved forge and returns. A fresh owner picks up the next self-contained item from the queue, per poteto-mode's Subagents section. <!-- matthew: start -->The merge rule and understanding gate in `playbooks/opening-a-pr.md`, plus the root's clean verdict, are the merge authorization that babysitting alone never has. Never enable auto-merge.<!-- matthew: end --> Operator-named items stop at merge-ready and wait for the operator's click.
++5. **On a clean verdict the owner merges, and a fresh owner takes the next item.** The owner merges only from a head freshly rebased onto trunk. Merge prep never comes before a round's lanes start, and it ends with a rebase onto current trunk right before the merge. After the merge-prep rebase, the owner reports the new head SHA. CI must pass on that head before the merge, and the patch-id rule decides whether the round's verdict still holds. Once that head is green and its patch-id matches the verdict's under the patch-id rule in `playbooks/shipping.md`, a later trunk move does not force another rebase. Right before the merge, fetch trunk and check that `git merge-tree` of the head against current trunk is clean. Also check that no path in `git diff --name-only $(git merge-base HEAD origin/main) origin/main` is a path the PR changes or a path that decides which CI runs for it, such as the repo's CI config paths. If either check fails, rebase again, report the new head SHA, wait for CI to pass on it, and repeat these checks. A new head voids the verdict unless the patch-id is unchanged. The owner squash-merges its own PR through the resolved forge and returns. A fresh owner picks up the next self-contained item from the queue, per poteto-mode's Subagents section. <!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`; together with the root's clean verdict they authorize the merge. Never enable auto-merge.<!-- matthew: end --> Operator-named items stop at merge-ready and wait for the operator's click.
  6. **Run the root layer.** A genuinely new raise of a pinned gate or budget value (a limit CI only lets tighten) needs your fresh countersign, granted only after verifier proof. If the operator's grant or standing orders cover approvals, that countersign is the approval. The owner records it in the form that the tool's approval contract allows, with a pointer to the root's countersign. A lane checks the record against that countersign. The root never gives or bypasses an approval that the forge enforces. Absorbing values that already landed on main is drift, not a raise. Run an audit tick over all owners every hour. On the operator's go, arm `/loop 1h` with a prompt that runs this tick. `/loop` works in local and cloud roots. Never leave the cadence to memory or lossy completion notifications. At each tick, re-read this playbook from trunk with `git show origin/main:pstack/skills/poteto-mode/playbooks/autopilot-full.md` and audit the operation against it. Fix drift during that tick. Probe each owner with a generic liveness or status check, and collect the decision trails. Count only side effects as progress: commits, pushes, PR or check deltas, and store reports. Treat a lane that errors, or that passes its expected runtime without a side effect, as stuck. Stand it down and dispatch a replacement at once. Do not wait for a polite return. The tick judges an owner by the pushed branch and the decision trail that step 2 requires, and it replaces an owner whose agent cannot start a turn. Each tick also runs the lane stuck test over the program's agent list, where the platform has one, and over every owner's `children.tsv`. Whether or not a stop works, the root has the owner record each stuck subagent as stuck and, if its work is still needed, replace it. Each replacement that stalls gets the same steps. The root takes both steps when the owner cannot. A stall never proves or drops the work. When merges batch, run a retro pass and a post-merge bot-comment sweep. End the tick only when no delegated work is left, even after the last merge.
  7. **Stand down instantly on the operator's stop.** The operator's hold or stand-down reaches every owner as a zero-writes order immediately. Owners hold their briefs until the operator releases them.
  
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/babysit.md b/plugins/pstack/skills/poteto-mode/playbooks/babysit.md
-index 798d75b..df446e6 100644
+index 798d75b..e64330f 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/babysit.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/babysit.md
-@@ -24,4 +24,8 @@ Babysitting starts when the user asks for it, which is normally once a phase or
+@@ -24,4 +24,6 @@ Babysitting starts when the user asks for it, which is normally once a phase or
  
  `drive` ends at merge-ready. Landing the stack is `playbooks/shipping.md`.
  
-+<!-- matthew: start -->
-+**Understanding gate and merge rule.** Before any merge an agent performs, apply the understanding gate and the merge rule in `playbooks/opening-a-pr.md`. Never enable auto-merge.
-+<!-- matthew: end -->
++<!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge.<!-- matthew: end -->
 +
  **Reply:** the mode, the frontier and its active-forge state, the watcher's four-column table on GitHub, what you fixed versus dismissed with reasons, what is still pending, and what needs the human.
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/feature.md b/plugins/pstack/skills/poteto-mode/playbooks/feature.md
-index 79a6bbb..4464c20 100644
+index 79a6bbb..0abb75d 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/feature.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/feature.md
 @@ -2,6 +2,9 @@
@@ -205,40 +67,31 @@ index 79a6bbb..4464c20 100644
  **You own the design. Plan, review, verify.** Delegate implementation. Stay in the lead.
  
 +<!-- matthew: start -->
-+0. Restate the underlying issue in your own words, in plain English, before changing code. A misreading shows up before any code exists. Then proceed. Wait for the human only when the task is a new product feature or the intent is unclear. A clear, small "do X" proceeds.
++0. Restate the underlying issue in plain English before changing code, so a misreading shows up early. Wait for the human only on a new product feature or unclear intent; a clear, small "do X" proceeds.
 +<!-- matthew: end -->
  1. `how` over the affected subsystem.
  2. `architect` for parallel design exploration.
  3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
-index fcd0052..2dd5260 100644
+index fcd0052..2afd2ee 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
-@@ -31,4 +31,22 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
+@@ -31,4 +31,13 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
  
  **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
  
 +<!-- matthew: start -->
-+**Understanding gate.** Before any merge an agent performs, the human has seen a key-points brief: only what they most need to know or learn, because their attention is the scarce resource. Always give what changed for the user and the one or two things worth learning. Add a non-obvious risk or a decision only when it matters. Evidence is one line unless asked. Scale with the change: about 3 bullets for a small fix, 5 to 8 for a feature or design change. The human must say they understand; "ok" or "got it" counts. Only a trivial change, such as a docs-only edit, skips this gate.
++**Matthew's rules.** They replace any full-autonomy merge grant, and every playbook that merges points here.
 +
-+**Merge rule.** An agent merges only when all of these hold:
-+
-+- The human approved the intent.
-+- The human passed the understanding gate.
-+- The change is low risk and high confidence.
-+- The repo's required reviewers or bots approved, and every comment is addressed.
-+- CI is green.
-+
-+Otherwise it stops at merge-ready. Never enable auto-merge.
++- **Review panel before every PR.** The agent that opens a PR runs `interrogate` first, with reviewers from at least two model families, on the committed diff and the proof. Rerun until nothing blocks the main goal; small improvements don't block. Put the models and verdict in the PR body.
++- **Understanding gate.** Before an agent merges, Matthew has seen a key-points brief and said he understands ("ok" counts). Give only what he most needs to know or learn: what changed for the user, the one or two things worth learning, and a risk or decision only when it matters. Evidence is one line. About 3 bullets for a small fix, 5 to 8 for a feature or design change. A trivial change, such as a docs-only edit, skips it.
++- **Merge only when** Matthew approved the intent, the gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready. Never enable auto-merge.
 +<!-- matthew: end -->
 +
-+<!-- matthew: start -->
-+**Review panel before every PR.** Every agent that opens a PR, not only a subagent, runs `interrogate` before it opens the PR. The panel reviews the committed diff and the proof, with reviewers from at least two model families. Fix blocking findings and run it again until none block the main goal. Small improvements don't block. Put the panel's models and verdict in the PR body.
-+<!-- matthew: end -->
 +
  A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md b/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
-index fb86c4a..8a8781d 100644
+index fb86c4a..012c8bb 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
 @@ -62,7 +62,7 @@ A dependency is a context relay, not just ordering. Undeclared upstream context
@@ -246,21 +99,19 @@ index fb86c4a..8a8781d 100644
  4. **Scale.** Spawn a rolling window of workers up to the in-flight cap, refilling as children finish. Blocking batches pay the slowest child of every batch. Spawn track sub-coordinators only past the one-drain threshold in Roles. Recompute ready work after each drain. Relay upstream reports into downstream briefs. Keep sibling communication upward only. The sampled brief audit runs alongside the wave it samples and stops the next refill on failure, not the current one.
  5. **Drain.** Run the queue discipline below at every drain point.
 -6. **Land.** Landing is continuous, never a terminal phase. Integration starts with the first verified unit and runs alongside the remaining waves. On heavy repos the stacker is a standing role from wave one, integrating as units verify. On repos where local git is cheap, the coordinator lands verified units itself per Roles. Keep the frontier green before upper-stack work. Stack safety governs. Advance `frontier.json` only on merge or reported new head SHAs.
-+6. **Land.** Landing is continuous, never a terminal phase. Integration starts with the first verified unit and runs alongside the remaining waves. On heavy repos the stacker is a standing role from wave one, integrating as units verify. On repos where local git is cheap, the coordinator lands verified units itself per Roles. Keep the frontier green before upper-stack work. Stack safety governs. Advance `frontier.json` only on merge or reported new head SHAs. <!-- matthew: start -->Before any merge, apply the understanding gate and the merge rule in `playbooks/opening-a-pr.md`. Never enable auto-merge.<!-- matthew: end -->
++6. **Land.** Landing is continuous, never a terminal phase. Integration starts with the first verified unit and runs alongside the remaining waves. On heavy repos the stacker is a standing role from wave one, integrating as units verify. On repos where local git is cheap, the coordinator lands verified units itself per Roles. Keep the frontier green before upper-stack work. Stack safety governs. Advance `frontier.json` only on merge or reported new head SHAs. <!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge.<!-- matthew: end -->
  7. **Close.** Drain the final inbox, reconcile every spawned agent to a terminal row (done, abandoned, zombie-reconciled), confirm the predicate on the real artifact, confirm every landed PR has a verdict for its current head SHA, audit the trail per show-me-your-work including its cross-model review, encode recurring corrections into `preferences.md` or the brief template. Leave the store intact. It is the postmortem.
  
  #### Queue and drain
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/shipping.md b/plugins/pstack/skills/poteto-mode/playbooks/shipping.md
-index 5807e47..20f02de 100644
+index 5807e47..8efd62c 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/shipping.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/shipping.md
-@@ -4,6 +4,10 @@
+@@ -4,6 +4,8 @@
  
  This is the half after `playbooks/babysit.md`.
  
-+<!-- matthew: start -->
-+**Understanding gate and merge rule.** Before any merge an agent performs, apply the understanding gate and the merge rule in `playbooks/opening-a-pr.md`. Never enable auto-merge, so skip any step below that arms `--auto` and wait at merge-ready instead.
-+<!-- matthew: end -->
++<!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge; skip any step below that arms `--auto` and wait at merge-ready.<!-- matthew: end -->
 +
  1. **Resolve the forge, then verify every PR independently.** GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR view, watch, edit, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One subagent per PR, not batched, each a Cursor cloud agent, each exercising the real surface with the matching control skill (such as `control-ui` or `control-cli` from `cursor-team-kit`, or the repo's `verify-*` skill / driver) against parent versus head. Each returns `PASS`, `PASS+NOTES` or `FAIL` and posts that verdict on its own PR. Safe means a verdict from an agent that did not write the code. CI green is not a verdict, and an approving bot review is not a verdict.
  2. **Land only the contiguous verified run rooted at the bottom.** Walk up from the lowest unmerged PR and stop at the first one without a passing verdict, where both `PASS` and `PASS+NOTES` pass. A verified PR sitting above an unverified one is not landable. Report the ceiling as a PR number and say what breaks the chain.

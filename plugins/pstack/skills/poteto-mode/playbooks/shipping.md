@@ -4,9 +4,7 @@
 
 This is the half after `playbooks/babysit.md`.
 
-<!-- matthew: start -->
-**Understanding gate and merge rule.** Before any merge an agent performs, apply the understanding gate and the merge rule in `playbooks/opening-a-pr.md`. Never enable auto-merge, so skip any step below that arms `--auto` and wait at merge-ready instead.
-<!-- matthew: end -->
+<!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge; skip any step below that arms `--auto` and wait at merge-ready.<!-- matthew: end -->
 
 1. **Resolve the forge, then verify every PR independently.** GitHub CLI (`gh`) is the default. If `command -v origin` succeeds and Origin can resolve the repository, use `origin pr ...` for PR view, watch, edit, and merge operations. Otherwise stay on `gh` and record the fallback. Never require Graphite (`gt`). One subagent per PR, not batched, each a Cursor cloud agent, each exercising the real surface with the matching control skill (such as `control-ui` or `control-cli` from `cursor-team-kit`, or the repo's `verify-*` skill / driver) against parent versus head. Each returns `PASS`, `PASS+NOTES` or `FAIL` and posts that verdict on its own PR. Safe means a verdict from an agent that did not write the code. CI green is not a verdict, and an approving bot review is not a verdict.
 2. **Land only the contiguous verified run rooted at the bottom.** Walk up from the lowest unmerged PR and stop at the first one without a passing verdict, where both `PASS` and `PASS+NOTES` pass. A verified PR sitting above an unverified one is not landable. Report the ceiling as a PR number and say what breaks the chain.

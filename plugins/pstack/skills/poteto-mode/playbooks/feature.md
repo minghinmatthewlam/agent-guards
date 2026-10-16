@@ -3,7 +3,7 @@
 **You own the design. Plan, review, verify.** Delegate implementation. Stay in the lead.
 
 <!-- matthew: start -->
-0. Restate the underlying issue in your own words, in plain English, before changing code. A misreading shows up before any code exists. Then proceed. Wait for the human only when the task is a new product feature or the intent is unclear. A clear, small "do X" proceeds.
+0. Restate the underlying issue in plain English before changing code, so a misreading shows up early. Wait for the human only on a new product feature or unclear intent; a clear, small "do X" proceeds.
 <!-- matthew: end -->
 1. `how` over the affected subsystem.
 2. `architect` for parallel design exploration.

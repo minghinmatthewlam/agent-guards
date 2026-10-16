@@ -5,10 +5,11 @@
 - Commit: `11713c6` (Merge pull request #543 from santiagomed/cursor/x-encryption-status-quiet-2f0c)
 - Author: Lauren Tan, MIT license (see `LICENSE`)
 
-The vendor commit ("Vendor pstack upstream 11713c6") copies that directory byte for byte. Every local change lives in two later commits, saved as patches:
+The vendor commit ("Vendor pstack upstream 11713c6") copies that directory byte for byte. Every local change lives in later commits, saved as patches and applied in order:
 
-- `patches/01-tool-neutral.patch`: the tool-neutral fixes for Codex and Claude Code, `models.md`, and the Codex `agents/openai.yaml` policies that turn off implicit invocation.
-- `patches/02-matthew.patch`: Matthew's workflow additions, each wrapped in `<!-- matthew: start -->` / `<!-- matthew: end -->`. The two verification skills are the exception: their edits are line-level rewrites without markers.
+- `patches/01-tool-neutral.patch`: fixes so pstack works in Codex and Claude Code, `models.md`, and the Codex `agents/openai.yaml` policies.
+- `patches/02-matthew.patch`: Matthew's workflow rules, each between `<!-- matthew: start -->` and `<!-- matthew: end -->`. The rules live once, in `playbooks/opening-a-pr.md`; every other playbook that merges carries the same one-line pointer.
+- `patches/03-verification-skills.patch`: the two verification skills adapted for Codex and Claude Code.
 
 ## Invocation
 

@@ -1,0 +1,155 @@
+From f0242641119aa44d4bec6b4c2e80c236947f9112 Mon Sep 17 00:00:00 2001
+From: Matthew Lam <matthew.lam@openrouter.ai>
+Date: Fri, 16 Oct 2026 11:55:29 -0400
+Subject: [PATCH 2/2] Verification skills for Codex and Claude Code
+
+Keep the verify skill in .agents/skills with a .claude/skills symlink, use
+$skill invocation, prove core user journeys rather than one feature, hold
+health/evidence/no-leftover invariants in the live pass, and send changed
+maps through autoreview. Codex interface metadata for both skills.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ .../skills/create-verification-skill/SKILL.md | 14 ++++++----
+ .../agents/openai.yaml                        |  6 ++--
+ .../maintain-verification-skill/SKILL.md      | 28 ++++++++++++++-----
+ .../agents/openai.yaml                        |  6 ++--
+ 4 files changed, 37 insertions(+), 17 deletions(-)
+
+diff --git a/plugins/pstack/skills/create-verification-skill/SKILL.md b/plugins/pstack/skills/create-verification-skill/SKILL.md
+index f869e26..ca5bd7e 100644
+--- a/plugins/pstack/skills/create-verification-skill/SKILL.md
++++ b/plugins/pstack/skills/create-verification-skill/SKILL.md
+@@ -1,12 +1,12 @@
+ ---
+ name: create-verification-skill
+-description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
++description: "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for $create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior."
+ disable-model-invocation: true
+ ---
+ 
+ # Create a verification skill
+ 
+-Every serious project needs a scripted way to drive the real app and prove behavior: launch it, exercise a feature the way a user would, and capture evidence. This skill generates that as a project-local skill (`.cursor/skills/verify-<app>/`) tailored to the repo. You write the generator's output for the next agent, not for a human: it will be read cold, mid-task, by an agent that has never seen the app.
++Every serious project needs a scripted way to drive the real app and prove behavior: launch it, exercise a feature the way a user would, and capture evidence. This skill generates that as a project-local skill (`.agents/skills/verify-<app>/`) tailored to the repo. You write the generator's output for the next agent, not for a human: it will be read cold, mid-task, by an agent that has never seen the app.
+ 
+ ## 1. Interview the repo, not the user
+ 
+@@ -22,7 +22,7 @@ If the checkout doesn't build or start as-is, fix that first (or report it preci
+ 
+ ## 2. Generate the skill
+ 
+-Write `.cursor/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verify-<app>` and a `description` that names the app, the surface, and when to reach for it — without frontmatter the skill never registers) and these sections, each grounded in what the interview actually found (no placeholders left):
++Write `.agents/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verify-<app>` and a `description` that names the app, the surface, and when to reach for it — without frontmatter the skill never registers) and these sections, each grounded in what the interview actually found (no placeholders left):
+ 
+ - **Launch:** the exact command that starts the app for verification, and how to tell it's ready (a log line, a port answering, a prompt). Include teardown. For a short-lived CLI or TUI there is no server to keep alive: launch means build the binary (or install deps) once, then start each drive in its own isolated PTY or tmux session.
+ - **Doctor:** one read-only check that answers "is this instance worth driving?" — process up, right version/build, port owned by us, auth valid. An agent runs this first whenever anything looks off.
+@@ -31,14 +31,16 @@ Write `.cursor/skills/verify-<app>/SKILL.md` with YAML frontmatter (`name: verif
+ - **Cleanup:** how to tear down instances the run created. Never kill by process name; kill what you started. Cleanup removes instances and scratch state, never the evidence: proof artifacts survive the teardown, in a location the skill names.
+ - **Helpers:** any script the skill ships is executable and its invocation is shown in the skill body. A helper the reader has to reverse-engineer is not a helper.
+ 
++Codex reads `.agents/skills/`; Claude Code reads `.claude/skills/`. Keep `.agents/skills/verify-<app>/` as the only copy and register it for Claude with a relative symlink: `.claude/skills/verify-<app> -> ../../.agents/skills/verify-<app>`. Commit both.
++
+ ## 3. Seed the feature map
+ 
+-Create `.cursor/skills/verify-<app>/features/README.md` plus one file per user-facing feature you can identify (aim for the top 3-5 to start, from routes, commands, menus, or docs). Follow the shape in [`references/feature-map-example/`](references/feature-map-example/), with a README index and one file per feature. Each file answers, from the user's point of view: what the feature is, how to reach it, how to drive it with the harness, and what observable end state proves it works. The four H2s are `Sub-features`, `How to get to it (user POV)`, `Driving it with <harness>`, and `Gotchas`. The map is the repo's maintained verification source; a proof that drives one convenient entry point is incomplete when the map lists others.
++Create `.agents/skills/verify-<app>/features/README.md` plus feature recipes covering the core user experiences identified from the repository. Prioritize complete user journeys that fulfill the app's main purpose over peripheral screens; distinguish core coverage from secondary features without trying to enumerate every edge case. Follow the shape in [`references/feature-map-example/`](references/feature-map-example/), with a README index and one file per feature. Each file answers, from the user's point of view: what the feature is, how to reach it, how to drive it with the harness, and what observable end state proves it works. The four H2s are `Sub-features`, `How to get to it (user POV)`, `Driving it with <harness>`, and `Gotchas`. The map is the repo's maintained verification source; a proof that drives one convenient entry point is incomplete when the map lists others.
+ 
+ ## 4. Prove the generated skill before handing it over
+ 
+-Run its own instructions end to end once: launch, doctor, drive ONE mapped feature (one is enough; the map exists so later runs can cover the rest), capture evidence, clean up. After cleanup, confirm the evidence still exists at the named location — a cleanup that eats the proof fails this step. Fix what fails, and run the generated cleanup after every failed iteration too, so broken attempts don't strand processes and ports. A generated skill that was never executed is a draft, not a deliverable.
++Confirm `.claude/skills/verify-<app>/SKILL.md` resolves through the symlink. Run its own instructions end to end: launch, doctor, exercise the mapped core user experiences, capture evidence, and clean up. Report each blocked or untested core experience explicitly; do not call setup complete based only on a secondary smoke test. This is core-journey coverage, not an exhaustive edge-case suite. After cleanup, confirm the evidence still exists at the named location — a cleanup that eats the proof fails this step. Fix verification-infrastructure failures within scope; report product defects rather than expanding the task to repair them. Run the generated cleanup after every failed iteration too, so broken attempts don't strand processes and ports. A generated skill that was never executed is a draft, not a deliverable; incomplete core proof remains partial or blocked.
+ 
+ ## 5. Offer the maintenance loop
+ 
+-Point the user at `/maintain-verification-skill` for keeping the map honest as the app changes. Suggest a cadence only if they ask.
++Point the user at `$maintain-verification-skill` for keeping the map honest as the app changes. Suggest a cadence only if they ask.
+diff --git a/plugins/pstack/skills/create-verification-skill/agents/openai.yaml b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
+index 5b1f887..4a1d724 100644
+--- a/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
++++ b/plugins/pstack/skills/create-verification-skill/agents/openai.yaml
+@@ -1,2 +1,4 @@
+-policy:
+-  allow_implicit_invocation: false
++interface:
++  display_name: "Create Verification Skill"
++  short_description: "Teach agents how to verify a repository"
++  default_prompt: "Use $create-verification-skill to build and prove a repo-local verifier for this product."
+diff --git a/plugins/pstack/skills/maintain-verification-skill/SKILL.md b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
+index a2680b9..82a58fe 100644
+--- a/plugins/pstack/skills/maintain-verification-skill/SKILL.md
++++ b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
+@@ -1,19 +1,19 @@
+ ---
+ name: maintain-verification-skill
+-description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\"."
++description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for $maintain-verification-skill or \"audit the verify skill\"."
+ disable-model-invocation: true
+ ---
+ 
+ # Maintain a verification skill
+ 
+-A feature map rots the moment the app changes. This skill is the upkeep loop for a skill generated by `/create-verification-skill` (or any project-local verification skill with a feature map). The unit of rigor is the feature, not every sentence: cover every feature file from source and exercise every feature live, without terminalising every bullet.
++A feature map rots the moment the app changes. This skill is the upkeep loop for a skill generated by `$create-verification-skill` (or any project-local verification skill with a feature map). The unit of rigor is the feature, not every sentence: cover every feature file from source and exercise every feature live, without terminalising every bullet.
+ 
+ ## Outcomes
+ 
+ Pick one, and say which:
+ 
+ - **clean** — every feature got source and live coverage; nothing worth shipping. No branch, no PR.
+-- **changed** — one PR ships proven doc, harness, or map corrections.
++- **changed** — one PR ships proven doc, harness, or map corrections; an independent `$autoreview` confirms that PR.
+ - **blocked** — coverage could not finish or a proven fix could not ship safely. Say exactly what blocked it.
+ 
+ ## Edit scope
+@@ -22,18 +22,32 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
+ 
+ ## Pass
+ 
+-0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.cursor/skills/verify-*/`). Several candidates → ask which one; none → stop and point at `/create-verification-skill` instead of inventing a target.
++0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.agents/skills/verify-*/`; a `.claude/skills/verify-*` symlink to it is the same skill, not a second candidate). Several candidates → ask which one; none → stop and point at `$create-verification-skill` instead of inventing a target.
+ 
+-1. **Index hygiene.** Read the feature map README and glob its sibling files. Fix missing, extra, duplicate, or dead entries. Lightweight; no generated inventory.
++1. **Index hygiene.** Read the feature map README and glob its sibling files. Fix missing, extra, duplicate, or dead entries. Confirm `.claude/skills/verify-<app>` exists as a relative symlink to the `.agents/skills` copy; add it if missing. Lightweight; no generated inventory.
+ 
+ 2. **Source wave.** One read-only subagent per feature file, launched concurrently. Each explains "how does this user-facing feature work?" from source, flags likely doc drift with citations, and returns one concise live-verification recipe. Children never drive the app and never edit files. Return shape: feature summary / source entry points / likely drift or none / one recipe.
+ 
+ 3. **Reconcile.** Every feature file has a returned summary. Merge overlapping recipes into as few app states as practical. Spot-check cited drift; don't re-prove clean claims. Sweep recent churn for user-facing surfaces missing from the map — require a concrete source path before calling one missing.
+ 
+-4. **Live pass.** Required even when source looks clean. The coordinator owns all driving; follow the verification skill's own launch model — one long-lived instance driven serially for servers and UIs, or a fresh isolated session per drive for short-lived CLIs (the skill's Launch section decides, not this one). Exercise every feature at least once, and hold three invariants the whole pass, whatever the failure: (1) never drive an instance you haven't health-checked since it last did something surprising — doctor before first drive, doctor on each fresh session where sessions are the unit, doctor again after any failed drive, and where doctor can't see the failure (a wedged UI state on a healthy process), reset to a known state or relaunch rather than hoping; (2) evidence captured so far survives every cleanup, checked at its named location, not assumed; (3) nothing a drive started outlives that drive's usefulness — failed-iteration residue is cleaned whether the session is stuck, exited, or shared (for a shared instance, clean the residue, not the instance). A doctor failure caused by skill drift is drift: fix it under edit scope and retry once — restart whatever the fix invalidated, nothing more — before calling the pass `blocked`. A feature that can't be reached is `verified-unreachable` only with the concrete prerequisite (auth, entitlement, OS, external state) and the route attempted; if the map omits that prerequisite, that's drift. Any harness fix from triage gets re-driven live before it ships. Final teardown happens after the last drive of the run — including those re-proofs — so nothing outlives the run (evidence stays, per the skill).
++4. **Live pass.** Required even when source looks clean. The coordinator owns all driving. Follow the verification skill's own launch model: one long-lived instance driven serially for servers and UIs, or a fresh isolated session per drive for short-lived CLIs. The skill's Launch section decides, not this one. Exercise every feature at least once.
++
++   Hold three invariants for the whole pass, whatever the failure:
++
++   - **Health before driving.** Never drive an instance you haven't health-checked since it last did something surprising. Run doctor before the first drive, on each fresh session where sessions are the unit, and again after any failed drive. Where doctor can't see the failure (a wedged UI state on a healthy process), reset to a known state or relaunch rather than hoping.
++   - **Evidence survives.** Evidence captured so far survives every cleanup, checked at its named location, not assumed.
++   - **No leftovers.** Nothing a drive started outlives that drive's usefulness. Clean failed-iteration residue whether the session is stuck, exited, or shared; for a shared instance, clean the residue, not the instance.
++
++   Handling failures:
++
++   - A doctor failure caused by skill drift is drift: fix it under edit scope and retry once, restarting only what the fix invalidated, before calling the pass `blocked`.
++   - A feature that can't be reached is `verified-unreachable` only with the concrete prerequisite (auth, entitlement, OS, external state) and the route attempted. If the map omits that prerequisite, that's drift.
++   - Any harness fix from triage gets re-driven live before it ships.
++
++   Final teardown happens after the last drive of the run, including those re-proofs, so nothing outlives the run. Evidence stays, per the skill.
+ 
+ 5. **Triage.** Wrong or missing user-POV description → doc drift, fix it. Working behavior the harness can't drive → harness gap, fix it; a harness fix follows the same helpers rule as generation (scripts executable, invocation documented in the skill body). App behavior that's actually broken → product gap; record it for the user, keep it out of this PR.
+ 
+-6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first. For clean or blocked: no PR, report the outcome and the coverage honestly.
++6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first, then run `$autoreview` on that PR/diff. Spawn one independent reviewer; stay on this pass. Do not treat the coordinator re-read as review. Apply only in-scope accepted blockers (verify skill directory only) and re-drive any harness fix live before it ships. For clean or blocked: no PR, no review agents, report the outcome and the coverage honestly.
+ 
+ Keep concise run notes (features covered, unreachable prerequisites, confirmed drift, outcome) in a scratch location; don't commit them.
+diff --git a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
+index 5b1f887..790b548 100644
+--- a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
++++ b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
+@@ -1,2 +1,4 @@
+-policy:
+-  allow_implicit_invocation: false
++interface:
++  display_name: "Maintain Verification Skill"
++  short_description: "Keep a repository verifier accurate"
++  default_prompt: "Use $maintain-verification-skill to compare this repository's verifier with current code and live behavior, then repair proven drift."
+-- 
+2.50.1 (Apple Git-155)
+

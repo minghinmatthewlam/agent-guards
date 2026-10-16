@@ -24,8 +24,6 @@ Babysitting starts when the user asks for it, which is normally once a phase or 
 
 `drive` ends at merge-ready. Landing the stack is `playbooks/shipping.md`.
 
-<!-- matthew: start -->
-**Understanding gate and merge rule.** Before any merge an agent performs, apply the understanding gate and the merge rule in `playbooks/opening-a-pr.md`. Never enable auto-merge.
-<!-- matthew: end -->
+<!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge.<!-- matthew: end -->
 
 **Reply:** the mode, the frontier and its active-forge state, the watcher's four-column table on GitHub, what you fixed versus dismissed with reasons, what is still pending, and what needs the human.
