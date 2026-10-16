@@ -54,6 +54,7 @@ Task-specific skills:
 |---|---|
 | `skills-audit` | Audits a repo's skills against practical quality checks |
 | `find-bugs` | Finds high-confidence correctness bugs and edge cases in existing code |
+| `find-quick-wins` | Finds low-risk, high-confidence fixes an agent can make and prove alone, and optionally ships each as a small PR |
 | `new-task` | Aligns on the goal and asks only questions that could change the outcome |
 | `record-screen` | Records a UI change as a small MP4 proof: the private virtual display in Linux cloud sessions, only the app window on macOS |
 | `project-coordinator` | Coordinates a project in T3 Code by running pstack's Orchestrate playbook, adding T3 tools, the human's gates, and per-project review steps |

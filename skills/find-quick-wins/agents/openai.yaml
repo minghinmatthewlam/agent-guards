@@ -1,0 +1,4 @@
+interface:
+  display_name: "Find Quick Wins"
+  short_description: "Find low-risk, high-confidence fixes an agent can ship alone"
+  default_prompt: "Use $find-quick-wins to find low-risk, high-confidence improvements in this codebase."
