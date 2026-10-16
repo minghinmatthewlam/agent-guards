@@ -1,20 +1,21 @@
-From 7bc548ca875ac9daa30212ebfefd08dd46d6ffc8 Mon Sep 17 00:00:00 2001
+From 023892ec169e59d202c29be3a5111a904fb23fc6 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Fri, 16 Oct 2026 11:55:29 -0400
-Subject: [PATCH 2/2] Verification skills for Codex and Claude Code
+Subject: [PATCH] Verification skills for Codex and Claude Code
 
 Keep the verify skill in .agents/skills with a .claude/skills symlink, use
-$skill invocation, prove core user journeys rather than one feature, hold
-health/evidence/no-leftover invariants in the live pass, and send changed
-maps through autoreview. Codex interface metadata for both skills.
+$skill invocation, prove core user journeys rather than one feature, and hold
+health/evidence/no-leftover invariants in the live pass. Review comes from the
+poteto-mode panel before the PR, so no separate review step here. Codex
+interface metadata for both skills.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- .../skills/create-verification-skill/SKILL.md | 14 ++++++----
- .../agents/openai.yaml                        |  6 ++--
- .../maintain-verification-skill/SKILL.md      | 28 ++++++++++++++-----
- .../agents/openai.yaml                        |  6 ++--
- 4 files changed, 37 insertions(+), 17 deletions(-)
+ .../skills/create-verification-skill/SKILL.md | 14 ++++++-----
+ .../agents/openai.yaml                        |  6 +++--
+ .../maintain-verification-skill/SKILL.md      | 25 ++++++++++++++-----
+ .../agents/openai.yaml                        |  6 +++--
+ 4 files changed, 35 insertions(+), 16 deletions(-)
 
 diff --git a/plugins/pstack/skills/create-verification-skill/SKILL.md b/plugins/pstack/skills/create-verification-skill/SKILL.md
 index f869e26..ca5bd7e 100644
@@ -76,15 +77,15 @@ index 5b1f887..4a1d724 100644
 +  short_description: "Teach agents how to verify a repository"
 +  default_prompt: "Use $create-verification-skill to build and prove a repo-local verifier for this product."
 diff --git a/plugins/pstack/skills/maintain-verification-skill/SKILL.md b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-index a2680b9..82a58fe 100644
+index a2680b9..a34a358 100644
 --- a/plugins/pstack/skills/maintain-verification-skill/SKILL.md
 +++ b/plugins/pstack/skills/maintain-verification-skill/SKILL.md
-@@ -1,19 +1,19 @@
+@@ -1,12 +1,11 @@
  ---
  name: maintain-verification-skill
 -description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\"."
+-disable-model-invocation: true
 +description: "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for $maintain-verification-skill or \"audit the verify skill\"."
- disable-model-invocation: true
  ---
  
  # Maintain a verification skill
@@ -94,15 +95,7 @@ index a2680b9..82a58fe 100644
  
  ## Outcomes
  
- Pick one, and say which:
- 
- - **clean** — every feature got source and live coverage; nothing worth shipping. No branch, no PR.
--- **changed** — one PR ships proven doc, harness, or map corrections.
-+- **changed** — one PR ships proven doc, harness, or map corrections; an independent `$autoreview` confirms that PR.
- - **blocked** — coverage could not finish or a proven fix could not ship safely. Say exactly what blocked it.
- 
- ## Edit scope
-@@ -22,18 +22,32 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
+@@ -22,15 +21,29 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
  
  ## Pass
  
@@ -135,10 +128,6 @@ index a2680b9..82a58fe 100644
  
  5. **Triage.** Wrong or missing user-POV description → doc drift, fix it. Working behavior the harness can't drive → harness gap, fix it; a harness fix follows the same helpers rule as generation (scripts executable, invocation documented in the skill body). App behavior that's actually broken → product gap; record it for the user, keep it out of this PR.
  
--6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first. For clean or blocked: no PR, report the outcome and the coverage honestly.
-+6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first, then run `$autoreview` on that PR/diff. Spawn one independent reviewer; stay on this pass. Do not treat the coordinator re-read as review. Apply only in-scope accepted blockers (verify skill directory only) and re-drive any harness fix live before it ships. For clean or blocked: no PR, no review agents, report the outcome and the coverage honestly.
- 
- Keep concise run notes (features covered, unreachable prerequisites, confirmed drift, outcome) in a scratch location; don't commit them.
 diff --git a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml b/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml
 index 5b1f887..790b548 100644
 --- a/plugins/pstack/skills/maintain-verification-skill/agents/openai.yaml

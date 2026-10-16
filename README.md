@@ -45,7 +45,6 @@ Core workflow skills:
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
 | `teach` | Builds a code-grounded mental model through components, interfaces, and end-to-end steps |
 | `architect` | Designs changes through explicit code ownership, dependency boundaries, data models, and caller interfaces |
-| `autoreview` | Uses independent native subagents to review changes for concrete defects and unnecessary complexity |
 | `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, code changes, learning, decisions, and accepted findings |
 
 Task-specific skills:
