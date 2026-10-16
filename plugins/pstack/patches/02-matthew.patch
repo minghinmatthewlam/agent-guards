@@ -219,7 +219,7 @@ index fcd0052..2dd5260 100644
  **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
  
 +<!-- matthew: start -->
-+**Understanding gate.** Before any merge an agent performs, the human has seen a key-points brief: what changed for the user, how it works at a high level, the evidence, and the risks. Write it in the **teach** skill's style. The human must say they understand. Only a trivial change, such as a docs-only edit, skips this gate.
++**Understanding gate.** Before any merge an agent performs, the human has seen a key-points brief: only what they most need to know or learn, because their attention is the scarce resource. Always give what changed for the user and the one or two things worth learning. Add a non-obvious risk or a decision only when it matters. Evidence is one line unless asked. Scale with the change: about 3 bullets for a small fix, 5 to 8 for a feature or design change. The human must say they understand; "ok" or "got it" counts. Only a trivial change, such as a docs-only edit, skips this gate.
 +
 +**Merge rule.** An agent merges only when all of these hold:
 +
