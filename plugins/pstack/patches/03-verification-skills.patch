@@ -1,4 +1,4 @@
-From f0242641119aa44d4bec6b4c2e80c236947f9112 Mon Sep 17 00:00:00 2001
+From 7bc548ca875ac9daa30212ebfefd08dd46d6ffc8 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Fri, 16 Oct 2026 11:55:29 -0400
 Subject: [PATCH 2/2] Verification skills for Codex and Claude Code

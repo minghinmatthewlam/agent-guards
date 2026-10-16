@@ -39,5 +39,4 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
 - **Merge only when** Matthew approved the intent, the gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready. Never enable auto-merge.
 <!-- matthew: end -->
 
-
 A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.

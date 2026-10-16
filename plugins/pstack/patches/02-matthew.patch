@@ -1,4 +1,4 @@
-From 6bcda8bc9eec2fa7825474c21752e4d5d261ab17 Mon Sep 17 00:00:00 2001
+From 075fb169b92d6554633985465398ae2e2a143df2 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Fri, 16 Oct 2026 11:55:29 -0400
 Subject: [PATCH 1/2] Matthew's workflow rules
@@ -11,14 +11,14 @@ before code. Every addition sits between <!-- matthew: start --> and
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- plugins/pstack/skills/poteto-mode/SKILL.md               | 3 +++
- .../skills/poteto-mode/playbooks/autopilot-full.md       | 2 +-
- plugins/pstack/skills/poteto-mode/playbooks/babysit.md   | 2 ++
- plugins/pstack/skills/poteto-mode/playbooks/feature.md   | 3 +++
- .../pstack/skills/poteto-mode/playbooks/opening-a-pr.md  | 9 +++++++++
- .../pstack/skills/poteto-mode/playbooks/orchestrate.md   | 2 +-
- plugins/pstack/skills/poteto-mode/playbooks/shipping.md  | 2 ++
- 7 files changed, 21 insertions(+), 2 deletions(-)
+ plugins/pstack/skills/poteto-mode/SKILL.md                | 3 +++
+ .../pstack/skills/poteto-mode/playbooks/autopilot-full.md | 2 +-
+ plugins/pstack/skills/poteto-mode/playbooks/babysit.md    | 2 ++
+ plugins/pstack/skills/poteto-mode/playbooks/feature.md    | 3 +++
+ .../pstack/skills/poteto-mode/playbooks/opening-a-pr.md   | 8 ++++++++
+ .../pstack/skills/poteto-mode/playbooks/orchestrate.md    | 2 +-
+ plugins/pstack/skills/poteto-mode/playbooks/shipping.md   | 2 ++
+ 7 files changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
 index 952dd0e..e93bfd6 100644
@@ -73,10 +73,10 @@ index 79a6bbb..0abb75d 100644
  2. `architect` for parallel design exploration.
  3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
-index fcd0052..2afd2ee 100644
+index fcd0052..0f1ea34 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
 +++ b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
-@@ -31,4 +31,13 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
+@@ -31,4 +31,12 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
  
  **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
  
@@ -87,7 +87,6 @@ index fcd0052..2afd2ee 100644
 +- **Understanding gate.** Before an agent merges, Matthew has seen a key-points brief and said he understands ("ok" counts). Give only what he most needs to know or learn: what changed for the user, the one or two things worth learning, and a risk or decision only when it matters. Evidence is one line. About 3 bullets for a small fix, 5 to 8 for a feature or design change. A trivial change, such as a docs-only edit, skips it.
 +- **Merge only when** Matthew approved the intent, the gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready. Never enable auto-merge.
 +<!-- matthew: end -->
-+
 +
  A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md b/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md
