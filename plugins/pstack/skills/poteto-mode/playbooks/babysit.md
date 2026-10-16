@@ -21,3 +21,5 @@ Babysitting starts when the user asks for it, which is normally once a phase or 
 9. **Stop at the human's line.** Owner approval is a wait, not a blocker to fix. Babysitting never authorizes merging. Only an explicit request to merge, land, ship, or merge when ready does. Route that request to Shipping. Surface the escalation and keep working the rest. After GitHub reports `READY`, a queued `WAITING`/`merge-queue` stop, or `COMPLETE`, or after Origin reports the frontier merge-ready, sweep the run's triage decisions once. Offer any team-useful dismissal pattern as a candidate entry in the shared rubric (`../references/bugbot-triage.md`) and its own PR. Never keep it only in private memory.
 
 `drive` ends at merge-ready. Landing the stack is `playbooks/shipping.md`.
+
+<!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge.<!-- matthew: end -->
