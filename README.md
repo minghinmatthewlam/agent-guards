@@ -106,7 +106,7 @@ Useful sync commands:
 
 ## Poteto Reminder Hook
 
-`hooks/poteto-reminder.py` runs on `SessionStart` (startup, compact, clear) and `UserPromptSubmit`. In every Claude Code and Codex session whose folder is under a path in `hooks/poteto-reminder.scopes`, whatever launched it, it adds the reminder "Follow pstack's /poteto-mode strictly". Everywhere else it prints nothing.
+`hooks/poteto-reminder.py` runs on `SessionStart` (startup, compact, clear) and `UserPromptSubmit`. In every Claude Code and Codex session whose folder is under a path in `hooks/poteto-reminder.scopes`, whatever launched it, it adds the reminder "Follow pstack's /poteto-mode strictly. If its SKILL.md is not in your context, load it first." Everywhere else it prints nothing.
 
 To cover another repo, add its folder to `hooks/poteto-reminder.scopes`, one path per line, then run `./scripts/sync.sh`.
 
