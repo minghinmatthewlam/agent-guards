@@ -9,7 +9,7 @@ Codex's trust of them, do not change.
 import json, os, sys
 
 HERE = os.path.dirname(os.path.realpath(__file__))
-REMINDER = "Follow pstack's /poteto-mode"
+REMINDER = "Follow pstack's /poteto-mode strictly"
 
 
 def load_scopes():

@@ -141,7 +141,7 @@ reminds() {
   run_hook "$1" "$HOME/dev/ori/apps" | python3 -c '
 import json, sys
 out = json.load(sys.stdin)["hookSpecificOutput"]
-assert out == {"hookEventName": "UserPromptSubmit", "additionalContext": "Follow pstack'"'"'s /poteto-mode"}, out'
+assert out == {"hookEventName": "UserPromptSubmit", "additionalContext": "Follow pstack'"'"'s /poteto-mode strictly"}, out'
 }
 
 mkdir -p "$HOME/dev/ori/apps" "$HOME/dev/ori-other"
