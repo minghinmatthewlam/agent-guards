@@ -132,20 +132,16 @@ EOF
 }
 
 run_hook() {
-  local tool="$1" cwd="$2" t3_cli="$3"
+  local tool="$1" cwd="$2"
   printf '{"cwd": "%s", "hook_event_name": "UserPromptSubmit"}' "$cwd" |
-    env -u T3CODE_CLI_PATH ${t3_cli:+T3CODE_CLI_PATH="$t3_cli"} "$HOME/.$tool/hooks/poteto-reminder.py" "$tool"
+    env -u T3CODE_CLI_PATH "$HOME/.$tool/hooks/poteto-reminder.py" "$tool"
 }
 
 reminds() {
-  local tool="$1" expected="$2" unexpected="$3"
-  local context
-  context="$(run_hook "$tool" "$HOME/dev/ori/apps" /t3 | python3 -c '
+  run_hook "$1" "$HOME/dev/ori/apps" | python3 -c '
 import json, sys
 out = json.load(sys.stdin)["hookSpecificOutput"]
-assert out["hookEventName"] == "UserPromptSubmit"
-print(out["additionalContext"])')" || return 1
-  grep -q "$expected" <<<"$context" && ! grep -q "$unexpected" <<<"$context"
+assert out == {"hookEventName": "UserPromptSubmit", "additionalContext": "Follow pstack'"'"'s /poteto-mode"}, out'
 }
 
 mkdir -p "$HOME/dev/ori/apps" "$HOME/dev/ori-other"
@@ -160,11 +156,10 @@ check "dry-run previews the Codex hook merge" \
 check "dry-run writes no Codex hooks.json" "! $dry_run_wrote_codex_hooks"
 check "second sync leaves hook files and config unchanged" "[ '$first_snapshot' = '$second_snapshot' ]"
 check "second sync reports both hook configs current" "[ \"\$(grep -c 'Hooks already current' '$WORK/resync.log')\" = 2 ]"
-check "hook reminds Claude to use its Skill tool in scope under T3" "reminds claude 'Skill tool with pstack:poteto-mode' NOMATCH"
-check "hook reminds Codex without the Claude Skill tool" "reminds codex 'pstack:poteto-mode' 'Skill tool'"
-check "hook is silent without T3CODE_CLI_PATH" "[ -z \"\$(run_hook claude '$HOME/dev/ori/apps' '')\" ]"
-check "hook is silent out of scope" "[ -z \"\$(run_hook claude '$WORK' /t3)\" ]"
-check "hook is silent in a sibling folder sharing the prefix" "[ -z \"\$(run_hook codex '$HOME/dev/ori-other' /t3)\" ]"
+check "hook reminds Claude in scope outside T3" "reminds claude"
+check "hook reminds Codex in scope outside T3" "reminds codex"
+check "hook is silent out of scope" "[ -z \"\$(run_hook claude '$WORK')\" ]"
+check "hook is silent in a sibling folder sharing the prefix" "[ -z \"\$(run_hook codex '$HOME/dev/ori-other')\" ]"
 
 if [ "$failures" -gt 0 ]; then
   echo "$failures check(s) failed. sync.sh output:" >&2

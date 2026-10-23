@@ -106,7 +106,7 @@ Useful sync commands:
 
 ## Poteto Reminder Hook
 
-`hooks/poteto-reminder.py` runs on `SessionStart` (startup, compact, clear) and `UserPromptSubmit`. When T3 Code launched the agent (`T3CODE_CLI_PATH` is set) and the session's folder is under a path in `hooks/poteto-reminder.scopes`, it adds a reminder to work in pstack's poteto-mode and to load the skill if its body is not in context. Claude is told to use the Skill tool; Codex is told to read the poteto-mode `SKILL.md` from its pstack plugin cache. Everywhere else it prints nothing.
+`hooks/poteto-reminder.py` runs on `SessionStart` (startup, compact, clear) and `UserPromptSubmit`. In every Claude Code and Codex session whose folder is under a path in `hooks/poteto-reminder.scopes`, whatever launched it, it adds the reminder "Follow pstack's /poteto-mode". Everywhere else it prints nothing.
 
 To cover another repo, add its folder to `hooks/poteto-reminder.scopes`, one path per line, then run `./scripts/sync.sh`.
 
