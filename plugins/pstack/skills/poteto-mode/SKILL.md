@@ -10,6 +10,8 @@ color: yellow
 
 Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `poteto-agent` prompt.
 
+<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, and transcripts are the rollouts under `~/.codex/sessions/` whose `session_meta` `cwd` is this workspace, and Cursor's `create-skill` is the `skill-creator` system skill.<!-- tool-neutral: end -->
+
 ## Non-negotiables
 
 The Principles section below grounds every trigger. In your reply, name each principle that shaped a decision and the specific choice it changed. Cite only principles whose leaf SKILL.md you read this session.

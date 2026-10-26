@@ -11,6 +11,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
 | Open a todolist | Use `TodoWrite` if the session offers it. Otherwise keep the list in your reply and update it at each phase. |
 | Run another pstack skill (`/name` or "the **name** skill") | `Read` `<pstack>/skills/<name>/SKILL.md` and follow it. The `Skill` tool refuses most pstack skills. When you tell the user to type it, write `/pstack:<name>`. |
 | `Grep`, `Glob` | `Bash` with `rg` when the session has no `Grep` or `Glob`. |
+| The `create-skill` skill, Cursor's built-in for authoring `SKILL.md` files | The `skill-creator` skill from the `skill-creator@claude-plugins-official` plugin. Its frontmatter rules, draft / test / iterate loop, and description-optimization loop stand in for `create-skill`'s. Where its writing advice differs from the pstack skill that called it, follow the pstack skill. If it is missing, tell the user to run `claude plugin install skill-creator@claude-plugins-official`. |
 
 ## Subagent fields
 
@@ -32,7 +33,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
 | Cursor | Claude Code |
 | --- | --- |
 | `claude-<family>-<version>-<effort>[-fast]`, such as `claude-opus-5-5-xhigh` | `model: "opus"` and `effort: "xhigh"`. `model` takes only `opus`, `sonnet`, `haiku`, `fable`. Drop `-fast`. |
-| A `grok-*`, `gpt-*`, or other non-Claude slug | Omit `model` so the agent runs on the session model, and say so. |
+| A `grok-*`, `gpt-*`, or other non-Claude slug | Run that seat through the host's cross-provider tool, such as T3 Code's `delegate_task`, or `codex exec -m <slug>`. Omit `model` and say so only when neither works. |
 | `auto` or `inherit-parent` | Omit `model`. |
 | The `pstack-models.mdc` rule, `~/.cursor/rules/pstack-models.mdc` | `~/.claude/rules/pstack-models.md`. Claude Code loads it into every new session, so its role lines are already in context. If they are not, read the file. If the file or the role's line is missing, use the skill's default slug. |
 | A role value `<model> <effort>`, such as `opus high` | `model: "opus"` and `effort: "high"`. |
