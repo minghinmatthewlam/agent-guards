@@ -26,7 +26,7 @@ Upstream sets `disable-model-invocation: true` on 57 of 58 skills. In Claude Cod
 
 ## Model roles
 
-`models.md` holds Matthew's roles. It is owned by this repo, not a patch, so a sync never touches it. Upstream's Claude Code adapter reads the role file at `~/.claude/rules/pstack-models.md`, and Claude Code loads every file in `~/.claude/rules/` into each session. Run `plugins/pstack/scripts/install.sh` once per machine. It links that path to `plugins/pstack/models.md` in the main `~/dev/agent-guards` checkout, so `/setup-pstack` edits the tracked file. Commit the change there. Codex has no upstream role path, so patch 01 points Codex at the same file.
+`models.md` holds Matthew's roles. It is owned by this repo, not a patch, so a sync never touches it. Upstream's Claude Code adapter reads the role file at `~/.claude/rules/pstack-models.md`, and Claude Code loads every file in `~/.claude/rules/` into each session. Claude Code skips symlinked rule files, so `plugins/pstack/scripts/install.sh` copies `plugins/pstack/models.md` from the main `~/dev/agent-guards` checkout to that path. The tracked file is the source of truth. Run the script after changing the tracked file. After `/setup-pstack` writes the installed copy, the script refuses to overwrite it and prints the `cp` that brings the change back to the tracked file, which you then commit. Codex has no upstream role path, so patch 01 points Codex at the same file.
 
 ## How a plugin change reaches each tool
 
@@ -35,7 +35,7 @@ Both tools run a cached copy of the plugin, not this directory.
 - Codex: edit in `~/dev/agent-guards`, commit, then run `codex plugin add pstack@agent-guards`. That re-copies the plugin into `~/.codex/plugins/cache/agent-guards/pstack/<version>/`. Start a new Codex session. The marketplace is `[marketplaces.agent-guards]` in `~/.codex/config.toml`, a local source at `/Users/matthewlam/dev/agent-guards`.
 - Claude Code: install once with `claude plugin marketplace add /Users/matthewlam/dev/agent-guards`, then `claude plugin install pstack@agent-guards`. After a change, run `claude plugin marketplace update agent-guards`, then `claude plugin update pstack@agent-guards`, and start a new session. `update` skips the change while `version` in `.claude-plugin/plugin.json` is unchanged; bump it, or run `claude plugin uninstall pstack@agent-guards` then `claude plugin install pstack@agent-guards`.
 - Cursor: copy the plugin with `rsync -a --delete plugins/pstack/ ~/.cursor/plugins/local/pstack/`.
-- A `models.md` change needs no plugin refresh, because both tools read it through the `~/.claude/rules` symlink. Claude Code picks it up in the next new session.
+- A `models.md` change needs no plugin refresh. Run `install.sh` to copy it to `~/.claude/rules/pstack-models.md`; Claude Code and Codex read it there from the next new session.
 
 ## Re-sync
 
