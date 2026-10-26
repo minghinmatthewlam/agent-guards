@@ -5,35 +5,18 @@ Subject: [PATCH 2/3] Matthew's workflow rules
 
 One canonical block in playbooks/opening-a-pr.md (review panel, understanding
 gate, merge rule). Every other playbook that merges carries the same one-line
-pointer to it. poteto-mode and the Feature playbook add a plain-English restate
-before code. Every addition sits between <!-- matthew: start --> and
+pointer to it. Every addition sits between <!-- matthew: start --> and
 <!-- matthew: end -->.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- plugins/pstack/skills/poteto-mode/SKILL.md                | 3 +++
  .../pstack/skills/poteto-mode/playbooks/autopilot-full.md | 2 +-
  plugins/pstack/skills/poteto-mode/playbooks/babysit.md    | 2 ++
- plugins/pstack/skills/poteto-mode/playbooks/feature.md    | 3 +++
  .../pstack/skills/poteto-mode/playbooks/opening-a-pr.md   | 8 ++++++++
  .../pstack/skills/poteto-mode/playbooks/orchestrate.md    | 2 +-
  plugins/pstack/skills/poteto-mode/playbooks/shipping.md   | 2 ++
- 7 files changed, 20 insertions(+), 2 deletions(-)
+ 5 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 1077a21..d260ebb 100644
---- a/plugins/pstack/skills/poteto-mode/SKILL.md
-+++ b/plugins/pstack/skills/poteto-mode/SKILL.md
-@@ -18,6 +18,9 @@ The Principles section below grounds every trigger. In your reply, name each pri
- 
- Remaining triggers:
- 
-+<!-- matthew: start -->
-+- A Feature, or a noisy report → restate the underlying issue in plain English before changing code, so a misreading shows up early. Wait for the human only on a new product feature or unclear intent; a clear, small "do X" proceeds.
-+<!-- matthew: end -->
- - Nontrivial change, architecture decision, or "are we sure?" → the **how** skill.
- - About to `AskQuestion` on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Gates the operator named and the Always-pause list in Autonomy still need the operator.
- - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md b/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
 index 0688823..5c01604 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/autopilot-full.md
@@ -57,20 +40,6 @@ index 51549ab..91483b8 100644
  `drive` ends at merge-ready. Landing the stack is `playbooks/shipping.md`.
 +
 +<!-- matthew: start -->Merging follows Matthew's rules in `playbooks/opening-a-pr.md`. Never enable auto-merge.<!-- matthew: end -->
-diff --git a/plugins/pstack/skills/poteto-mode/playbooks/feature.md b/plugins/pstack/skills/poteto-mode/playbooks/feature.md
-index eb1040c..d44b8f8 100644
---- a/plugins/pstack/skills/poteto-mode/playbooks/feature.md
-+++ b/plugins/pstack/skills/poteto-mode/playbooks/feature.md
-@@ -2,6 +2,9 @@
- 
- **You own the design. Plan, review, verify.** Delegate implementation. Stay in the lead.
- 
-+<!-- matthew: start -->
-+0. Restate the underlying issue in plain English before changing code, so a misreading shows up early. Wait for the human only on a new product feature or unclear intent; a clear, small "do X" proceeds.
-+<!-- matthew: end -->
- 1. `how` over the affected subsystem.
- 2. `architect` for parallel design exploration.
- 3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
 diff --git a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md b/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
 index d729a7a..911ebfc 100644
 --- a/plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md
