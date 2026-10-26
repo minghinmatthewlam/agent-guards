@@ -13,7 +13,7 @@
 set -euo pipefail
 
 SKILLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../skills" && pwd)"
-ENTRY_SKILLS="poteto-mode poteto-help setup-pstack make-bot-ui automate-me create-verification-skill maintain-verification-skill"
+ENTRY_SKILLS="poteto-mode poteto-help setup-pstack make-bot-ui automate-me create-verification-skill maintain-verification-skill teach"
 
 ruby - "$SKILLS_DIR" "${1:-}" "$ENTRY_SKILLS" <<'RUBY'
 skills_dir, mode, entry = ARGV

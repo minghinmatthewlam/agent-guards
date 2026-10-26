@@ -16,7 +16,7 @@ The vendor commit ("Vendor pstack upstream 99b609a") copies that directory byte 
 Upstream sets `disable-model-invocation: true` on 57 of 58 skills. In Claude Code that blocks the Skill tool, so the poteto-reminder hook's "load poteto-mode" fails. Codex ignores the flag and would invoke every skill implicitly. `scripts/normalize-invocation.sh` owns the replacement rule, not a patch, so it also covers skills upstream adds later:
 
 - No skill sets `disable-model-invocation`.
-- Every skill except `poteto-mode`, `poteto-help`, `setup-pstack`, `make-bot-ui`, `automate-me`, `create-verification-skill`, and `maintain-verification-skill` sets `user-invocable: false` and has `allow_implicit_invocation: false` in `agents/openai.yaml`.
+- Every skill except `poteto-mode`, `poteto-help`, `setup-pstack`, `make-bot-ui`, `automate-me`, `create-verification-skill`, `maintain-verification-skill`, and `teach` sets `user-invocable: false` and has `allow_implicit_invocation: false` in `agents/openai.yaml`.
 
 `sync-upstream.sh` runs it after the patches and commits the result as "Normalize pstack skill invocation". CI runs it with `--check`. To change the entry list, edit `ENTRY_SKILLS` in the script and run it.
 
