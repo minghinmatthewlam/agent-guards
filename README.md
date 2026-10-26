@@ -81,7 +81,6 @@ Cursor moves uploaded skills into its managed User Context, so the local staging
 - prunes stale agent-guards-managed commands and skills by default
 - skips `agent-only` skills for Claude
 - merges the hook entries into `~/.claude/settings.json` and `~/.codex/hooks.json` without touching other keys or hooks, and leaves both files alone when they already match
-- compares skills uploaded to claude.ai (for cloud agents, as cached by Claude desktop) with this repo, and packages any out-of-date ones as zips in `~/.cache/agent-guards/upload/` for re-upload
 
 ## First-Time Setup
 

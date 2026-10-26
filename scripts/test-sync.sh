@@ -1,9 +1,8 @@
 #!/bin/bash
 # Run sync.sh against a throwaway HOME and a copy of this repo, then check the result.
 # Covers: validation under a non-UTF-8 locale, skill/command/AGENTS.md destinations,
-# agent-only exclusion from Claude, pruning of retired managed skills,
-# detection of out-of-date skills uploaded to claude.ai, and the poteto-reminder
-# hook: entries merged into Claude and Codex config, re-sync as a no-op, and the
+# agent-only exclusion from Claude, pruning of retired managed skills, and the
+# poteto-reminder hook: entries merged into Claude and Codex config, re-sync as a no-op, and the
 # script staying silent outside T3 or outside its scoped folders.
 
 set -euo pipefail
@@ -33,12 +32,6 @@ for dir in "$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.cursor/skills";
   mkdir -p "$dir/retired-skill" "$dir/user-owned-skill"
   echo "retired-skill" > "$dir/.agent-guards-managed-skills"
 done
-
-# Fixture: claude.ai uploaded-skill cache with one current and one stale skill.
-CACHE="$HOME/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/a/b/skills"
-mkdir -p "$CACHE"
-cp -R "$SRC/skills/find-bugs" "$SRC/skills/teach" "$CACHE/"
-echo "old line" >> "$CACHE/teach/SKILL.md"
 
 # Fixture: Claude settings with unrelated keys, other hooks, and an old poteto-reminder entry.
 mkdir -p "$HOME/.claude"
@@ -104,10 +97,6 @@ for dir in .agents/skills .claude/skills .cursor/skills; do
   check "$dir retired managed skill pruned" "[ ! -e '$HOME/$dir/retired-skill' ]"
   check "$dir unmanaged skill kept" "[ -d '$HOME/$dir/user-owned-skill' ]"
 done
-
-check "stale uploaded skill packaged" "[ -f '$HOME/.cache/agent-guards/upload/teach.zip' ]"
-check "current uploaded skill not packaged" "[ ! -e '$HOME/.cache/agent-guards/upload/find-bugs.zip' ]"
-check "stale uploaded skill reported" "grep -q -- '- teach ->' '$WORK/sync.log'"
 
 registers_hook() {
   python3 - "$1" "$2" <<'EOF'

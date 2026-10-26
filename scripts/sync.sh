@@ -25,9 +25,6 @@ CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 CODEX_HOOKS="$HOME/.codex/hooks"
 CODEX_HOOKS_JSON="$HOME/.codex/hooks.json"
 HOOK_FILES=(poteto-reminder.py poteto-reminder.scopes)
-# Claude desktop caches skills uploaded to the claude.ai account (used by cloud agents) here.
-CLAUDE_UPLOADED_CACHE="$HOME/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin"
-UPLOAD_DIR="$HOME/.cache/agent-guards/upload"
 
 CODEX_MANIFEST="$CODEX_PROMPTS/.agent-guards-managed-commands"
 CLAUDE_MANIFEST="$CLAUDE_COMMANDS/.agent-guards-managed-commands"
@@ -334,26 +331,6 @@ log "  Syncing poteto-reminder hook to ~/.claude/hooks and ~/.codex/hooks..."
 sync_hooks_to "$CLAUDE_HOOKS" "$CLAUDE_SETTINGS" claude
 sync_hooks_to "$CODEX_HOOKS" "$CODEX_HOOKS_JSON" codex
 
-stale_uploads=()
-for cached in "$CLAUDE_UPLOADED_CACHE"/*/*/skills/*/; do
-  name=$(basename "$cached")
-  list_contains "$name" "${current_skills[@]}" || continue
-  if ! diff -rq -x .DS_Store "$GUARDS_DIR/skills/$name" "$cached" >/dev/null 2>&1; then
-    stale_uploads+=("$name")
-  fi
-done
-if [ "${#stale_uploads[@]}" -gt 0 ]; then
-  remove_path "$UPLOAD_DIR"
-  mkdir_p "$UPLOAD_DIR"
-  for name in "${stale_uploads[@]}"; do
-    if $DRY_RUN; then
-      echo "  [dry-run] zip $UPLOAD_DIR/$name.zip"
-    else
-      (cd "$GUARDS_DIR/skills" && zip -qr -X "$UPLOAD_DIR/$name.zip" "$name" -x '*.DS_Store')
-    fi
-  done
-fi
-
 command_count=${#current_commands[@]}
 skill_count=${#current_skills[@]}
 claude_skill_count=${#claude_skills[@]}
@@ -367,13 +344,3 @@ echo "  - $skill_count skills -> ~/.agents/skills"
 echo "  - $skill_count skills -> ~/.cursor/skills (enable Sync Skills for Cloud Agents in Cursor)"
 echo "  - $claude_skill_count skills -> ~/.claude/skills ($agent_only_count agent-only skipped)"
 echo "  - poteto-reminder hook -> ~/.claude/settings.json, ~/.codex/hooks.json"
-
-if [ "${#stale_uploads[@]}" -gt 0 ]; then
-  echo ""
-  echo "Action needed: ${#stale_uploads[@]} skill(s) uploaded to claude.ai (cloud agents) are out of date:"
-  for name in "${stale_uploads[@]}"; do
-    echo "  - $name -> $UPLOAD_DIR/$name.zip"
-  done
-  echo "Re-upload these zips in claude.ai skill settings, replacing the existing skill."
-  echo "The local cache refreshes after Claude desktop picks up the upload, so this may repeat briefly."
-fi
