@@ -19,16 +19,24 @@ Only what it leaves broken stays here:
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- plugins/pstack/docs/harness/claude-code.md                | 2 +-
+ plugins/pstack/docs/harness/claude-code.md                | 3 ++-
  plugins/pstack/skills/poteto-mode/SKILL.md                | 2 ++
  .../pstack/skills/poteto-mode/scripts/worktree-audit.sh   | 8 ++++++--
- 3 files changed, 9 insertions(+), 3 deletions(-)
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/plugins/pstack/docs/harness/claude-code.md b/plugins/pstack/docs/harness/claude-code.md
-index bf154e6..9a780a4 100644
+index bf154e6..aa67f18 100644
 --- a/plugins/pstack/docs/harness/claude-code.md
 +++ b/plugins/pstack/docs/harness/claude-code.md
-@@ -32,7 +32,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
+@@ -11,6 +11,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
+ | Open a todolist | Use `TodoWrite` if the session offers it. Otherwise keep the list in your reply and update it at each phase. |
+ | Run another pstack skill (`/name` or "the **name** skill") | `Read` `<pstack>/skills/<name>/SKILL.md` and follow it. The `Skill` tool refuses most pstack skills. When you tell the user to type it, write `/pstack:<name>`. |
+ | `Grep`, `Glob` | `Bash` with `rg` when the session has no `Grep` or `Glob`. |
++| The `create-skill` skill, Cursor's built-in for authoring `SKILL.md` files | The `skill-creator` skill from the `skill-creator@claude-plugins-official` plugin. Its frontmatter rules, draft / test / iterate loop, and description-optimization loop stand in for `create-skill`'s. Where its writing advice differs from the pstack skill that called it, follow the pstack skill. If it is missing, tell the user to run `claude plugin install skill-creator@claude-plugins-official`. |
+ 
+ ## Subagent fields
+ 
+@@ -32,7 +33,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
  | Cursor | Claude Code |
  | --- | --- |
  | `claude-<family>-<version>-<effort>[-fast]`, such as `claude-opus-5-5-xhigh` | `model: "opus"` and `effort: "xhigh"`. `model` takes only `opus`, `sonnet`, `haiku`, `fable`. Drop `-fast`. |
@@ -38,14 +46,14 @@ index bf154e6..9a780a4 100644
  | The `pstack-models.mdc` rule, `~/.cursor/rules/pstack-models.mdc` | `~/.claude/rules/pstack-models.md`. Claude Code loads it into every new session, so its role lines are already in context. If they are not, read the file. If the file or the role's line is missing, use the skill's default slug. |
  | A role value `<model> <effort>`, such as `opus high` | `model: "opus"` and `effort: "high"`. |
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 21993f5..c241a13 100644
+index 21993f5..1077a21 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
 @@ -10,6 +10,8 @@ color: yellow
  
  Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `poteto-agent` prompt.
  
-+<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, and transcripts are the rollouts under `~/.codex/sessions/` whose `session_meta` `cwd` is this workspace.<!-- tool-neutral: end -->
++<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, and transcripts are the rollouts under `~/.codex/sessions/` whose `session_meta` `cwd` is this workspace, and Cursor's `create-skill` is the `skill-creator` system skill.<!-- tool-neutral: end -->
 +
  ## Non-negotiables
  

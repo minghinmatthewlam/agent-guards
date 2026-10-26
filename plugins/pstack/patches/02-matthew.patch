@@ -21,7 +21,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
  7 files changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index c241a13..73b9070 100644
+index 1077a21..d260ebb 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
 @@ -18,6 +18,9 @@ The Principles section below grounds every trigger. In your reply, name each pri
