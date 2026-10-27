@@ -41,7 +41,7 @@ index bf154e6..aa67f18 100644
  | --- | --- |
  | `claude-<family>-<version>-<effort>[-fast]`, such as `claude-opus-5-5-xhigh` | `model: "opus"` and `effort: "xhigh"`. `model` takes only `opus`, `sonnet`, `haiku`, `fable`. Drop `-fast`. |
 -| A `grok-*`, `gpt-*`, or other non-Claude slug | Omit `model` so the agent runs on the session model, and say so. |
-+| A `grok-*`, `gpt-*`, or other non-Claude slug | Run that seat through the host's cross-provider tool, such as T3 Code's `delegate_task`, or `codex exec -m <slug>`. Omit `model` and say so only when neither works. |
++| A `grok-*`, `gpt-*`, or other non-Claude slug | Run that seat through the host's cross-provider tool, as in T3 Code, or `codex exec -m <slug>`. Omit `model` and say so only when neither works. |
  | `auto` or `inherit-parent` | Omit `model`. |
  | The `pstack-models.mdc` rule, `~/.cursor/rules/pstack-models.mdc` | `~/.claude/rules/pstack-models.md`. Claude Code loads it into every new session, so its role lines are already in context. If they are not, read the file. If the file or the role's line is missing, use the skill's default slug. |
  | A role value `<model> <effort>`, such as `opus high` | `model: "opus"` and `effort: "high"`. |

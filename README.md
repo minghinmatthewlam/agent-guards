@@ -57,7 +57,6 @@ Task-specific skills:
 | `ori-pr` | Matthew runs `/ori-pr` on an ori PR he has approved: perry review once CI is green, GraphQL merge-queue enqueue, within quiet hours |
 | `new-task` | Aligns on the goal and asks only questions that could change the outcome |
 | `record-screen` | Records a UI change as a small MP4 proof: the private virtual display in Linux cloud sessions, only the app window on macOS |
-| `project-coordinator` | Coordinates a project in T3 Code by running pstack's Orchestrate playbook, adding T3 tools, the human's gates, and per-project review steps |
 
 ## Cross-Tool Sync Model
 
