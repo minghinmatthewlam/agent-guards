@@ -25,7 +25,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
  3 files changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/plugins/pstack/docs/harness/claude-code.md b/plugins/pstack/docs/harness/claude-code.md
-index bf154e6..b6c0b41 100644
+index bf154e6..aa67f18 100644
 --- a/plugins/pstack/docs/harness/claude-code.md
 +++ b/plugins/pstack/docs/harness/claude-code.md
 @@ -11,6 +11,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
@@ -46,14 +46,14 @@ index bf154e6..b6c0b41 100644
  | The `pstack-models.mdc` rule, `~/.cursor/rules/pstack-models.mdc` | `~/.claude/rules/pstack-models.md`. Claude Code loads it into every new session, so its role lines are already in context. If they are not, read the file. If the file or the role's line is missing, use the skill's default slug. |
  | A role value `<model> <effort>`, such as `opus high` | `model: "opus"` and `effort: "high"`. |
 diff --git a/plugins/pstack/skills/poteto-mode/SKILL.md b/plugins/pstack/skills/poteto-mode/SKILL.md
-index 21993f5..f9af52f 100644
+index 21993f5..1077a21 100644
 --- a/plugins/pstack/skills/poteto-mode/SKILL.md
 +++ b/plugins/pstack/skills/poteto-mode/SKILL.md
 @@ -10,6 +10,8 @@ color: yellow
  
  Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `poteto-agent` prompt.
  
-+<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, and transcripts are the rollouts under `~/.codex/sessions/` whose `session_meta` `cwd` is this workspace, and Cursor's `create-skill` is the `skill-creator` system skill. On a host that keeps agent threads open, such as T3 Code, settle a worker's thread once its unit is done or abandoned.<!-- tool-neutral: end -->
++<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, and transcripts are the rollouts under `~/.codex/sessions/` whose `session_meta` `cwd` is this workspace, and Cursor's `create-skill` is the `skill-creator` system skill.<!-- tool-neutral: end -->
 +
  ## Non-negotiables
  
