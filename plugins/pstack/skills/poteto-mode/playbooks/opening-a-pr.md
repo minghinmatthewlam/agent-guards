@@ -32,11 +32,11 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
 **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
 
 <!-- matthew: start -->
-**Matthew's rules.** They replace any full-autonomy merge grant, and every playbook that merges points here.
+**Matthew's rules.** They replace any full-autonomy merge grant.
 
-- **Review panel before every PR.** The agent that opens a PR runs `interrogate` first, with reviewers from at least two model families, on the committed diff and the proof. Rerun until nothing blocks the main goal; small improvements don't block. Put the models and verdict in the PR body.
-- **Understanding gate.** Before an agent builds or merges a change that sets long-term direction (architecture or design, a contract, schema, persisted data, public API or CLI surface, RFC, or package boundary), Matthew has seen a key-points brief and said he understands ("ok" counts). Bring it at design time, and again before merge if the design moved. Give only what he most needs to know or learn: what changes for the user, the one or two things worth learning, and a risk or decision only when it matters. When unsure whether a change qualifies, it does.
-- **Merge only when** Matthew approved the intent, the gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready. Never enable auto-merge.
+- **Review panel before every PR.** Run `interrogate` with reviewers from at least two model families on the committed diff and proof, until nothing blocks. Put the models and verdict in the PR body.
+- **Understanding gate.** Before an agent builds or merges a change that sets long-term direction (architecture or design, a contract, schema, persisted data, public API or CLI surface, RFC, or package boundary), Matthew has seen a short key-points brief and said he understands ("ok" counts), at design time and again before merge if the design moved. When unsure whether a change qualifies, it does.
+- **Merge only when** Matthew approved the intent, any required gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready. Never enable auto-merge.
 <!-- matthew: end -->
 
 A subagent that opens a PR runs `interrogate`, `/deslop`, and `/no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.

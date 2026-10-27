@@ -11,7 +11,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
 | Open a todolist | Use `TodoWrite` if the session offers it. Otherwise keep the list in your reply and update it at each phase. |
 | Run another pstack skill (`/name` or "the **name** skill") | `Read` `<pstack>/skills/<name>/SKILL.md` and follow it. The `Skill` tool refuses most pstack skills. When you tell the user to type it, write `/pstack:<name>`. |
 | `Grep`, `Glob` | `Bash` with `rg` when the session has no `Grep` or `Glob`. |
-| The `create-skill` skill, Cursor's built-in for authoring `SKILL.md` files | The `skill-creator` skill from the `skill-creator@claude-plugins-official` plugin. Its frontmatter rules, draft / test / iterate loop, and description-optimization loop stand in for `create-skill`'s. Where its writing advice differs from the pstack skill that called it, follow the pstack skill. If it is missing, tell the user to run `claude plugin install skill-creator@claude-plugins-official`. |
+| The `create-skill` skill, Cursor's built-in for authoring `SKILL.md` files | The `skill-creator` skill (`claude plugin install skill-creator@claude-plugins-official`). Where its writing advice differs from the pstack skill that called it, follow the pstack skill. |
 
 ## Subagent fields
 

@@ -32,7 +32,7 @@ index bf154e6..aa67f18 100644
  | Open a todolist | Use `TodoWrite` if the session offers it. Otherwise keep the list in your reply and update it at each phase. |
  | Run another pstack skill (`/name` or "the **name** skill") | `Read` `<pstack>/skills/<name>/SKILL.md` and follow it. The `Skill` tool refuses most pstack skills. When you tell the user to type it, write `/pstack:<name>`. |
  | `Grep`, `Glob` | `Bash` with `rg` when the session has no `Grep` or `Glob`. |
-+| The `create-skill` skill, Cursor's built-in for authoring `SKILL.md` files | The `skill-creator` skill from the `skill-creator@claude-plugins-official` plugin. Its frontmatter rules, draft / test / iterate loop, and description-optimization loop stand in for `create-skill`'s. Where its writing advice differs from the pstack skill that called it, follow the pstack skill. If it is missing, tell the user to run `claude plugin install skill-creator@claude-plugins-official`. |
++| The `create-skill` skill, Cursor's built-in for authoring `SKILL.md` files | The `skill-creator` skill (`claude plugin install skill-creator@claude-plugins-official`). Where its writing advice differs from the pstack skill that called it, follow the pstack skill. |
  
  ## Subagent fields
  
@@ -53,7 +53,7 @@ index 21993f5..1077a21 100644
  
  Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `poteto-agent` prompt.
  
-+<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, and transcripts are the rollouts under `~/.codex/sessions/` whose `session_meta` `cwd` is this workspace, and Cursor's `create-skill` is the `skill-creator` system skill.<!-- tool-neutral: end -->
++<!-- tool-neutral: start -->In Claude Code, read [the Claude Code adapter](../../docs/harness/claude-code.md) once per session before you follow this skill. In Codex, the `pstack-models.mdc` rule is `~/.claude/rules/pstack-models.md`, transcripts are `~/.codex/sessions/` rollouts whose `session_meta` `cwd` is this workspace, and `create-skill` is the `skill-creator` system skill.<!-- tool-neutral: end -->
 +
  ## Non-negotiables
  
