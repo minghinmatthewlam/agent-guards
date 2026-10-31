@@ -2,10 +2,10 @@
 
 - Repo: https://github.com/cursor/plugins
 - Path: `pstack/`
-- Commit: `99b609a` (Merge pull request #810 from cursor/eliu/tailscale-skill-1.0.3)
+- Commit: `4dd1d05` (Merge pull request #1137 from texclayton/update-gopuff-logo)
 - Author: Lauren Tan, MIT license (see `LICENSE`)
 
-The vendor commit ("Vendor pstack upstream 99b609a") copies that directory byte for byte. Every local change lives in later commits, saved as patches and applied in order. Each patch line exists because upstream leaves something broken in Claude Code or Codex, or because Matthew asked for it (02). Where upstream covers a fix, take upstream's version.
+The vendor commit ("Vendor pstack upstream 4dd1d05") copies that directory byte for byte. Every local change lives in later commits, saved as patches and applied in order. Each patch line exists because upstream leaves something broken in Claude Code or Codex, or because Matthew asked for it (02). Where upstream covers a fix, take upstream's version.
 
 - `patches/01-tool-neutral.patch`: upstream's `docs/harness/claude-code.md` maps Cursor names to Claude Code. The patch points poteto-mode at it (upstream adds that pointer only in its generated harness tree), names Codex's role file and transcripts (upstream has no Codex adapter), maps Cursor's built-in `create-skill` to `skill-creator` in both tools, runs non-Claude roles through a cross-provider tool instead of the session model (so the two-family review panel stays two families), and makes `worktree-audit.sh` search Claude Code and Codex transcripts.
 - `patches/02-matthew.patch`: Matthew's workflow rules, each between `<!-- matthew: start -->` and `<!-- matthew: end -->`. The rules live once, in `playbooks/opening-a-pr.md`; every other playbook that merges carries the same one-line pointer.
