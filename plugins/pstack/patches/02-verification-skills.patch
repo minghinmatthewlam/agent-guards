@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthew Lam <matthew.lam@openrouter.ai>
 Date: Mon, 26 Oct 2026 10:21:42 -0400
-Subject: [PATCH 3/3] Point the verification skills at paths Claude Code and
+Subject: [PATCH 2/2] Point the verification skills at paths Claude Code and
  Codex read
 
 Upstream writes the generated skill to .cursor/skills/, which neither
