@@ -34,7 +34,6 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
 <!-- matthew: start -->
 **Matthew's rules.** They replace any full-autonomy merge grant.
 
-- **Review panel before every PR.** Run `interrogate` with reviewers from at least two model families on the committed diff and proof, until nothing blocks. Put the models and verdict in the PR body.
 - **Understanding gate.** Before an agent builds or merges a change that sets long-term direction (architecture or design, a contract, schema, persisted data, public API or CLI surface, RFC, or package boundary), Matthew has seen a short key-points brief and said he understands ("ok" counts), at design time and again before merge if the design moved. When unsure whether a change qualifies, it does.
 - **Merge only when** Matthew approved the intent, any required gate passed, the change is low risk and high confidence, the required reviewers or bots approved with every comment addressed, and CI is green. Otherwise stop at merge-ready.
 <!-- matthew: end -->

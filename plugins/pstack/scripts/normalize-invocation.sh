@@ -8,12 +8,13 @@
 #   subagent preloading, so poteto-mode could not load the skills it routes to.
 # - Skills outside ENTRY_SKILLS set user-invocable: false, which hides them from the / menu.
 # - Skills outside ENTRY_SKILLS have agents/openai.yaml with allow_implicit_invocation: false.
+# - Entry skills never set allow_implicit_invocation: false.
 # --check reports violations and exits 1 instead of fixing them.
 
 set -euo pipefail
 
 SKILLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../skills" && pwd)"
-ENTRY_SKILLS="poteto-mode poteto-help setup-pstack make-bot-ui automate-me create-verification-skill maintain-verification-skill teach"
+ENTRY_SKILLS="poteto-mode poteto-help setup-pstack make-bot-ui automate-me create-verification-skill maintain-verification-skill teach statechart"
 
 ruby - "$SKILLS_DIR" "${1:-}" "$ENTRY_SKILLS" <<'RUBY'
 skills_dir, mode, entry = ARGV
@@ -33,9 +34,17 @@ Dir.glob(File.join(skills_dir, "*/SKILL.md")).sort.each do |path|
     File.write(path, fixed) unless check
   end
 
-  next if entry.include?(name)
   yaml = File.join(File.dirname(path), "agents", "openai.yaml")
   text = File.exist?(yaml) ? File.read(yaml) : ""
+  if entry.include?(name)
+    next unless text.match?(/^\s+allow_implicit_invocation: false$/)
+    problems << "#{name}: entry skill's agents/openai.yaml sets allow_implicit_invocation: false"
+    next if check
+    abort "#{yaml}: has more than the generated policy; remove allow_implicit_invocation by hand" unless text == "policy:\n  allow_implicit_invocation: false\n"
+    File.delete(yaml)
+    Dir.rmdir(File.dirname(yaml)) if Dir.empty?(File.dirname(yaml))
+    next
+  end
   next if text.match?(/^\s+allow_implicit_invocation: false$/)
   problems << "#{name}: agents/openai.yaml lacks allow_implicit_invocation: false"
   next if check
