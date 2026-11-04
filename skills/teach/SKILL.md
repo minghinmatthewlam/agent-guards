@@ -22,6 +22,8 @@ Start with the system map. Move to the contract walk when the user asks to go de
 - Each type or schema: what it represents, its key fields, one filled-in instance with real values, where it is stored and how durable that is (memory, file, which database; does it survive a restart or crash), and who writes it.
 - The call flow: a top-down Mermaid flowchart from the entry point. Each box is a numbered function or step with one line on what it does, and each arrow is a call labeled with when it happens, such as "blocked" or "the tool waits". Give the call-flow section the full window width and draw the diagram at full text size. Clicking a box opens its full contract card in a panel beside the diagram, separated by a draggable divider, and clicking the same box again or pressing Esc closes the panel so the diagram takes the full width. Do not repeat the steps as a separate list.
 
+**Proposed designs.** Teach a design the same way, with both views. Trace the existing code it touches so the starting point is real. Mark each component, type, and function as existing, changed, or new, in prose and in the diagrams. Use color-blind-safe styles that also differ without color: new is blue with a thick solid border, changed is orange with a dashed border, existing is gray with a thin border. Never use red against green. For a change, show the call flow before and after. Point a new piece's `path:line` at the design sketch file when one exists, and otherwise say "not written yet". Label example values for new pieces as illustrative.
+
 ## Output
 
 Chat is text only. The Claude desktop chat shows Mermaid and `<details>` as raw source.
