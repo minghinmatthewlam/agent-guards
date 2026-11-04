@@ -43,9 +43,8 @@ Core workflow skills:
 | `repo-setup` | Makes the intended architecture obvious and important violations fail mechanically |
 | `learn-from-mistake` | Diagnoses an agent failure, strengthens the owning system, and retries the task |
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
-| `teach` | Builds a code-grounded mental model through components, interfaces, and end-to-end steps |
+| `teach` | Wraps pstack teach for code: a system map, then interfaces, schemas, and signature chains, with visuals in an HTML page |
 | `architect` | Designs changes through explicit code ownership, dependency boundaries, data models, and caller interfaces |
-| `explain-report` | Produces focused self-contained HTML reports for important project knowledge, research, code changes, learning, decisions, and accepted findings |
 
 Task-specific skills:
 

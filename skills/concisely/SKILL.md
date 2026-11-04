@@ -22,4 +22,4 @@ Keep the human in the loop:
 
 For a pre-implementation plan, briefly explain the goal, proposed approach, important decisions or trade-offs, verification strategy, and material risk. Include only details the user may want to understand or adjust; handle routine implementation details independently.
 
-Investigate broadly and verify thoroughly; report selectively. Put supporting depth in artifacts or provide it when asked. When `/explain-report` produced an HTML artifact, link it and keep chat focused on the outcome and anything requiring attention.
+Investigate broadly and verify thoroughly; report selectively. Put supporting depth in artifacts or provide it when asked.
