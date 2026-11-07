@@ -26,7 +26,7 @@ Start with the system map. Move to the contract walk when the user asks to go de
 
 ## Output
 
-Chat is text only. The Claude desktop chat shows Mermaid and `<details>` as raw source.
+The Claude desktop chat shows Mermaid and `<details>` as raw source. Visuals go in the HTML page, or inline with the imagine tool (`show_widget`) when that helps more.
 
 - In chat, link code as a Markdown link whose target is the absolute path plus `:line`. It opens the file pane at that line. Show at most one-line signatures.
 - When you show code, explain it with pseudocode.
