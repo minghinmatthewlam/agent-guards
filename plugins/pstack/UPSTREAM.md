@@ -2,7 +2,7 @@
 
 - Repo: https://github.com/cursor/plugins
 - Path: `pstack/`
-- Commit: `4dd1d05` (Merge pull request #1137 from texclayton/update-gopuff-logo)
+- Commit: `bf0c7cd` (feat(pstack): new default models, one-file why and how, statechart fixes, sharpen and reflect text (#1236))
 - Author: Lauren Tan, MIT license (see `LICENSE`)
 
 The vendor commit ("Vendor pstack upstream 4dd1d05") copies that directory byte for byte. Every local change lives in later commits, saved as patches and applied in order. Each patch line exists because upstream leaves something broken in Claude Code or Codex. Where upstream covers a fix, take upstream's version.
