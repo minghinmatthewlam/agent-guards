@@ -40,6 +40,7 @@ Core workflow skills:
 |---|---|
 | `create-verification-skill` | Builds and proves a repo-local guide for running and checking the real product |
 | `maintain-verification-skill` | Checks that guide against current code and live behavior, then repairs drift |
+| `create-architecture-audit-skill` | Builds and proves a repo-local audit of what each crate or package owns, which way dependencies may point, and where the code breaks those rules |
 | `repo-setup` | Makes the intended architecture obvious and important violations fail mechanically |
 | `learn-from-mistake` | Diagnoses an agent failure, strengthens the owning system, and retries the task |
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
