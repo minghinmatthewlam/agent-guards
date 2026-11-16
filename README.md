@@ -57,6 +57,7 @@ Task-specific skills:
 | `ori-pr` | Matthew runs `/ori-pr` on an ori PR he has approved: perry review once CI is green, GraphQL merge-queue enqueue, within quiet hours |
 | `new-task` | Aligns on the goal and asks only questions that could change the outcome |
 | `record-screen` | Records a UI change as a small MP4 proof: the private virtual display in Linux cloud sessions, only the app window on macOS |
+| `mycomp` | Drives the user's own Mac: signed-in Chrome (Gmail, Workspace) through the Anthropic-logged-in Claude CLI, native apps through Codex computer use |
 
 ## Cross-Tool Sync Model
 
