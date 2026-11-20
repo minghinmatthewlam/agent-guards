@@ -2,7 +2,7 @@
 
 - Repo: https://github.com/cursor/plugins
 - Path: `pstack/`
-- Commit: `bf0c7cd` (feat(pstack): new default models, one-file why and how, statechart fixes, sharpen and reflect text (#1236))
+- Commit: `aaeb0ea` (Merge pull request #1299 from cursor/djiang/front-drop-scopes-only-auth). Last pstack change: `0b46ec3` (fix(pstack): run /statechart on native Windows and read TLC's \r\n line ends (#1292))
 - Author: Lauren Tan, MIT license (see `LICENSE`)
 
 The vendor commit ("Vendor pstack upstream 4dd1d05") copies that directory byte for byte. Every local change lives in later commits, saved as patches and applied in order. Each patch line exists because upstream leaves something broken in Claude Code or Codex. Where upstream covers a fix, take upstream's version.
