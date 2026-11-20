@@ -16,14 +16,32 @@ Only what it leaves broken stays here:
    collapses the two-family review panel Matthew's rules require.
 4. worktree-audit.sh also searches Claude Code and Codex transcripts.
    Without it a worktree a live session still uses is bucketed safe.
+5. poteto-agent pins `model: opus` and `effort: xhigh`. Upstream pins the
+   Cursor slug claude-opus-5-5-xhigh-fast, which the Claude Code API
+   rejects with a 400, so any spawn without a model override fails.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
+ plugins/pstack/agents/poteto-agent.md                     | 3 ++-
  plugins/pstack/docs/harness/claude-code.md                | 3 ++-
  plugins/pstack/skills/poteto-mode/SKILL.md                | 2 ++
  .../pstack/skills/poteto-mode/scripts/worktree-audit.sh   | 8 ++++++--
- 3 files changed, 10 insertions(+), 3 deletions(-)
+ 4 files changed, 12 insertions(+), 4 deletions(-)
 
+diff --git a/plugins/pstack/agents/poteto-agent.md b/plugins/pstack/agents/poteto-agent.md
+index 801b01c..02de91a 100644
+--- a/plugins/pstack/agents/poteto-agent.md
++++ b/plugins/pstack/agents/poteto-agent.md
+@@ -2,7 +2,8 @@
+ name: poteto-agent
+ description: Delegate subagent for code-writing and helper tasks spawned during a `/poteto-mode` run. Use for delegates, not as the runner for `/poteto-mode` itself. Spawn a fresh `poteto-agent` for each new task, and resume one only in the strict cases that poteto-mode's Subagents section names. Reads the `poteto-mode` skill's `SKILL.md` in full before any work, including its inline Principles index. Substituting `generalPurpose` skips that read and drifts.
+ is_background: true
+-model: claude-opus-5-5-xhigh-fast
++model: opus
++effort: xhigh
+ ---
+ 
+ # Poteto subagent
 diff --git a/plugins/pstack/docs/harness/claude-code.md b/plugins/pstack/docs/harness/claude-code.md
 index 2a59bc8..47a0380 100644
 --- a/plugins/pstack/docs/harness/claude-code.md
