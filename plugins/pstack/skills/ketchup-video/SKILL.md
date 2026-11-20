@@ -1,7 +1,7 @@
 ---
 name: ketchup-video
 description: "Catch the user up like /ketchup, with a short subtitled video of slides for what happened and the waiting calls as text under it. Use for /ketchup-video."
-user-invocable: false
+disable-model-invocation: true
 ---
 
 # Ketchup video
