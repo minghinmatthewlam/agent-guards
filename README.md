@@ -54,7 +54,7 @@ Task-specific skills:
 | `skills-audit` | Audits a repo's skills against practical quality checks |
 | `find-bugs` | Finds high-confidence correctness bugs and edge cases in existing code |
 | `find-quick-wins` | Finds low-risk, high-confidence fixes an agent can make and prove alone, and optionally ships each as a small PR |
-| `ori-pr` | Matthew runs `/ori-pr` on an ori PR he has approved: perry review once CI is green, GraphQL merge-queue enqueue, within quiet hours |
+| `perry-review` | Matthew runs `/perry-review` on an `openrouter-web` PR he has approved: perry review once CI is green, GraphQL merge-queue enqueue, within quiet hours |
 | `new-task` | Aligns on the goal and asks only questions that could change the outcome |
 | `record-screen` | Records a UI change as a small MP4 proof: the private virtual display in Linux cloud sessions, only the app window on macOS |
 | `mycomp` | Drives the user's own Mac: signed-in Chrome (Gmail, Workspace) through the Anthropic-logged-in Claude CLI, native apps through Codex computer use |
