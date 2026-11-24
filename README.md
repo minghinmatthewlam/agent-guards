@@ -66,7 +66,7 @@ One source repo fans out to Codex, Claude, Cursor, and Antigravity:
 
 | Source | Codex destination | Claude destination | Cursor destination | Antigravity destination |
 |---|---|---|---|---|
-| `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | — | — |
+| `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | — | `~/.gemini/AGENTS.md` |
 | `commands/*.md` | `~/.codex/prompts/` | `~/.claude/commands/` | — | — |
 | `skills/*/` | `~/.agents/skills/` | `~/.claude/skills/` | `~/.cursor/skills/` | `~/.gemini/config/skills/` |
 | `hooks/poteto-reminder.*` | `~/.codex/hooks/`, registered in `~/.codex/hooks.json` | `~/.claude/hooks/`, registered in `~/.claude/settings.json` | — | — |

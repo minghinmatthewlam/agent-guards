@@ -28,7 +28,7 @@ EOF
 echo '`agent-only-fixture`' >> "$SRC/README.md"
 
 # Fixture: a skill recorded as managed by a previous sync, now retired.
-for dir in "$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.cursor/skills"; do
+for dir in "$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.cursor/skills" "$HOME/.gemini/config/skills"; do
   mkdir -p "$dir/retired-skill" "$dir/user-owned-skill"
   echo "retired-skill" > "$dir/.agent-guards-managed-skills"
 done
@@ -78,13 +78,14 @@ for skill_dir in "$REPO_ROOT"/skills/*/; do
 done
 
 for skill in "${skills[@]}"; do
-  for dir in .agents/skills .claude/skills .cursor/skills; do
+  for dir in .agents/skills .claude/skills .cursor/skills .gemini/config/skills; do
     check "$dir/$skill synced" "[ -f '$HOME/$dir/$skill/SKILL.md' ]"
   done
 done
 
 check "AGENTS.md linked for Codex" "[ '$(readlink "$HOME/.codex/AGENTS.md")' = '$SRC/AGENTS.md' ]"
 check "AGENTS.md linked for Claude" "[ '$(readlink "$HOME/.claude/CLAUDE.md")' = '$SRC/AGENTS.md' ]"
+check "AGENTS.md linked for Antigravity" "[ '$(readlink "$HOME/.gemini/AGENTS.md")' = '$SRC/AGENTS.md' ]"
 for cmd in "$REPO_ROOT"/commands/*.md; do
   name="$(basename "$cmd")"
   check "command $name linked for Claude" "[ -L '$HOME/.claude/commands/$name' ]"
@@ -93,7 +94,7 @@ done
 check "agent-only skill synced to ~/.agents" "[ -f '$HOME/.agents/skills/agent-only-fixture/SKILL.md' ]"
 check "agent-only skill excluded from ~/.claude" "[ ! -e '$HOME/.claude/skills/agent-only-fixture' ]"
 
-for dir in .agents/skills .claude/skills .cursor/skills; do
+for dir in .agents/skills .claude/skills .cursor/skills .gemini/config/skills; do
   check "$dir retired managed skill pruned" "[ ! -e '$HOME/$dir/retired-skill' ]"
   check "$dir unmanaged skill kept" "[ -d '$HOME/$dir/user-owned-skill' ]"
 done

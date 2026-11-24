@@ -20,7 +20,8 @@ CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 AGENT_SKILLS="$HOME/.agents/skills"
 CURSOR_SKILLS="$HOME/.cursor/skills"
-# Antigravity global skills. T3 Code links each agy profile's private GEMINI_HOME here.
+# Antigravity global config. T3 Code links each agy profile's private GEMINI_HOME here.
+ANTIGRAVITY_AGENTS="$HOME/.gemini/AGENTS.md"
 ANTIGRAVITY_SKILLS="$HOME/.gemini/config/skills"
 CLAUDE_HOOKS="$HOME/.claude/hooks"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
@@ -43,7 +44,7 @@ usage() {
 Usage: ./scripts/sync.sh [--dry-run|-n] [--no-prune]
 
 Syncs:
-  - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md
+  - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md, ~/.gemini/AGENTS.md
   - commands/*.md -> ~/.codex/prompts, ~/.claude/commands
   - skills/*/ -> ~/.agents/skills, ~/.claude/skills, ~/.cursor/skills,
     ~/.gemini/config/skills
@@ -278,6 +279,7 @@ mkdir_p "$ANTIGRAVITY_SKILLS"
 log "  Linking AGENTS.md..."
 link_file "$GUARDS_DIR/AGENTS.md" "$CODEX_AGENTS"
 link_file "$GUARDS_DIR/AGENTS.md" "$CLAUDE_MD"
+link_file "$GUARDS_DIR/AGENTS.md" "$ANTIGRAVITY_AGENTS"
 
 log "  Ensuring ~/.claude/skills is a real directory..."
 ensure_claude_skills_dir
@@ -348,7 +350,7 @@ agent_only_count=$((skill_count - claude_skill_count))
 
 echo ""
 echo "Done! Synced:"
-echo "  - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md"
+echo "  - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md, ~/.gemini/AGENTS.md"
 echo "  - $command_count commands -> ~/.codex/prompts, ~/.claude/commands"
 echo "  - $skill_count skills -> ~/.agents/skills"
 echo "  - $skill_count skills -> ~/.cursor/skills (enable Sync Skills for Cloud Agents in Cursor)"
