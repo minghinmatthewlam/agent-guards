@@ -5,32 +5,21 @@ description: "Find why an agent produced a bad result, strengthen the code, repo
 
 # Learn From Mistake
 
-Fix the immediate result and the system that made the mistake easy.
+Fix both the immediate result and the system that made the mistake easy.
 
 ## Diagnose
 
-Preserve the original request, wrong result, available context and tools, and the observation that exposed the failure. Inspect the real source and output. Treat the agent's explanation as a hypothesis, not proof.
+Inspect the real source, output, and failure observation—treat the agent's explanation as a hypothesis, not proof. Identify the owning cause:
 
-Find the owning cause:
+- **Repository** (misleading structure, weak types, missing checks) → `repo-setup`
+- **Verification** (wrong surface, weak proof, missing coverage) → `create-verification-skill` or `maintain-verification-skill`
+- **Task boundary** (missing context, access, or tools) → fix the boundary
+- **Judgment** (one-off with adequate setup) → fix the result without adding machinery
 
-- **Repository:** Misleading structure, duplicate paths, weak types, or missing deterministic checks. Use `repo-setup` to choose and prove the strongest proportional prevention.
-- **Verification:** The wrong surface was checked, proof was weak, or the feature was not covered. Use `create-verification-skill` or `maintain-verification-skill`.
-- **Task boundary:** Required context, access, ownership, or tools were missing or unclear. Fix that boundary.
-- **Judgment:** The setup was adequate and recurrence is unlikely. Correct the result without adding machinery.
+## Prevent & Retry
 
-## Prevent And Retry
-
-Implement the prevention within the authorized scope. Prove it catches the same class of failure, then retry the original task and verify the affected surface.
-
-Ask before changing global guidance, external state, or anything outside the task's write scope.
+Implement prevention in scope (prefer code/tooling over prose), prove it catches the failure class, then retry and verify the affected surface. Ask before changing global guidance or out-of-scope state.
 
 ## Report
 
-Use `concisely`. State what failed, the verified cause, what changed to prevent recurrence, the corrected result, and remaining risk.
-
-## Gotchas
-
-- Do not turn every ordinary bug into an agent rule.
-- Do not add prose when code or tooling can enforce the behavior.
-- Do not fix the visible symptom while leaving the demonstrated failure path open.
-- Do not claim prevention worked without reproducing the relevant failure safely.
+Use `concisely`: what failed, verified cause, prevention + proof, corrected result, and residual risk.

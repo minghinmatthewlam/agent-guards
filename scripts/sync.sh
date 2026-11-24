@@ -20,6 +20,8 @@ CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 AGENT_SKILLS="$HOME/.agents/skills"
 CURSOR_SKILLS="$HOME/.cursor/skills"
+# Antigravity global skills. T3 Code links each agy profile's private GEMINI_HOME here.
+ANTIGRAVITY_SKILLS="$HOME/.gemini/config/skills"
 CLAUDE_HOOKS="$HOME/.claude/hooks"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 CODEX_HOOKS="$HOME/.codex/hooks"
@@ -30,6 +32,7 @@ CODEX_MANIFEST="$CODEX_PROMPTS/.agent-guards-managed-commands"
 CLAUDE_MANIFEST="$CLAUDE_COMMANDS/.agent-guards-managed-commands"
 AGENT_SKILLS_MANIFEST="$AGENT_SKILLS/.agent-guards-managed-skills"
 CURSOR_SKILLS_MANIFEST="$CURSOR_SKILLS/.agent-guards-managed-skills"
+ANTIGRAVITY_SKILLS_MANIFEST="$ANTIGRAVITY_SKILLS/.agent-guards-managed-skills"
 CLAUDE_SKILLS_MANIFEST="$CLAUDE_SKILLS/.agent-guards-managed-skills"
 
 DRY_RUN=false
@@ -42,7 +45,8 @@ Usage: ./scripts/sync.sh [--dry-run|-n] [--no-prune]
 Syncs:
   - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md
   - commands/*.md -> ~/.codex/prompts, ~/.claude/commands
-  - skills/*/ -> ~/.agents/skills, ~/.claude/skills, ~/.cursor/skills
+  - skills/*/ -> ~/.agents/skills, ~/.claude/skills, ~/.cursor/skills,
+    ~/.gemini/config/skills
   - hooks/poteto-reminder.* -> ~/.claude/hooks, ~/.codex/hooks, registered in
     ~/.claude/settings.json and ~/.codex/hooks.json
 
@@ -269,6 +273,7 @@ mkdir_p "$CODEX_PROMPTS"
 mkdir_p "$CLAUDE_COMMANDS"
 mkdir_p "$AGENT_SKILLS"
 mkdir_p "$CURSOR_SKILLS"
+mkdir_p "$ANTIGRAVITY_SKILLS"
 
 log "  Linking AGENTS.md..."
 link_file "$GUARDS_DIR/AGENTS.md" "$CODEX_AGENTS"
@@ -317,14 +322,19 @@ sync_skills_to "$AGENT_SKILLS" "${current_skills[@]}"
 log "  Syncing skills to ~/.cursor/skills (for Cursor Cloud sync)..."
 sync_skills_to "$CURSOR_SKILLS" "${current_skills[@]}"
 
+log "  Syncing skills to ~/.gemini/config/skills (Antigravity)..."
+sync_skills_to "$ANTIGRAVITY_SKILLS" "${current_skills[@]}"
+
 log "  Syncing skills to ~/.claude/skills (excluding agent-only)..."
 sync_skills_to "$CLAUDE_SKILLS" "${claude_skills[@]}"
 
 prune_from_manifest "$AGENT_SKILLS_MANIFEST" "$AGENT_SKILLS" "${current_skills[@]}"
 prune_from_manifest "$CURSOR_SKILLS_MANIFEST" "$CURSOR_SKILLS" "${current_skills[@]}"
+prune_from_manifest "$ANTIGRAVITY_SKILLS_MANIFEST" "$ANTIGRAVITY_SKILLS" "${current_skills[@]}"
 prune_from_manifest "$CLAUDE_SKILLS_MANIFEST" "$CLAUDE_SKILLS" "${claude_skills[@]}"
 write_manifest "$AGENT_SKILLS_MANIFEST" "${current_skills[@]}"
 write_manifest "$CURSOR_SKILLS_MANIFEST" "${current_skills[@]}"
+write_manifest "$ANTIGRAVITY_SKILLS_MANIFEST" "${current_skills[@]}"
 write_manifest "$CLAUDE_SKILLS_MANIFEST" "${claude_skills[@]}"
 
 log "  Syncing poteto-reminder hook to ~/.claude/hooks and ~/.codex/hooks..."
@@ -342,5 +352,6 @@ echo "  - AGENTS.md -> ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md"
 echo "  - $command_count commands -> ~/.codex/prompts, ~/.claude/commands"
 echo "  - $skill_count skills -> ~/.agents/skills"
 echo "  - $skill_count skills -> ~/.cursor/skills (enable Sync Skills for Cloud Agents in Cursor)"
+echo "  - $skill_count skills -> ~/.gemini/config/skills (Antigravity; T3 links it on the next agy launch)"
 echo "  - $claude_skill_count skills -> ~/.claude/skills ($agent_only_count agent-only skipped)"
 echo "  - poteto-reminder hook -> ~/.claude/settings.json, ~/.codex/hooks.json"

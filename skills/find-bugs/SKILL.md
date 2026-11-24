@@ -5,43 +5,20 @@ description: "Find important, high-confidence correctness bugs and edge cases in
 
 # Find Bugs
 
-Understand the real behavior before judging it. Trace relevant entrypoints,
-callers, tests, state transitions, invariants, and failure paths.
+Trace real execution paths, invariants, and failure modes before judging.
 
 ## Investigate
 
-- Prioritize high-confidence, high-impact findings. When impact and confidence
-  are similar, favor lower-complexity fixes, but do not hide a severe bug
-  because its fix is complex.
-- Explore adaptively. Use subagents when they materially improve coverage, keep
-  their scopes distinct, and consolidate their findings centrally.
-- Verify consequential findings with a focused reproduction, test, or runtime
-  probe when practical.
-- Remain read-only unless the user asks for fixes.
+- Prioritize high-confidence, high-impact bugs. Favor simpler fixes when impact and confidence are close, without hiding severe bugs.
+- Use subagents with distinct scopes when helpful; verify and consolidate centrally.
+- Verify consequential findings with a repro, test, or runtime probe when practical.
+- Stay read-only unless asked to fix.
 
-## Report Findings
+## Report
 
-For each material finding:
+Put priority, fix complexity, finding confidence, and fix confidence in each heading:
+`P1 — [Medium fix, 98% finding confidence, 90% fix confidence] Cache entries are not isolated`
 
-- put priority, expected fix complexity, finding confidence percentage, and fix
-  confidence percentage in the heading so they are immediately scannable, for
-  example
-  `P1 — [Medium fix, 98% finding confidence, 90% fix confidence] Cache entries are not isolated`;
-- state the proposed fix direction that the fix estimates refer to;
-- state the expected impact of the fix and explain material risk, blast radius,
-  trade-offs, or unknowns behind the fix confidence.
+Include: affected files/symbols, trigger and expected vs. actual behavior, impact, concrete evidence, proposed fix direction, and risk/blast radius behind the fix confidence. Keep simple findings compact.
 
-Include enough of the following to substantiate it:
-
-- affected files and symbols;
-- trigger or edge case;
-- expected versus actual behavior;
-- user or system impact;
-- concrete code, test, or runtime evidence;
-
-Keep simple findings compact; omit fields that do not add clarity.
-
-Only call something a bug when the execution path and expected contract support
-that conclusion. Separate verified bugs from plausible investigation leads. Do
-not report style preferences, intentional trade-offs, or unrealistic edge cases
-as correctness bugs.
+Separate verified bugs from leads. Skip style preferences, intentional trade-offs, and unrealistic edge cases.

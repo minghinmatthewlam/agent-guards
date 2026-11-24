@@ -5,14 +5,14 @@ description: "Record a small MP4 while demonstrating or verifying a UI change, t
 
 # Record screen
 
-Video is the reviewer's main evidence for UI work. Record around the part of the run that shows the change, then attach the MP4.
+Record the UI change and attach the MP4 as proof. Never record screens showing credentials or tokens.
 
-- **Linux cloud session:** record the whole virtual X display with sections 1–3. Nothing else runs on it, so the whole display is safe to capture.
-- **macOS:** the screen is the user's real desktop, with personal windows and notifications. Never record the full display. Use [the macOS section](#macos-record-only-the-app-window), then continue at section 4.
+- **Linux cloud:** record the private virtual X display (sections 1–2).
+- **macOS:** never record the full desktop—capture only the app window (macOS section).
 
-## Linux: 1. Start (just before the app launches)
+## Linux: 1. Start (before app launch)
 
-Run as one command. It reuses a running display, else starts Xvfb on :99; installs ffmpeg if missing (about 30s with apt); records at 15 fps in the background.
+Reuses a running display or starts Xvfb on `:99`, installs `ffmpeg` if missing, and records at 15 fps. Prefix later app commands with `DISPLAY=:99` if Xvfb was started here.
 
 ```sh
 REC=/tmp/record-screen; mkdir -p "$REC"; SUDO=$([ "$(id -u)" = 0 ] || echo sudo)
@@ -29,15 +29,11 @@ setsid nohup ffmpeg -loglevel error -f x11grab -framerate 15 -draw_mouse 0 -i "$
 echo $! >"$REC/ffmpeg.pid"; echo "recording $DISPLAY (pid $(cat "$REC/ffmpeg.pid"))"
 ```
 
-The app under test must use the same `DISPLAY`. If you started Xvfb here, prefix later commands with `DISPLAY=:99`, since shell exports do not carry across tool calls.
+Demonstrate the change, pausing ~2s on each state.
 
-## Linux: 2. Demonstrate
+## Linux: 2. Stop and encode (always, even on failure)
 
-Drive the app so the change is visible: open the affected screens, pause about 2 seconds on each (`waitForTimeout` in Playwright is fine for pacing), and show the before and after state where it applies. Nothing but the app appears on a virtual display, and Playwright clicks do not move a pointer, so screens change without a visible cursor.
-
-## Linux: 3. Stop and encode (always, even if the run failed)
-
-Replace `NAME` with a short slug for the change. The stop is clean (`SIGINT`); the black lead-in before the first app frame is trimmed; the output is 10 fps H.264 with faststart, typically 0.2 MB for 20s and 4 MB for 90s at 1080p.
+Replace `NAME` with a short slug. Trims black lead-in and encodes 10 fps H.264 faststart.
 
 ```sh
 REC=/tmp/record-screen; OUT="$REC/NAME.mp4"; pid=$(cat "$REC/ffmpeg.pid")
@@ -49,24 +45,19 @@ ffmpeg -v error -y -ss "${lead:-0}" -i "$REC/raw.mkv" -vf fps=10 -c:v libx264 -p
 ffprobe -v error -show_entries format=duration,size -of default=nw=1 "$OUT"
 ```
 
-## macOS: record only the app window
+## macOS: capture only the app window
 
-[`scripts/mac-record.sh`](scripts/mac-record.sh) captures one window's own pixels with `screencapture -l`, at about 5–10 fps, and encodes them with `ffmpeg`. Other windows, notifications and the rest of the screen never reach disk, even when they cover the window. Requires `ffmpeg` and Screen Recording permission for the app running the agent; if capture fails or macOS prompts, ask the user to allow it in System Settings → Privacy & Security → Screen Recording.
+[`scripts/mac-record.sh`](scripts/mac-record.sh) uses `screencapture -l` + `ffmpeg` (requires Screen Recording permission in System Settings → Privacy & Security). Open the window on-screen first (not minimized / other Space) with only test data; pass a title substring if the app has multiple windows.
 
 ```sh
 S=<this skill>/scripts/mac-record.sh
-$S start "<App name as shown in the menu bar>" "<optional window title substring>"
-# demonstrate the change, pausing about 2 seconds on each state
-$S stop NAME   # always, even if the run failed; writes /tmp/record-screen/NAME.mp4 and check.png
+$S start "<App name>" "<optional window title substring>"
+# demonstrate the change, pausing ~2s on each state
+$S stop NAME   # always, even on failure; writes /tmp/record-screen/NAME.mp4 and check.png
 ```
 
-- Open the app window before `start`. A minimized window or one on another Space is not on screen; `start` refuses rather than guessing.
-- Pass a title substring when the app has several windows (for example a browser with personal tabs), so the recording picks the window under test.
-- Launch the app under test in its own window with only test data in it. The window's contents are recorded as they are.
+## 3. Check and attach
 
-## 4. Check and attach
-
-- Pull one frame (`ffmpeg -ss 5 -i "$OUT" -frames:v 1 /tmp/record-screen/check.png`) and look at it. A black or empty frame means the app ran on another display. On macOS, `stop` already wrote `check.png`; confirm it shows only the app under test, and delete the video if it shows anything else.
-- In a project thread, copy the MP4 under `/mnt/project-files/` (for example `/mnt/project-files/screen-recordings/NAME.mp4`) and attach it to the reply that reports the result with `attached_outputs: [{"kind": "file", "ref": "<that path>"}]`. Elsewhere, give the path.
-- Say in one line what the video shows and its duration. The video supports assertions and screenshots; it does not replace them.
-- Never record screens that show credentials or tokens.
+- Inspect a frame (`ffmpeg -ss 5 -i "$OUT" -frames:v 1 /tmp/record-screen/check.png`, or macOS's `check.png`). Verify it shows only the app under test; delete if anything else appears.
+- In a project thread, copy to `/mnt/project-files/screen-recordings/NAME.mp4` and attach via `attached_outputs: [{"kind": "file", "ref": "<path>"}]`; otherwise give the path.
+- Note what the video shows and its duration in one line.

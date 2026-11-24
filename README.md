@@ -61,14 +61,16 @@ Task-specific skills:
 
 ## Cross-Tool Sync Model
 
-One source repo fans out to Codex, Claude, and Cursor:
+One source repo fans out to Codex, Claude, Cursor, and Antigravity:
 
-| Source | Codex destination | Claude destination | Cursor destination |
-|---|---|---|---|
-| `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | — |
-| `commands/*.md` | `~/.codex/prompts/` | `~/.claude/commands/` | — |
-| `skills/*/` | `~/.agents/skills/` | `~/.claude/skills/` | `~/.cursor/skills/` |
-| `hooks/poteto-reminder.*` | `~/.codex/hooks/`, registered in `~/.codex/hooks.json` | `~/.claude/hooks/`, registered in `~/.claude/settings.json` | — |
+| Source | Codex destination | Claude destination | Cursor destination | Antigravity destination |
+|---|---|---|---|---|
+| `AGENTS.md` | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | — | — |
+| `commands/*.md` | `~/.codex/prompts/` | `~/.claude/commands/` | — | — |
+| `skills/*/` | `~/.agents/skills/` | `~/.claude/skills/` | `~/.cursor/skills/` | `~/.gemini/config/skills/` |
+| `hooks/poteto-reminder.*` | `~/.codex/hooks/`, registered in `~/.codex/hooks.json` | `~/.claude/hooks/`, registered in `~/.claude/settings.json` | — | — |
+
+Antigravity (`agy`) does not read `~/.agents/skills/`. T3 Code runs agy with a private `GEMINI_HOME` under `~/.t3/userdata/providers/antigravity/`, and on each launch links that profile's `config/skills` to the real `~/.gemini/config/skills/`. Start a new agy thread after syncing.
 
 To use these skills in Cursor Cloud Agents, enable **Settings → Agents → Context and Tools → Sync Skills for Cloud Agents** in Cursor after running the script. Cursor uploads personal skills from `~/.cursor/skills/`; it does not upload `~/.agents/skills/`. The script copies the full skill folders, including supporting files, into Cursor's sync directory.
 

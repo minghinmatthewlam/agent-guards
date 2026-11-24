@@ -5,35 +5,28 @@ description: "Find low-risk, high-confidence improvements in a codebase that an 
 
 # Find Quick Wins
 
-A quick win is a real problem with a small, safe fix that an agent can make and prove without a human steering it. Trace the current behavior before judging it.
+A quick win is a real problem with a small, safe fix an agent can land and prove autonomously.
 
-## The bar
+## Bar (all must hold)
 
-Report a finding only when all of these hold:
+- **Real:** observed via repro, missing/failing test, runtime probe, or traced contract violation—not style or an intentional trade-off.
+- **Worth it:** a user, caller, or future engineer will notice.
+- **Small & contained:** one PR, a few files, no contract/schema change, migration, or product decision.
+- **Provable:** concrete before-and-after verification.
 
-- **Real.** You observed it: a reproduction, a failing or missing test, a runtime probe, or a traced code path that contradicts a stated contract. Not a style preference or an intentional trade-off.
-- **Worth it.** Someone would notice the fix: a user, a caller, or the next engineer reading the code.
-- **Small and contained.** One PR, a few files, no public contract or schema change, no migration, no product decision.
-- **Provable.** There is a concrete way to show it before and after.
-
-Rank what passes by impact against risk. Prefer the fix you are most sure of when impact is close.
+Rank by impact vs. risk, breaking ties by confidence.
 
 ## Investigate
 
-- Check the tracker and open PRs first, and skip anything already filed or in flight.
-- Spread wide. Use parallel subagents over distinct areas, then verify and deduplicate their findings centrally. Keep only what you confirmed yourself.
-- Stay read-only unless the user asks for fixes.
+- Check the tracker and open PRs first; skip anything already filed or in flight.
+- Fan out with parallel subagents over distinct areas; verify and deduplicate centrally. Stay read-only unless asked to fix.
 
 ## Report
 
-For each finding, a heading with impact, risk, fix size, issue confidence and fix confidence, for example `[High impact, Low risk, S, 95% issue, 90% fix] Retry loop ignores Retry-After`. Then, briefly:
+Heading: `[High impact, Low risk, S, 95% issue, 90% fix] Retry loop ignores Retry-After`
 
-- the evidence and file:line;
-- the fix;
-- how to prove it, before and after.
-
-Each finding should read as a self-contained brief a fresh agent could fix from. List near-misses that failed the bar separately, with the reason.
+Briefly give evidence (`file:line`), the fix, and before/after proof—self-contained enough for a fresh agent to execute. List near-misses separately with reasons.
 
 ## Fix (when asked)
 
-One finding per PR, following the repository's own PR, review and verification rules. Show the problem before the fix and gone after it on the real surface. Drop a finding that turns out larger or riskier than estimated, and report why.
+One finding per PR following repo PR/verification rules. Prove the issue before and gone after on the real surface. Drop and report any finding that turns out larger or riskier than estimated.

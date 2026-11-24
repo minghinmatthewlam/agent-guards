@@ -5,47 +5,17 @@ description: "Audit agent skills for triggering quality, correctness, context ef
 
 # Audit Skills
 
-Perform a read-only, evidence-backed audit of the requested skills. Default to decision-relevant findings, not an exhaustive ceremony.
+Perform a read-only, evidence-backed audit focused on decision-relevant findings.
 
-## Discover
+## Discover & Evaluate
 
-Inspect the paths in scope, including when relevant:
+- Inspect paths in scope (`~/.agents/skills/`, `~/.claude/skills/`, `~/.claude/commands/`, repo `.agents/skills/`, `.claude/skills/`, custom paths). Deduplicate synced/linked mirrors to their source of truth.
+- Consult [`references/checklist.md`](references/checklist.md) (and [`references/categories.md`](references/categories.md) when helpful); apply only relevant checks.
+- Prioritize: incorrect/stale/unsafe instructions, drift-prone duplication, context efficiency (progressive disclosure), weak triggers, missing real-world gotchas, overly rigid procedures, and evidence-backed coverage gaps.
+- Don't penalize short behavioral skills for lacking extra folders, and don't cut real failure knowledge just to reduce line count.
 
-- `~/.agents/skills/`, `~/.claude/skills/`, and `~/.claude/commands/`;
-- repo-local `.agents/skills/` and `.claude/skills/`;
-- custom paths named by the user.
+## Report & Apply
 
-Deduplicate synced or linked copies and identify the source of truth. Note agent system, folder resources, frontmatter, and broken links or scripts.
+Use `concisely`. Order material findings by impact with exact file evidence and the smallest useful fix; group clean skills; separate observed facts from inference.
 
-## Evaluate
-
-Read `references/checklist.md` and apply only relevant checks. Use `references/categories.md` when classification helps reveal mixed responsibilities or a repository-level coverage gap; do not force classification when it adds no decision value.
-
-Prioritize:
-
-- incorrect, stale, conflicting, or unsafe instructions;
-- duplicated guidance likely to drift;
-- always-loaded detail better routed through references or scripts;
-- weak trigger descriptions;
-- missing real-world failure guidance;
-- rigid procedures that prevent capable agents from adapting;
-- missing skills only when repository evidence shows repeated value.
-
-Numeric scores are optional comparison aids, not required output. Never penalize a short behavioral skill for lacking unnecessary resources.
-
-## Report
-
-Use `concisely`. Include every material finding, ordered by impact, with exact file evidence and the smallest useful change. Group clean or low-priority skills rather than producing filler.
-
-Distinguish observed evidence from inference. Do not impose a fixed findings count.
-
-## Apply Mode
-
-Audit first. If the user asks for changes, edit only the approved scope, preserve useful non-obvious guidance through progressive disclosure, validate the changed skills, and report proof.
-
-## Gotchas
-
-- Do not audit installed mirrors as independent skills when they share one source.
-- Do not optimize for line count at the cost of deleting real failure knowledge.
-- Do not treat a large command reference as always-loaded context when it is properly routed.
-- Do not recommend generic new skills without repository evidence that they would recur.
+Audit first. If asked to apply changes, edit only approved scope, validate changed skills, and report proof.
