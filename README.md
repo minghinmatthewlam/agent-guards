@@ -46,6 +46,7 @@ Core workflow skills:
 | `concisely` | Keeps reports concise while surfacing important outcomes, evidence, and project learning |
 | `teach` | Wraps pstack teach for code: a system map, then interfaces, schemas, and signature chains, with visuals in an HTML page |
 | `architect` | Designs changes through explicit code ownership, dependency boundaries, data models, and caller interfaces |
+| `review-loop` | Runs an independent review loop on non-trivial changes before merging until no high-priority findings remain |
 
 Task-specific skills:
 
